@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a th:href="@{/dashboard}">Inicio</a></li>
+            <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+            <li><a th:href="@{/subir-doc}">Documentos</a></li>
+            <li><a th:href="@{/partida}">Partidas</a></li>
+            <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+            <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+            <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        </ul>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container_principal">
+
+        <!-- Barra superior -->
+        <header class="barra-superior">
+            <h1>ISuite Balance | ISB</h1>
+            <div class="barra-busqueda">
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="info-usuario">
+                <span>Diego</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </div>
+        </header>
+
+        <!-- Contenido central -->
+        <main class="auditoria">
+            <h1 class="titulo-auditoria">Bitácora de Auditoría</h1>
+
+            <div class="contenedor-auditoria">
+                <div class="formulario-auditoria">
+                    <div class="grupo-auditoria">
+                        <label for="usuario">Usuario:</label>
+                        <select id="usuario">
+                            <option value="">Seleccione el tipo de usuario</option>
+                            <option value="admin">Administrador</option>
+                            <option value="editor">Auditor</option>
+                            <option value="invitado">Contador</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-auditoria">
+                        <label for="busqueda">Control de búsqueda:</label>
+                        <select id="busqueda">
+                            <option value="">Seleccione una opción</option>
+                            <option value="accion">Acción</option>
+                            <option value="entidad">Entidad</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-auditoria">
+                        <label for="fecha">Ingrese la fecha:</label>
+                        <input type="date" id="fecha" />
+                    </div>
+                </div>
+
+                <div class="tabla-auditoria">
+                    <h2 class="titulo-tabla">Tabla de registros de auditoría</h2>
+                    <table class="tabla-registros">
+                        <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                            <th>Entidad</th>
+                            <th>Fecha/Hora</th>
+                            <th>Otros</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="botones-finales">
+                    <button class="btn-final pdf">Generar PDF</button>
+                    <button class="btn-final excel">Exportar a Excel</button>
+                    <button class="btn-final cancelar">Cancelar</button>
+                </div>
+            </div>
+        </main>
+
+
+    </div>
+</div>
+</body>
+</html>

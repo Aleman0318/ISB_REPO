@@ -2,31 +2,118 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Sistema Contable</a>
-        <div class="collapse navbar-collapse justify-content-end">
-                <span class="navbar-text text-white">
-                    Hola <span th:text="${nombre}">Usuario</span>, bienvenido. Tu rol es <span th:text="${rol}">ROL</span>
-                </span>
-        </div>
-    </div>
-</nav>
+<body>
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-body text-center">
-            <h2 class="card-title">Dashboard</h2>
-            <p class="card-text">Has ingresado correctamente al sistema.</p>
-            <a href="/logout" class="btn btn-danger mt-3">Cerrar Sesión</a>
-        </div>
-    </div>
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="main">
+    <header>
+        <div class="brand">
+            <h1>Suite Balance | ISB</h1>
+        </div>
+        <input type="text" placeholder="Buscar...">
+        <div class="user-info">
+            <span th:text="${nombreUsuario}">Ariana Flores</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+        </div>
+    </header>
+
+    <section class="stats">
+        <!-- Primera fila -->
+        <div class="row top-row">
+            <div class="card large">
+                <h3>Welcome <span th:text="${nombreUsuario}">Ariana</span></h3>
+                <p>Tiempo de Actividad</p>
+                <h2 th:text="${tiempoActividad}">2h:43m:25s</h2>
+            </div>
+            <div class="card large">
+                <h3>Revisiones Pendientes</h3>
+                <p>Admin / Auditor</p>
+                <h2 th:text="${revisionesPendientes}">150</h2>
+            </div>
+        </div>
+
+        <!-- Segunda fila -->
+        <div class="row bottom-row">
+            <div class="card small green">
+                <h4>Reportes Aprobados</h4>
+                <h2 th:text="${reportesAprobados}">960</h2>
+                <p>% mensual</p>
+            </div>
+            <div class="card small red">
+                <h4>Reportes Rechazados</h4>
+                <h2 th:text="${reportesRechazados}">220</h2>
+                <p>% mensual</p>
+            </div>
+            <div class="card small blue">
+                <h4>Reportes en Revisión</h4>
+                <h2 th:text="${reportesRevision}">150</h2>
+                <p>% mensual</p>
+            </div>
+            <div class="card small orange">
+                <h4>Bitácora de Auditoría</h4>
+                <h2 th:text="${bitacoraTotal}">2.3k</h2>
+                <p>% total</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="reports">
+        <div class="chart">
+            <h3>Reporte de Partidas</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+        <div class="recent">
+            <h3>Documentos Recientes</h3>
+            <ul>
+                <li>Documento 1 <button>Visualizar</button></li>
+                <li>Documento 2 <button>Visualizar</button></li>
+                <li>Documento 3 <button>Visualizar</button></li>
+                <li>Documento 4 <button>Visualizar</button></li>
+                <li>Documento 5 <button>Visualizar</button></li>
+                <li>Documento 6 <button>Visualizar</button></li>
+            </ul>
+        </div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('barChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['JUL', 'JUN', 'AGO', 'SEP', 'OCT'],
+            datasets: [{
+                label: 'Reportes',
+                data: [546, 390, 487, 254, 673],
+                backgroundColor: '#2b6cb0'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 </body>
 </html>

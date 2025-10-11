@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+
+
+<!-- Contenedor principal -->
+    <div class="container_principal">
+
+        <!-- Barra superior -->
+        <header class="barra-superior">
+            <h1>ISuite Balance | ISB</h1>
+            <div class="barra-busqueda">
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="info-usuario">
+                <span>Diego</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </div>
+        </header>
+
+        <!-- Contenido central -->
+        <main class="libro-diario">
+            <h1 class="titulo-libro">Registrar Partida</h1>
+
+            <!-- Recuadro principal -->
+            <div class="contenedor-blanco registrar-partida">
+
+                <!-- CONTENEDOR DE CUENTAS AFECTADAS -->
+                <div class="cuentas-wrap">
+                    <div class="cuentas-header">
+                        <span class="cuentas-titulo">Cuentas afectadas</span>
+                    </div>
+
+                    <div id="cuentas-container" class="cuentas-container" aria-live="polite">
+                        <!-- Tarjeta inicial (SIN + fijo) -->
+                        <section class="cuenta-item" data-idx="1">
+                            <div class="cuenta-head">
+                                <h3>Cuenta afectada 1</h3>
+                                <div class="head-actions">
+                                    <!-- el botón "+" lo inyecta JS en la ultima tarjeta -->
+                                    <button class="btn-icon danger btn-delete-card" title="Eliminar cuenta">🗑️</button>
+                                </div>
+                            </div>
+
+                            <div class="cuenta-body">
+                                <label class="sub">Cuenta</label>
+                                <select class="input sel-cuenta">
+                                    <option value="" selected>Seleccione la cuenta</option>
+                                    <option>Inventario</option>
+                                    <option>Bancos</option>
+                                    <option>Clientes</option>
+                                    <option>IVA acreditable</option>
+                                    <option>Ventas</option>
+                                    <option>Proveedores</option>
+                                </select>
+
+                                <label class="sub">Fecha</label>
+                                <input type="date" class="input inp-fecha" />
+
+                                <div class="fila-form mt-8">
+                                    <label class="radio"><input type="radio" name="lado-1" value="debe" checked> Debe</label>
+                                    <label class="radio"><input type="radio" name="lado-1" value="haber"> Haber</label>
+                                </div>
+
+                                <label class="sub">Monto</label>
+                                <input class="input monto inp-monto" type="number" min="0" step="0.01" placeholder="$ 0.00">
+
+                                <label class="sub">Descripción (por cuenta)</label>
+                                <textarea class="input inp-desc" rows="2" placeholder="Describe esta línea…"></textarea>
+                            </div>
+
+                            <div class="cuenta-foot">
+                                <button class="btn btn-primary btn-enviar">Añadir a tabla</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <h2 class="subtitulo">Tabla de Partida Doble</h2>
+                <table class="tabla-libro" id="tabla-partida">
+                    <thead>
+                    <tr>
+                        <th>N° Partida</th>
+                        <th>Fecha</th>
+                        <th>Cuenta</th>
+                        <th>Descripción</th>
+                        <th>Debe</th>
+                        <th>Haber</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody-partida"></tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4" class="totales-texto">Totales:</td>
+                        <td id="total-debe">$ 0.00</td>
+                        <td id="total-haber">$ 0.00</td>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Botones -->
+                <div class="acciones-internas">
+                    <button class="btn-adjuntar">Adjuntar documento</button>
+                    <div class="acciones-derecha">
+                        <button class="btn-cerrar" id="btn-cerrar">Cancelar</button>
+                        <button class="btn-guardar" id="btn-guardar">Guardar Partida</button>
+                    </div>
+                </div>
+
+                <div class="acciones-siguiente">
+                    <button class="btn" id="btn-siguiente">Añadir siguiente partida</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="/JS/app.js"></script>
+</body>
+</html>

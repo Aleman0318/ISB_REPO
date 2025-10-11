@@ -1,0 +1,951 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* ---------- CONTENEDOR GENERAL ---------- */
+.contenedor-general {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* ---------- PANEL LATERAL ---------- */
+.panel-lateral {
+  background-color: #212121;
+  color: white;
+  width: 13%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 25px;
+}
+
+.panel-lateral h2 {
+  font-size: clamp(1rem, 1.3vw, 1.5rem);
+  font-weight: 600;
+  margin-bottom: 40px;
+  color: #ccc;
+}
+
+.panel-lateral button {
+  width: 85%;
+  background-color: #e03131;
+  border: none;
+  color: white;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  text-align: center;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.panel-lateral button:hover {
+  background-color: #c62828;
+}
+
+/* ---------- CONTENEDOR PRINCIPAL ---------- */
+.container_principal {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- BARRA SUPERIOR ---------- */
+.barra-superior {
+  background-color: #e03131;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 30px;
+  color: white;
+}
+
+.barra-superior h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.barra-busqueda input {
+  padding: 8px 15px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  width: clamp(180px, 20vw, 250px);
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+}
+
+.info-usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: clamp(35px, 4vw, 45px);
+  height: clamp(35px, 4vw, 45px);
+  background-color: #000;
+  border-radius: 50%;
+}
+
+/* ---------- FORMULARIO ---------- */
+.formulario-usuario {
+  background-color: #f3f3f3;
+  padding: clamp(1rem, 3vw, 3rem);
+  border-radius: 10px;
+  width: 75%;
+  margin: 2rem auto;
+}
+
+.formulario-usuario h1 {
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+}
+
+.form-grupo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: clamp(1rem, 2vw, 2rem) clamp(0.8rem, 2vw, 1.5rem);
+}
+
+.form-grupo label {
+  font-weight: bold;
+  color: #333;
+  min-width: 150px;
+  text-align: left;
+  font-size: clamp(1rem, 2vw, 1.6rem);
+}
+
+.form-grupo input,
+.form-grupo select {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  color: #444;
+  background: transparent;
+}
+
+.form-grupo input::placeholder {
+  color: #777777;
+}
+
+/* ---------- BOTONES ---------- */
+.botones {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.btn-agregar,
+.btn-cancelar {
+  width: 40%;
+  padding: clamp(0.6rem, 1.2vw, 0.8rem);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+}
+
+.btn-agregar {
+  background-color: #FF3030;
+}
+
+.btn-cancelar {
+  background-color: #FF3030;
+}
+
+#contrasenal::placeholder {
+  color: red;
+  opacity: 1;
+}
+
+.texto {
+  text-align: center;
+  padding: 25px;
+}
+
+.resaltar {
+  color: red;
+}
+
+/* ---------- GESTIÓN DE USUARIOS ---------- */
+.gestion-usuarios {
+  padding: 3rem;
+}
+
+.titulo-gestion {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+/* ---------- TABLA ---------- */
+.tabla-usuarios {
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  font-weight: bold;
+  padding: clamp(8px, 1vw, 12px);
+  text-align: center;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #333;
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
+}
+
+.tabla-usuarios th {
+  background-color: #f7f7f7;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+}
+
+.tabla-usuarios th:first-child,
+.tabla-usuarios td:first-child {
+  border-left: none;
+}
+
+.tabla-usuarios th:last-child,
+.tabla-usuarios td:last-child {
+  border-right: none;
+}
+
+/* ---------- BOTONES OPCIONES ---------- */
+.opciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-opcion {
+  width: clamp(28px, 3vw, 35px);
+  height: clamp(28px, 3vw, 35px);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.eliminar {
+  background-color: #ff5757;
+}
+
+.editar {
+  background-color: #6f8eff;
+}
+
+/* ---------- BOTÓN INFERIOR ---------- */
+.contenedor-boton {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-crear {
+  background-color: #e03131;
+  color: white;
+  border: none;
+  padding: clamp(0.8rem, 2vw, 1rem) clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* ---------- LIBRO DIARIO ---------- */
+.libro-diario {
+  padding: 3rem;
+  background-color: #f4f0e6;
+}
+
+.titulo-libro {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  color: #000;
+  margin-bottom: 1.5rem;
+}
+
+.busqueda-fecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.busqueda-fecha input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  cursor: pointer;
+  background-color: white;
+  transition: box-shadow 0.3s ease;
+}
+
+.busqueda-fecha input[type="date"]:hover,
+.busqueda-fecha input[type="date"]:focus {
+  box-shadow: 0 0 5px rgba(224, 49, 49, 0.6);
+}
+
+.acciones-superiores {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btn-nueva-partida {
+  background-color: #1e1e1e;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  transition: background 0.3s ease;
+}
+
+/* ---------- GENERAR REPORTE ---------- */
+.generar-reporte {
+  padding: 3rem;
+  background-color: #f4f0e6;
+}
+
+.titulo-reporte {
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #000;
+  margin-bottom: 2rem;
+}
+
+/* ---------- GRUPO DE SELECCIÓN ---------- */
+.grupo-seleccion {
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 200px;
+}
+
+.campo label {
+  font-weight: bold;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.campo input,
+.campo select {
+  padding: 10px;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+/* ---------- VISTA PREVIA ---------- */
+.vista-previa {
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.vista-previa h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.tabla-reporte {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.tabla-reporte th,
+.tabla-reporte td {
+  border: 1px solid #000;
+  padding: 10px;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #000;
+  height: 40px;
+}
+
+/* ---------- BOTONES ---------- */
+.botones-reporte {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-reporte {
+  flex: 1;
+  padding: 12px;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+
+.btn-reporte.pdf {
+  background-color: #e03131;
+}
+
+.btn-reporte.excel {
+  background-color: #2f9e44;
+}
+
+.btn-reporte.cancelar {
+  background-color: #868e96;
+}
+
+
+/* ---------- RECUADRO BLANCO ---------- */
+.contenedor-blanco {
+  background-color: white;
+  border-radius: 10px;
+  border: 2px solid #000;
+  padding: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-libro {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tabla-libro th,
+.tabla-libro td {
+  border: 1px solid #000;
+  padding: 10px;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #000;
+}
+
+.tabla-libro th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.totales-texto {
+  text-align: right;
+  font-weight: bold;
+  padding-right: 20px;
+  background-color: #fff;
+}
+
+/* ---------- BOTONES INTERNOS ---------- */
+.acciones-internas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.btn-adjuntar,
+.btn-cerrar {
+  background-color: #1e1e1e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* ---------- SUBIR DOCUMENTO PDF ---------- */
+.subir-documento {
+  padding: 3rem;
+  width: 50%;
+  margin: 0 auto;
+}
+
+
+.titulo-subida {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+.area-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  transition: border-color 0.3s ease;
+}
+
+.area-carga:hover {
+  border-color: #e03131;
+}
+
+.area-carga label {
+  font-weight: bold;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.area-carga input[type="file"] {
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  cursor: pointer;
+}
+
+.vista-previa {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.vista-previa label {
+  font-weight: bold;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: #333;
+}
+
+.vista-previa p {
+  margin-top: 1rem;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  color: #555;
+}
+
+.botones-subida {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-subir,
+.btn-adjuntar-partida {
+  background-color: #1e1e1e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.imagen-subida {
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.imagen-subida:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- AUDITORÍA ---------- */
+.auditoria {
+  padding: 3rem;
+  background-color: #f4f0e6;
+}
+
+.titulo-auditoria {
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #000;
+  margin-bottom: 2rem;
+}
+
+/* ---------- CONTENEDOR GENERAL ---------- */
+.contenedor-auditoria {
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- FORMULARIO ---------- */
+.formulario-auditoria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.grupo-auditoria {
+  flex: 1 1 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.grupo-auditoria label {
+  font-weight: bold;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.grupo-auditoria input,
+.grupo-auditoria select {
+  padding: 10px;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+/* ---------- TABLA ---------- */
+.tabla-auditoria {
+  margin-bottom: 2rem;
+}
+
+.titulo-tabla {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.tabla-registros {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.tabla-registros th,
+.tabla-registros td {
+  border: 1px solid #000;
+  padding: 10px;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #000;
+  height: 40px;
+}
+
+.tabla-registros th {
+  background-color: #f7f7f7;
+  font-weight: bold;
+}
+
+/* ---------- BOTONES FINALES ---------- */
+.botones-finales {
+  display: flex;
+  justify-content: space-between;
+  gap: 250px;
+  margin-top: 1.5rem;
+}
+
+.btn-final {
+  flex: 1;
+  padding: 12px;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  text-align: center;
+}
+
+.btn-final.pdf {
+  background-color: #e03131;
+}
+
+.btn-final.excel {
+  background-color: #2f9e44;
+}
+
+.btn-final.cancelar {
+  background-color: #868e96;
+}
+
+.cuentas-wrap { margin-bottom: 12px; }
+.cuentas-header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 8px;
+}
+.cuentas-titulo{ font-weight: 800; }
+
+.cuentas-container{
+  border: 1px solid #000;
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 320px;           /* altura fija con scroll */
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  background: #fff;
+}
+
+.cuenta-item{
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fafafa;
+  display:flex; flex-direction:column; gap: 8px;
+}
+
+.cuenta-head{
+  display:flex; align-items:center; justify-content:space-between;
+}
+.cuenta-head h3{
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+}
+.btn-plus-card{
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid #ccc; background:#fff; cursor:pointer; font-size: 20px; line-height:1;
+}
+
+/* Cuerpo de la tarjeta */
+.cuenta-body .input, .cuenta-body select{
+  background:#fff;
+}
+
+.cuenta-foot{ display:flex; justify-content:flex-end; }
+.cuenta-item:not(:last-child) .btn-enviar{ display:none; }
+
+.acciones-derecha{ display:flex; gap:10px; }
+.acciones-siguiente{
+  display:flex; justify-content:flex-end; margin-top:10px;
+}
+
+.registrar-partida .cuenta-item{
+  padding: 10px;
+  border-radius: 10px;
+  gap: 6px;
+  box-shadow: 0 1px 8px rgba(0,0,0,.05);
+}
+
+.registrar-partida .cuentas-container{
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  max-height: 330px;
+}
+
+.registrar-partida .cuenta-head{
+  padding-bottom: 4px;
+}
+.registrar-partida .cuenta-head h3{
+  font-size: .95rem;
+}
+
+.registrar-partida .cuenta-body{
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  gap: 6px 10px;
+  align-items: end;
+}
+
+.registrar-partida .cuenta-body .sub{
+  font-size: .8rem;
+  margin: 0;
+  color:#444;
+}
+
+.registrar-partida .cuenta-body .sub:nth-of-type(1){ grid-column: 1 / -1; }
+.registrar-partida .sel-cuenta{              grid-column: 1 / -1; }
+
+.registrar-partida .fila-form{               grid-column: 1 / 2;  align-items:center; }
+.registrar-partida .cuenta-body .sub:nth-of-type(2){ grid-column: 2 / 3; }
+.registrar-partida .inp-monto{               grid-column: 2 / 3; }
+
+.registrar-partida .cuenta-body .sub:nth-of-type(3){ grid-column: 1 / -1; }
+.registrar-partida .inp-desc{                grid-column: 1 / -1; }
+
+
+.registrar-partida .input,
+.registrar-partida select,
+.registrar-partida textarea{
+  padding: 8px 10px;
+  font-size: .92rem;
+}
+
+.registrar-partida .fila-form label{
+  font-size: .9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.registrar-partida .btn-icon{
+  width: 32px; height: 32px;
+  font-size: 16px;
+}
+
+.registrar-partida .cuenta-foot{ margin-top: 4px; }
+.registrar-partida .btn-enviar{ padding: 8px 12px; font-size: .92rem; }
+
+
+.registrar-partida .acciones-derecha{ display:flex; gap:10px; }
+.registrar-partida .acciones-siguiente{ display:flex; justify-content:flex-end; margin-top:10px; }
+
+.registrar-partida .btn-adjuntar,
+.registrar-partida .btn-cerrar,
+.registrar-partida .btn-guardar,
+.registrar-partida #btn-siguiente {
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease, transform .04s ease, box-shadow .2s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+.registrar-partida .btn-adjuntar,
+.registrar-partida .btn-cerrar { background:#1e1e1e; color:#fff; }
+.registrar-partida .btn-adjuntar:hover,
+.registrar-partida .btn-cerrar:hover { background:#151515; }
+
+.registrar-partida .btn-guardar{ background:#2f9e44; color:#fff; }
+.registrar-partida .btn-guardar:hover{ background:#27963a; }
+
+.registrar-partida #btn-siguiente{ background:#e03131; color:#fff; }
+.registrar-partida #btn-siguiente:hover{ background:#c62828; }
+
+.registrar-partida .btn-enviar{
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 700;
+  background:#e03131;
+  color:#fff;
+  cursor:pointer;
+  transition: background .2s ease, transform .04s ease;
+}
+.registrar-partida .btn-enviar:hover{ background:#c62828; }
+.registrar-partida .cuenta-item:not(:last-child) .btn-enviar{ display:none; }
+
+/* Head actions SIEMPRE horizontales */
+.registrar-partida .cuenta-head{ display:flex; align-items:center; justify-content:space-between; }
+.registrar-partida .head-actions{
+  display:flex;
+  flex-direction: row;   /* fuerza horizontal */
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+}
+.registrar-partida .btn-icon{
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  background:#fff;
+  cursor:pointer;
+  display:grid; place-items:center;
+  font-size:16px; line-height:1;
+  transition: background .2s ease, transform .04s ease, border-color .2s ease;
+}
+.registrar-partida .btn-icon:hover{ background:#f7f7f7; }
+.registrar-partida .btn-icon.danger{ border-color:#ff9a9a; }
+.registrar-partida .btn-icon.danger:hover{ background:#fff1f1; }
+
+/* Contenedor un poquito más grande */
+.registrar-partida .cuentas-container{
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  background: #fff;
+}
+
+
+.registrar-partida .cuenta-item{
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  background: linear-gradient(#ffffff, #fafafa);
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  padding: 12px;
+  display:flex; flex-direction:column; gap: 8px;
+}
+
+
+.registrar-partida .cuenta-body{
+  display: grid;
+  grid-template-columns: 1fr 170px;
+  gap: 8px 12px;
+  align-items: end;
+}
+.registrar-partida .cuenta-body .sub{ font-size: .85rem; font-weight:700; color:#333; margin:0; }
+
+/* Mapeo de posiciones */
+.registrar-partida .cuenta-body .sub:nth-of-type(1){ grid-column:1 / -1; }
+.registrar-partida .sel-cuenta{ grid-column:1 / -1; }
+
+.registrar-partida .cuenta-body .sub:nth-of-type(2){ grid-column:2 / 3; }
+.registrar-partida .inp-fecha{ grid-column:2 / 3; }
+
+.registrar-partida .fila-form{ grid-column:1 / 2; align-items:center; }
+
+.registrar-partida .cuenta-body .sub:nth-of-type(3){ grid-column:2 / 3; }
+.registrar-partida .inp-monto{ grid-column:2 / 3; text-align:right; }
+
+.registrar-partida .cuenta-body .sub:nth-of-type(4){ grid-column:1 / -1; }
+.registrar-partida .inp-desc{ grid-column:1 / -1; }
+
+.registrar-partida .input,
+.registrar-partida select,
+.registrar-partida textarea{
+  padding: 9px 10px;
+  font-size: .95rem;
+}
+.registrar-partida .cuentas-container{
+  max-height: 520px;
+  padding: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}

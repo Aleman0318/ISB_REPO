@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+    <!-- Contenedor principal -->
+    <div class="container_principal">
+
+        <!-- Barra superior -->
+        <header class="barra-superior">
+            <h1>ISuite Balance | ISB</h1>
+            <div class="barra-busqueda">
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="info-usuario">
+                <span>Diego</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </div>
+        </header>
+
+        <!-- Contenido central -->
+        <main class="gestion-usuarios">
+            <h1 class="titulo-gestion">Gestión de Usuario</h1>
+
+            <table class="tabla-usuarios">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Contraseña</th>
+                    <th>Rol</th>
+                    <th>Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>001</td>
+                    <td>Diego</td>
+                    <td>Flores</td>
+                    <td>Diego@hotmail.com</td>
+                    <td>dk82HjBnds72Fv</td>
+                    <td>Contador</td>
+                    <td class="opciones">
+                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
+                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>Aleman</td>
+                    <td>Gonzales</td>
+                    <td>Aleman@hotmail.com</td>
+                    <td>8a8Hhshd72dncP</td>
+                    <td>Admin</td>
+                    <td class="opciones">
+                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
+                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>Ariana</td>
+                    <td>Flores</td>
+                    <td>Ariana@hotmail.com</td>
+                    <td>138Hhshd34dncP</td>
+                    <td>Auditor</td>
+                    <td class="opciones">
+                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
+                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>Diego</td>
+                    <td>Montesinos</td>
+                    <td>DiegoMontes@hotmail.com</td>
+                    <td>dheuh8920jw</td>
+                    <td>Admin</td>
+                    <td class="opciones">
+                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
+                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>004</td>
+                    <td>Marlon</td>
+                    <td>Urrutia</td>
+                    <td>urrutia@hotmail.com</td>
+                    <td>hsuh98u81282</td>
+                    <td>Contador</td>
+                    <td class="opciones">
+                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
+                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="contenedor-boton">
+                <button class="btn-agregar" onclick="window.location.href='/crear-usuario'">Crear Usuario</button>
+            </div>
+        </main>
+
+    </div>
+</div>
+</body>
+</html>

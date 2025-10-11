@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+
+    <!-- Contenedor principal -->
+    <div class="container_principal">
+
+        <!-- Barra superior -->
+        <header class="barra-superior">
+            <h1>ISuite Balance | ISB</h1>
+            <div class="barra-busqueda">
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="info-usuario">
+                <span>Diego</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="subir-documento">
+            <h1 class="titulo-subida">Subir Documento PDF</h1>
+
+            <div class="contenedor-blanco">
+                <!-- Área de carga -->
+                <div class="area-carga">
+                    <label for="archivoPDF">Cargar archivo</label>
+                    <input type="file" id="archivoPDF" accept="application/pdf" style="display: none;" />
+                    <label for="archivoPDF">
+                        <img src="https://cdn-icons-png.flaticon.com/512/724/724933.png" alt="Subir documento" class="imagen-subida" />
+                    </label>
+                </div>
+
+                <!-- Vista previa -->
+                <div class="vista-previa">
+                    <label>Vista previa</label>
+                    <p>Nombre del documento: <span id="nombreDocumento">---</span></p>
+                </div>
+
+                <!-- Botones -->
+                <div class="botones-subida">
+                    <button class="btn-subir">Subir documento</button>
+                    <button class="btn-adjuntar-partida">Adjuntar a Partida</button>
+                </div>
+            </div>
+        </main>
+
+
+    </div>
+</div>
+</body>
+</html>

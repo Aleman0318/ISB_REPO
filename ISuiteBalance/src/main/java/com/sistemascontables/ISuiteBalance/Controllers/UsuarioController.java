@@ -50,17 +50,4 @@ public class UsuarioController {
 
 
 
-    // Dashboard
-    @GetMapping("/dashboard")
-    public String dashboard(@AuthenticationPrincipal Usuario usuario, Model model) {
-        if (usuario == null) {
-            return "redirect:/login"; // fallback si no está autenticado
-        }
-
-        model.addAttribute("nombre", usuario.getNombre());
-        model.addAttribute("rol", usuario.getRol());
-        return "dashboard";
-    }
-
-
 }

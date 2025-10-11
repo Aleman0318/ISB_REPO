@@ -1,251 +1,230 @@
-:root {
-  --rojo: #ff3030;
-  --gris-fondo: #606060;
-  --gris-oscuro: #212121;
-  --blanco: #ffffff;
-  --mostaza: #ff9811;
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    display: flex;
+    background-color: #e3e4e6;
+    color: #222;
 }
 
-html, body {
-  height: 100%;
-  background: var(--gris-fondo);
-  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+/* === SIDEBAR === */
+.sidebar {
+    width: 230px;
+    background: #1e1f25;
+    color: #fff;
+    height: auto;
+    padding: 20px;
 }
 
-.login-shell {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
+.sidebar h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
 }
 
-/* Contenedor principal (dos tarjetas) */
-.login-frame {
-  max-width: 980px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 42px;
+.sidebar ul {
+    list-style: none;
+    padding: 0;
 }
 
-/* Tarjeta izquierda (oscura) */
-.panel-izq {
-  background: var(--gris-oscuro);
-  border-radius: 16px;
-  padding: 70px 36px; /* ⬆️ antes 40px, ahora 70px */
-  color: var(--blanco);
-  position: relative;
-  box-shadow: 0 14px 20px rgba(0,0,0,.35);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    transition: background 0.3s;
 }
 
-.marca-ISB {
-  font-family: 'Merriweather', serif;
-  font-size: clamp(48px, 6vw, 90px);
-  color: rgba(255,255,255,.20);
-  letter-spacing: 4px;
-  text-align: center;  /* ✅ centra el texto horizontalmente */
-  user-select: none;
-  width: 100%;         /* asegura que ocupe todo el ancho del panel */
-  display: flex;
-  justify-content: center;
-  align-items: center; /* opcional: centra también verticalmente si el contenedor crece */
+.sidebar a.active,
+.sidebar a:hover {
+    background: #e63946;
 }
 
-.ilustracion-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 24px;
+
+.brand {
+    font-size: 12px;
 }
 
-.ilustracion {
-  max-width: 360px;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.45));
+/* === ÁREA PRINCIPAL === */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Tarjeta derecha (roja) */
-.panel-der {
-  background: var(--rojo);
-  border-radius: 16px;
-  padding: 75px 36px; /* ⬆️ antes 44px, ahora 75px */
-  color: var(--blanco);
-  position: relative;
-  box-shadow: 0 14px 20px rgba(0,0,0,.35);
+/* === ENCABEZADO === */
+header {
+    background: #e63946;
+    color: white;
+    padding: 2px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.titulo-login {
-  font-family: 'Merriweather', serif;
-  font-size: clamp(40px, 4.5vw, 64px);
-  line-height: 1.1;
-  text-align: center;
-  margin-bottom: 6px;
+header input {
+    width: 350px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
 }
 
-.subtitulo {
-  text-align: center;
-  opacity: 0.9;
-  margin-bottom: 28px;
-  font-size: 16px;
-  font-weight: 400;     /* sin negrita */
-  letter-spacing: 2px;  /* espaciado entre letras */
-  text-transform: none; /* texto normal, no mayúsculas */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Inputs */
-.form-control {
-  border: none;
-  border-radius: 10px;
-  padding: 12px 14px;
-  background: #f9efe7; /* blanco cálido */
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
 }
 
-.form-control:focus {
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+/* === SECCIÓN DE TARJETAS === */
+.stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
 }
 
-.form-label {
-  color: var(--blanco);
-  opacity: 0.95;
-  margin-bottom: 0.35rem;
-  font-weight: 600;
+.row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
 }
 
-::placeholder {
-  color: #797979;
-  opacity: 0.95;
+/* === FILA SUPERIOR (2 GRANDES) === */
+.top-row .card.large {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 2px solid rgba(204, 111, 111, 0.288);
 }
 
-/* Checkbox en mostaza */
-.form-check-input {
-  width: 22px;
-  height: 22px;
-  margin-top: 0;
-  accent-color: var(--mostaza);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
-  border: none;
+/* === FILA INFERIOR (4 PEQUEÑAS) === */
+.bottom-row .card.small {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 3px 12px 5px rgba(0, 0, 0, 0.068);
+    overflow: hidden;
+    position: relative;
 }
 
-.form-check-label {
-  margin-left: 8px;
-  transform: translateY(2px);
-  color: var(--blanco);
-}
-
-/* Botón negro */
-.btn-login {
-  background: #121212;           /* color base negro */
-  color: var(--blanco);
-  border: none;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  width: 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.btn-login:hover {
-  background: var(--gris-fondo); /* gris claro (#606060) */
-  color: var(--blanco);
-}
-
-.btn-login:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
-}
-
-.link-olvido {
-  display: block;
-  text-align: center;
-  color: var(--blanco);
-  opacity: 0.9;
-  font-size: 14px;
-  text-decoration: none;
-  margin-top: 10px;
-}
-
-.link-olvido:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .login-frame {
-    gap: 28px;
-  }
-  .panel-izq, .panel-der {
-    padding: 32px 24px;
-  }
-}
-
-@media (max-width: 768px) {
-  .login-frame {
-    grid-template-columns: 1fr;
-    max-width: 560px;
-  }
-  .panel-izq {
-    order: 1;
-  }
-  .panel-der {
-    order: 2;
-  }
-  .marca-ISB {
+/* Nueva franja inferior con texto */
+.bottom-row .card p {
+    margin: 0;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
     text-align: center;
-  }
+    background: transparent;
+    padding: 8px 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-/* ======== REGISTRO (invertido) ======== */
-/* Aplica a la sección <section class="login-frame register-frame"> del register.html */
-.register-frame {
-  /* mismas columnas, pero invertimos visualmente los paneles */
-  grid-template-columns: 1fr 1fr;
-  direction: rtl; /* invierte el orden visual sin tocar el HTML base */
+/* === COLORES DE BORDES Y FRANJAS === */
+.card.green { border-bottom: 10px solid #16a34a; }
+.card.red { border-bottom: 10px solid #e63946; }
+.card.blue { border-bottom: 10px solid #3b82f6; }
+.card.orange { border-bottom: 10px solid #f59e0b; }
+
+/* Color de fondo para el texto “% mensual” igual que el borde */
+.bottom-row .card.green p { background-color: #16a34a; }
+.bottom-row .card.red p { background-color: #e63946; }
+.bottom-row .card.blue p { background-color: #3b82f6; }
+.bottom-row .card.orange p { background-color: #f59e0b; }
+
+/* === TEXTO EN TARJETAS === */
+.card h3, .card h4 {
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
-/* Restaura la dirección normal del contenido interno de cada panel */
-.register-frame > * {
-  direction: ltr;
+.chart h3, .recent h3 {
+    background: #1e1f25;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+    margin-top: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
-/* Panel de formulario (izquierda) en rojo */
-.panel-registro {
-  background: var(--rojo);
-  border-radius: 16px;
-  padding: 75px 36px;
-  color: var(--blanco);
-  position: relative;
-  box-shadow: 0 14px 20px rgba(0,0,0,.35);
+.card h2 {
+    margin: 0;
+    font-size: 28px;
+    margin-bottom: 35px;
 }
 
-/* Panel de ISB + imagen (derecha) en gris oscuro */
-.panel-izq-registro {
-  background: var(--gris-oscuro);
-  border-radius: 16px;
-  padding: 70px 36px;
-  color: var(--blanco);
-  position: relative;
-  box-shadow: 0 14px 20px rgba(0,0,0,.35);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+/* Colores de texto (h2) según tipo de card */
+.bottom-row .card.green h2 { color: #16a34a; }
+.bottom-row .card.red h2 { color: #e63946; }
+.bottom-row .card.blue h2 { color: #3b82f6; }
+.bottom-row .card.orange h2 { color: #f59e0b; }
+
+.card p {
+    font-size: 14px;
 }
 
-/* Responsivo: en móviles volvemos al flujo normal (form arriba, imagen abajo) */
-@media (max-width: 768px) {
-  .register-frame {
-    direction: ltr;
-    grid-template-columns: 1fr;
-  }
-  .panel-registro { order: 1; }
-  .panel-izq-registro { order: 2; }
+/* === SECCIÓN DE REPORTES Y DOCUMENTOS === */
+.reports {
+    display: flex;
+    padding: 25px;
+    gap: 20px;
+}
+
+.chart, .recent {
+    background: white;
+    border-radius: 10px;
+    padding: 0;
+    flex: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* === LISTA DE DOCUMENTOS === */
+.recent ul {
+    list-style: none;
+    padding: 10px 40px;
+}
+
+.recent li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.recent button {
+    background: #e63946;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 200px;
+}
+
+.recent button:hover {
+    background: #b91c1c;
+}
+
+/* === RESPONSIVE (opcional) === */
+@media (max-width: 1000px) {
+    .row {
+        flex-direction: column;
+    }
+
+    header input {
+        width: 180px;
+    }
 }

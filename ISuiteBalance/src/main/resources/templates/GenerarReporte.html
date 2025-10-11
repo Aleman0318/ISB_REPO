@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Balance | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+    <!-- Contenedor principal -->
+    <div class="container_principal">
+
+        <!-- Barra superior -->
+        <header class="barra-superior">
+            <h1>ISuite Balance | ISB</h1>
+            <div class="barra-busqueda">
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="info-usuario">
+                <span>Diego</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </div>
+        </header>
+
+        <!-- Contenido central -->
+        <main class="generar-reporte">
+            <h1 class="titulo-reporte">Generar Reporte</h1>
+
+            <div class="grupo-seleccion">
+                <div class="campo">
+                    <label for="periodo">Periodo Contable:</label>
+                    <select id="periodo">
+                        <option value="mensual">Mensual</option>
+                        <option value="trimestral">Trimestral</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="tipo-reporte">Tipo de Reporte:</label>
+                    <select id="tipo-reporte">
+                        <option value="libro-mayor">Libro Mayor</option>
+                        <option value="libro-diario">Libro Diario</option>
+                        <option value="balance">Balance General</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="fecha-inicial">Periodo Inicial:</label>
+                    <input type="date" id="fecha-inicial" />
+                </div>
+
+                <div class="campo">
+                    <label for="fecha-final">Periodo Final:</label>
+                    <input type="date" id="fecha-final" />
+                </div>
+            </div>
+
+            <div class="vista-previa">
+                <h2>Vista previa</h2>
+                <table class="tabla-reporte">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="botones-reporte">
+                <button class="btn-reporte pdf">Generar PDF</button>
+                <button class="btn-reporte excel">Exportar a Excel</button>
+                <button class="btn-reporte cancelar">Cancelar</button>
+            </div>
+        </main>
+
+
+    </div>
+</div>
+</body>
+</html>
