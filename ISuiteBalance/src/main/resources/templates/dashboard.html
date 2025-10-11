@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Sistema Contable</a>
+        <div class="collapse navbar-collapse justify-content-end">
+                <span class="navbar-text text-white">
+                    Hola <span th:text="${nombre}">Usuario</span>, bienvenido. Tu rol es <span th:text="${rol}">ROL</span>
+                </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body text-center">
+            <h2 class="card-title">Dashboard</h2>
+            <p class="card-text">Has ingresado correctamente al sistema.</p>
+            <a href="/logout" class="btn btn-danger mt-3">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
