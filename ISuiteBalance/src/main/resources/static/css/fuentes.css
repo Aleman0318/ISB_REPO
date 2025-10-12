@@ -1,0 +1,67 @@
+
+/*titulos formales como el login*/
+@font-face {
+  font-family: 'Fuente-titulos1';
+  src: url('/fonts/BELL.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/*Parrafos 1*/
+@font-face {
+  font-family: 'Fuente-p1';
+  src: url('/fonts/OverpassNerdFont-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: 7px;
+}
+
+/*Parrafos 2*/
+@font-face {
+  font-family: 'Fuente-p2';
+  src: url('/fonts/VictorMono-Light.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/*Parrafos 3*/
+@font-face {
+  font-family: 'Fuente-p3';
+  src: url('/fonts/segoeuil.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*semititulos*/
+@font-face {
+  font-family: 'Fuente-semi';
+  src: url('/fonts/Colmeak.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fuente-titulos1{
+font-family: 'Fuente-titulos1';
+font-size: 6.5rem;
+text-align: center; }
+
+.fuente-p1{
+font-family: 'Fuente-p1';
+font-size: 1.2rem;
+}
+
+.fuente-p2{
+font-family: 'Fuente-p2';
+font-size: 1rem;
+}
+
+.fuente-p3{
+font-family: 'Fuente-p3';
+font-size: 1.2rem;
+}
+
+.fuente-semi{
+font-family: 'Fuente-semi';
+font-size: 0.8rem;
+text-align: center; }
+

@@ -22,19 +22,15 @@ public class UsuarioService {
 
 
     public void saveUsuario(Usuario usuario) {
-        String hash = passwordEncoder.encode(usuario.getPasswordHash()); // ahora sí se hashea aquí
+        String hash = passwordEncoder.encode(usuario.getPasswordHash()); //
         usuario.setPasswordHash(hash);
+        usuario.setCorreo(usuario.getCorreo().toLowerCase());
         usuarioDAO.save(usuario);
     }
 
 
-    //Usamos optional para manejar el Exceptnullpointer o en resumen como puede existir como no
-    public Optional<Usuario> finByCorreo(String correo){
-        return usuarioDAO.findByCorreo(correo);
-    }
-
     public boolean verificarExistencia(String correo) {
-        return usuarioDAO.findByCorreo(correo).isPresent();
+        return usuarioDAO.findByCorreo(correo.toLowerCase()).isPresent();
     }
 
 

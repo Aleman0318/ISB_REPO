@@ -45,7 +45,7 @@ public class UsuarioController {
 
     @GetMapping("/login")
     public String mostrarLogin() {
-        return "login"; // sin extensión .html
+        return "login";
     }
 
 

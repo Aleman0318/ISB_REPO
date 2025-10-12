@@ -41,11 +41,11 @@ public class Usuario implements UserDetails{
     }
 
     public String getCorreo() {
-        return correo;
+        return correo.toLowerCase();
     }
 
     public void setCorreo(String correo) {
-        this.correo = correo;
+        this.correo = correo.toLowerCase();
     }
 
     public String getPasswordHash() {

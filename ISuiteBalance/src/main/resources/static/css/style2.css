@@ -13,8 +13,8 @@ body {
 /* ---------- CONTENEDOR GENERAL ---------- */
 .contenedor-general {
   display: flex;
-  min-height: 100vh;
   background-color: #f4f4f4;
+  height:auto
 }
 
 /* ---------- PANEL LATERAL ---------- */
@@ -280,8 +280,9 @@ body {
 
 /* ---------- LIBRO DIARIO ---------- */
 .libro-diario {
-  padding: 3rem;
+  padding: 1rem;
   background-color: #f4f0e6;
+  height:auto
 }
 
 .titulo-libro {

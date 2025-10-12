@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import java.util.Locale;
 
 @Service
 public class UsuarioDetailsService implements UserDetailsService {
@@ -15,8 +16,10 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        return usuarioDAO.findByCorreo(correo)
+        //  Convertir el correo ingresado a minúsculas antes de buscar en BD
+        String correoNormalizado = (correo == null ? "" : correo).trim().toLowerCase(Locale.ROOT);
+
+        return usuarioDAO.findByCorreo(correoNormalizado)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 }
-

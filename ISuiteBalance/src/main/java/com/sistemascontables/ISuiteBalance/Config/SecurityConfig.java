@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login",
                                 "/register",
+                                "/fonts/**",
                                 "/css/**",
                                 "/js/**",
                                 "/img/**",
