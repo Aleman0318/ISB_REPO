@@ -39,6 +39,8 @@
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
 
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> <!--Verificacion del token-->
+
                 <button type="submit" class="btn btn-login w-100">Registrar</button>
                 <a class="link-olvido mt-2" th:href="@{/login}">¿Ya tienes cuenta? Inicia sesión</a>
             </form>

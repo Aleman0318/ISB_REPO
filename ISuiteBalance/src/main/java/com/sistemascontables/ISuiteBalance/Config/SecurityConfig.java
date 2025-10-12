@@ -27,7 +27,7 @@ public class SecurityConfig {
                                 "/register",
                                 "/css/**",
                                 "/js/**",
-                                "/img/**",       // 👈 necesario para tus imágenes en static/img
+                                "/img/**",
                                 "/webjars/**",
                                 "/favicon.ico"
                         ).permitAll()
@@ -35,15 +35,15 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard")
+                        .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                )
-                .csrf(csrf -> csrf.disable());
+                );
+
 
         return http.build();
     }
