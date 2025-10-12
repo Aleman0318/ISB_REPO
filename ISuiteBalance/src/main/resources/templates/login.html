@@ -50,6 +50,8 @@
                     <label class="form-check-label" for="remember-me">Recordarme</label>
                 </div>
 
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> <!--Verificacion del token-->
+
                 <button type="submit" class="btn btn-login">Ingresar</button>
 
                 <a class="link-olvido" th:href="@{/register}">¿Aún no tienes una cuenta? Registrate</a>
