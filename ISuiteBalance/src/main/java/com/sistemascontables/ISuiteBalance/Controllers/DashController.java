@@ -68,4 +68,9 @@ public class DashController {
     public String registroPartida() {
         return "RegistroPartida";
     }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/logout";   // Spring Security hace el logout y redirige
+    }
 }
