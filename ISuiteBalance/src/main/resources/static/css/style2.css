@@ -1,67 +1,67 @@
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: "Segoe UI", Arial, sans-serif;
   background-color: #f4f4f4;
+  padding:0;
+  margin:0;
 }
 
 /* ---------- CONTENEDOR GENERAL ---------- */
 .contenedor-general {
   display: flex;
   min-height: 100vh;
+  display: flex;                       /* <- clave: ocupa el alto de la ventana */
   background-color: #f4f4f4;
+  height:auto;
 }
 
-/* ---------- PANEL LATERAL ---------- */
-.panel-lateral {
-  background-color: #212121;
+/* === SIDEBAR === */
+.sidebar {
+  flex: 0 0 230px;                           /* <- respeta ancho, no crece */
+  background: #1e1f25;
+  color: #fff;
+  min-height: 100vh;                         /* <- clave: llena el alto de pantalla */
+  padding: 20px;
+  overflow-y: auto;                           /* scroll interno si el contenido crece */
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 25px;
+}
+
+.sidebar ul { list-style: none; padding: 0; }
+
+.sidebar a {
+
+  display: block;
   color: white;
-  width: 13%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 25px;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  transition: background 0.3s;
 }
 
-.panel-lateral h2 {
-  font-size: clamp(1rem, 1.3vw, 1.5rem);
-  font-weight: 600;
-  margin-bottom: 40px;
-  color: #ccc;
-}
+.sidebar a.active,
+.sidebar a:hover { background: #e63946; }
 
-.panel-lateral button {
-  width: 85%;
-  background-color: #e03131;
-  border: none;
-  color: white;
-  font-size: clamp(0.9rem, 1vw, 1.1rem);
-  text-align: center;
-  padding: 12px 20px;
-  margin: 8px 0;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.panel-lateral button:hover {
-  background-color: #c62828;
-}
+.brand { font-size: 12px; }
 
 /* ---------- CONTENEDOR PRINCIPAL ---------- */
 .container_principal {
-  flex-grow: 1;
+  flex: 1;                                    /* <- ocupa todo el espacio restante */
   display: flex;
+  margin:0;
   flex-direction: column;
+  min-width: 0;                               /* evita desbordes horizontales */
+ height:auto;
 }
+
 
 /* ---------- BARRA SUPERIOR ---------- */
 .barra-superior {
+
   background-color: #e03131;
   display: flex;
   align-items: center;
@@ -280,8 +280,9 @@ body {
 
 /* ---------- LIBRO DIARIO ---------- */
 .libro-diario {
-  padding: 3rem;
+  padding: 6px;
   background-color: #f4f0e6;
+  height:100%;
 }
 
 .titulo-libro {
@@ -594,8 +595,9 @@ body {
 
 /* ---------- AUDITORÍA ---------- */
 .auditoria {
-  padding: 3rem;
+  padding: 1rem;
   background-color: #f4f0e6;
+  height:100%;
 }
 
 .titulo-auditoria {
