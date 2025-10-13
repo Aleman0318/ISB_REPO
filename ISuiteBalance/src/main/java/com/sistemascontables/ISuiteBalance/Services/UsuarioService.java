@@ -24,8 +24,9 @@ public class UsuarioService {
 
 
     public void saveUsuario(Usuario usuario) {
-        String hash = passwordEncoder.encode(usuario.getPasswordHash()); // ahora sí se hashea aquí
+        String hash = passwordEncoder.encode(usuario.getPasswordHash()); //
         usuario.setPasswordHash(hash);
+        usuario.setCorreo(usuario.getCorreo().toLowerCase());
         usuarioDAO.save(usuario);
     }
 
@@ -35,7 +36,7 @@ public class UsuarioService {
     }
 
     public boolean verificarExistencia(String correo) {
-        return usuarioDAO.findByCorreo(correo).isPresent();
+        return usuarioDAO.findByCorreo(correo.toLowerCase()).isPresent();
     }
 
     //agregado por daigo

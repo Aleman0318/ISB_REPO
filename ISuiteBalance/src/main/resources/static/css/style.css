@@ -5,6 +5,8 @@ body {
     display: flex;
     background-color: #e3e4e6;
     color: #222;
+    min-height: 100svh;
+    overflow-x: hidden;
 }
 
 /* === SIDEBAR === */
@@ -12,7 +14,8 @@ body {
     width: 230px;
     background: #1e1f25;
     color: #fff;
-    height: auto;
+    min-height: 100svh;
+    align-self: stretch;
     padding: 20px;
 }
 
@@ -51,6 +54,8 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 100svh;
+    min-width: 0;
 }
 
 /* === ENCABEZADO === */
@@ -76,6 +81,32 @@ header input {
     gap: 10px;
 }
 
+.logout-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  margin-left:8px;
+  border:none;
+  cursor:pointer;
+  border-radius:50%;
+  background:#fff;
+  color:#e63946;
+  box-shadow:0 0 0 4px rgba(0,0,0,.05);
+  transition:filter .2s, transform .06s, box-shadow .2s;
+}
+.logout-btn:hover{
+  filter:brightness(0.98);
+  box-shadow:0 0 0 2px rgba(230,57,70,.25);
+}
+.logout-btn:active{ transform:scale(.97); }
+.logout-btn:focus-visible{
+outline:none;
+box-shadow:0 0 0 3px rgba(230,57,70,.35); }
+.logout-btn .fi{ font-size:20px; line-height:1; }
+
+
 .avatar {
     width: 35px;
     height: 35px;
@@ -88,6 +119,7 @@ header input {
     flex-direction: column;
     gap: 20px;
     padding: 25px;
+    min-width: 0;
 }
 
 .row {
@@ -113,7 +145,6 @@ header input {
     border-radius: 12px;
     padding: 20px;
     box-shadow: 3px 12px 5px rgba(0, 0, 0, 0.068);
-    overflow: hidden;
     position: relative;
 }
 
@@ -181,6 +212,7 @@ header input {
     display: flex;
     padding: 25px;
     gap: 20px;
+    min-width: 0;
 }
 
 .chart, .recent {
@@ -218,13 +250,427 @@ header input {
     background: #b91c1c;
 }
 
-/* === RESPONSIVE (opcional) === */
-@media (max-width: 1000px) {
-    .row {
-        flex-direction: column;
+/* =========================
+   MD (Tablets)  <= 1024px
+   ========================= */
+@media (min-width: 768px) and (max-width: 1024px){
+
+  /* Sidebar más compacto */
+  .sidebar{
+    width: 200px;
+    padding: 16px;
+  }
+  .sidebar h2{
+  font-size: 18px;
+  margin-bottom: 16px;
+  }
+
+  .sidebar a{
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  header .brand h1{
+      font-size: 18px;
+      margin: 0;
+      white-space: nowrap;
+  }
+
+  /* Header compacto y buscador más flexible */
+   header input{
+      width: min(25vw, 180px) !important;
+      padding: 8px 14px;
+      margin-right: 12px;
+      margin-left: 12px;
+      flex: 0 0 auto;
+   }
+
+   header .user-info > span{
+        display: none;
+   }
+
+  /* Tarjetas: permitir wrap y tamaños base */
+  .row{ flex-wrap: wrap; }
+    .top-row .card.large{
+      flex: 1 1 420px;
+      min-height: 140px;
+      padding: 16px;
     }
 
-    header input {
-        width: 180px;
+  .bottom-row .card.small{
+      flex: 1 1 240px;
+      min-height: 120px;
+      padding: 14px 16px 34px;
+      border-bottom-width: 8px;
     }
+
+  /* Reports: SOLO tablets y móviles en columna */
+  .reports{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  .chart, .recent{
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+
+  :root{
+      --sb-w: 200px;
+      --hdr-h: 52px;
+      --gap: 30px;
+    }
+
+    .sidebar{
+      width: var(--sb-w);
+    }
+
+    header{
+      left: calc(var(--sb-w) + var(--gap));
+      height: var(--hdr-h);
+    }
+
+    .main{
+      padding-top: var(--hdr-h);
+    }
+  }
+
+  /* Ocultar scrollbar de la página, manteniendo el scroll */
+  html, body {
+    overflow-y: auto;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
+
+  body { -ms-overflow-style: none; }
+
+  /* Chrome, Edge, Safari, Opera */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* =========================
+   SM (Moviles)  <= 767px
+   ========================= */
+@media (max-width: 767px){
+
+  /* Estructura vertical */
+  body{
+    flex-direction: column;
+  }
+
+  /* Sidebar arriba a 100% */
+  .sidebar{
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .sidebar h2
+  {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .sidebar a{ margin-bottom: 8px; }
+
+  /* Main debajo del sidebar */
+  .main{ width: 100%; }
+
+  header .user-info > span{
+      display: none;
+  }
+
+  header > input{
+      display: none !important;
+  }
+
+  header{
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: auto;
+      align-items: center;
+      gap: 8px 10px;
+      padding: 8px 12px;
+    }
+
+    /* Fila superior */
+    #menuBtn{
+      grid-column: 1;
+      grid-row: 1;
+    }
+    header .brand
+    {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: center;
+    }
+
+    header .user-info{
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-btn{ display:flex; }
+
+    /* Sidebar como panel lateral */
+    .sidebar{
+      position: fixed;
+      top: 0; left: 0;
+      height: 100svh; width: 78vw;
+      max-width: 280px;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      z-index: 999;
+      padding: 20px;
+    }
+    .sidebar.sidebar--open{
+      transform: translateX(0);
+    }
+
+    /* Ajuste del layout cuando sidebar es flotante */
+    body{
+      flex-direction: column;
+    }
+    .main{ width:100%; }
+
+    header > input{
+      grid-column: 1 / -1;
+      grid-row: 2;
+      width: 100%;
+      max-width: none;
+      margin: 6px 0;
+      justify-self: stretch;
+    }
+
+    .brand h1{
+       font-size: 16px;
+       text-align: center;
+    }
+    .menu-btn{ display:flex; }
+
+  /* Tarjetas en columna */
+  .stats{
+     padding: 12px;
+     gap: 12px;
+  }
+    .row{
+       flex-direction: column;
+       gap: 12px;
+    }
+    .top-row .card.large,
+    .bottom-row .card.small{
+      flex: 1 1 100%;
+      min-height: unset;
+      padding: 12px 14px 30px;
+      border-bottom-width: 6px;
+  }
+
+  .reports{ padding: 12px; gap: 12px; }
+
+  /* Lista de documentos */
+  .recent ul{ padding: 10px 16px; }
+  .recent li{ gap: 10px; }
+  .recent button{ width: 50%; }
+
+  /* Tipos ligeramente menores */
+  .chart h3, .recent h3
+  {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .card h2
+  {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  :root{
+      --hdr-h: 56px;
+    }
+
+    header{
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--hdr-h);
+      z-index: 1000;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+    }
+
+    /* Empuja el contenido para que no quede bajo el header */
+    body{
+      padding-top: var(--hdr-h);
+    }
+
+    /* Sidebar off-canvas: comienza debajo del header fijo */
+    .sidebar{
+      top: var(--hdr-h);
+      height: calc(100svh - var(--hdr-h));
+    }
+
+    .backdrop{ z-index: 998; }
+}
+
+.reports .chart{
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: clamp(260px, 40vh, 420px);
+}
+
+#barChart{
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  min-height: clamp(220px, 35vh, 380px);
+  display: block;
+}
+
+/* Inputs algo fluidos en desktop */
+header input{
+  width: min(36vw, 350px);
+  max-width: 100%;
+}
+
+.bottom-row{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:16px;
+  padding-top: 20px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x;
+  -ms-overflow-style: none;
+   scrollbar-width: none;
+}
+.bottom-row > .card.small{
+  flex:0 0 auto;
+  min-width: clamp(260px, 33vw, 360px);
+}
+
+/* Reports: scroll lateral interno */
+.reports{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:16px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x;
+  -ms-overflow-style: none;
+   scrollbar-width: none;
+}
+.reports > .chart,
+.reports > .recent{
+  flex:0 0 auto;
+  min-width: clamp(420px, 60vw, 720px);
+  max-width: 100%;
+}
+
+/* Botón hamburguesa */
+.menu-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  margin-right:8px;
+  border:none;
+  border-radius:8px;
+  background:transparent;
+  cursor:pointer;
+  transition:background .2s,
+  transform .05s;
+}
+.menu-btn:hover{ background:rgba(255,255,255,.15); }
+.menu-btn:active{ transform:scale(.97); }
+
+.menu-btn .fi,
+.menu-btn .fi::before{
+  color:#ffffff !important;
+  font-size:20px; line-height:1;
+}
+
+.backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  z-index: 998;
+}
+.backdrop.backdrop--show{ opacity:1; pointer-events:auto; }
+
+/* Evitar scroll del body cuando panel abierto */
+.no-scroll{ overflow:hidden; }
+
+/* OCULTA hamburguesa */
+@media (min-width: 768px){
+  .menu-btn{ display: none; }
+}
+
+/* MOVIL: muestra hamburguesa */
+@media (max-width: 767px){
+  .menu-btn{ display: flex; }
+}
+
+/* ===== Fijar sidebar y header en MD/LG ===== */
+@media (min-width: 768px){
+  :root{
+    --sb-w: 230px;
+    --hdr-h: 56px;
+    --gap: 30px;
+  }
+
+  body{
+    padding-left: calc(var(--sb-w) + var(--gap));
+  }
+
+  /* Sidebar fijo*/
+  .sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sb-w);
+    height: 100svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 950;
+    box-shadow: 2px 0 0 rgba(0,0,0,.06);
+  }
+
+  /* Header fijo solo sobre el área de contenido  */
+  header{
+    position: fixed;
+    top: 0;
+    left: calc(var(--sb-w) + var(--gap));
+    right: 0;
+    height: var(--hdr-h);
+    z-index: 900;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Contenido por debajo del header y separado del sidebar por el gap */
+  .main{
+    padding-top: var(--hdr-h);
+    min-height: 100svh;
+  }
 }
