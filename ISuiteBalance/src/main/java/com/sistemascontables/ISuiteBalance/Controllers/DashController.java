@@ -1,11 +1,25 @@
 package com.sistemascontables.ISuiteBalance.Controllers;
 
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
+import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class DashController {
+
+    //modificado por daigo
+    private final UsuarioService usuarioService;
+
+    // Inyección por constructor
+    public DashController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+    //
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -29,9 +43,22 @@ public class DashController {
         return "Bitacora";
     }
 
+    // ✅ GET: muestra el formulario con un objeto vacío para el binding
     @GetMapping("/crear-usuario")
-    public String crearUsuario() {
-        return "CrearUsuario";
+    public String crearUsuarioForm(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        return "CrearUsuario"; // templates/CrearUsuario.html
+    }
+
+    // ✅ POST: recibe el form, guarda y redirige con mensaje flash
+    @PostMapping("/crear-usuario")
+    public String crearUsuarioSubmit(
+            @ModelAttribute("usuario") Usuario usuario,
+            RedirectAttributes ra) {
+
+        usuarioService.saveUsuario(usuario); // hashea internamente passwordHash
+        ra.addFlashAttribute("msg", "Usuario creado correctamente");
+        return "redirect:/gestion-usuario";
     }
 
     @GetMapping("/eliminar-usuario")
@@ -44,9 +71,11 @@ public class DashController {
         return "GenerarReporte";
     }
 
+    //  Ahora aquí cargamos los usuarios para la vista
     @GetMapping("/gestion-usuario")
-    public String gestionUsuario() {
-        return "GestionUsuario";
+    public String gestionUsuario(Model model) {
+        model.addAttribute("usuarios", usuarioService.listarTodos());
+        return "GestionUsuario"; // src/main/resources/templates/GestionUsuario.html
     }
 
     @GetMapping("/modificar-usuario")

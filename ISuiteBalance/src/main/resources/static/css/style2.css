@@ -951,3 +951,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 16px;
 }
+
+ .celda-hash{
+   max-width: 520px;     /* ajusta al ancho de tu tabla */
+   word-break: break-all; /* parte líneas si es necesario */
+   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+   font-size: 12px;
+   line-height: 1.2;
+ }

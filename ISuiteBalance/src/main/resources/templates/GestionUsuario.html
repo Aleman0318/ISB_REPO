@@ -46,75 +46,31 @@
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Apellido</th>
                     <th>Correo</th>
                     <th>Contraseña</th>
                     <th>Rol</th>
                     <th>Opciones</th>
                 </tr>
                 </thead>
+
                 <tbody>
-                <tr>
-                    <td>001</td>
-                    <td>Diego</td>
-                    <td>Flores</td>
-                    <td>Diego@hotmail.com</td>
-                    <td>dk82HjBnds72Fv</td>
-                    <td>Contador</td>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.id_usuario}">1</td>
+                    <td th:text="${u.nombre}">Nombre</td>
+                    <td th:text="${u.correo}">correo@ejemplo.com</td>
+                    <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
+                    <td th:text="${u.rol}">ROL</td>
                     <td class="opciones">
-                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
-                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
+                        <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
+                        <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Aleman</td>
-                    <td>Gonzales</td>
-                    <td>Aleman@hotmail.com</td>
-                    <td>8a8Hhshd72dncP</td>
-                    <td>Admin</td>
-                    <td class="opciones">
-                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
-                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Ariana</td>
-                    <td>Flores</td>
-                    <td>Ariana@hotmail.com</td>
-                    <td>138Hhshd34dncP</td>
-                    <td>Auditor</td>
-                    <td class="opciones">
-                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
-                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Diego</td>
-                    <td>Montesinos</td>
-                    <td>DiegoMontes@hotmail.com</td>
-                    <td>dheuh8920jw</td>
-                    <td>Admin</td>
-                    <td class="opciones">
-                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
-                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>004</td>
-                    <td>Marlon</td>
-                    <td>Urrutia</td>
-                    <td>urrutia@hotmail.com</td>
-                    <td>hsuh98u81282</td>
-                    <td>Contador</td>
-                    <td class="opciones">
-                        <button class="btn-opcion editar" onclick="window.location.href='/modificar-usuario'">✏️</button>
-                        <button class="btn-opcion eliminar" onclick="window.location.href='/eliminar-usuario'">🗑️</button>
-                    </td>
+
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="6">No hay usuarios registrados.</td>
                 </tr>
                 </tbody>
+
             </table>
 
             <div class="contenedor-boton">
