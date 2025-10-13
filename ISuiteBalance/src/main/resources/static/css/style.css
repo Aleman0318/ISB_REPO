@@ -14,7 +14,7 @@ body {
     width: 230px;
     background: #1e1f25;
     color: #fff;
-    min-height: 100svh;                 /
+    min-height: 100svh;
     align-self: stretch;
     padding: 20px;
 }
@@ -82,18 +82,29 @@ header input {
 }
 
 .logout-btn{
-  display:flex; align-items:center; justify-content:center;
-  width:36px; height:36px; margin-left:8px;
-  border:none; cursor:pointer; border-radius:50%;
-  background:#fff;               /* círculo blanco */
-  color:#e63946;                 /* el <i> hereda: icono rojo */
-  box-shadow:0 0 0 4px rgba(0,0,0,.05); /* sutil borde */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  margin-left:8px;
+  border:none;
+  cursor:pointer;
+  border-radius:50%;
+  background:#fff;
+  color:#e63946;
+  box-shadow:0 0 0 4px rgba(0,0,0,.05);
   transition:filter .2s, transform .06s, box-shadow .2s;
 }
-.logout-btn:hover{ filter:brightness(0.98); box-shadow:0 0 0 2px rgba(230,57,70,.25); }
+.logout-btn:hover{
+  filter:brightness(0.98);
+  box-shadow:0 0 0 2px rgba(230,57,70,.25);
+}
 .logout-btn:active{ transform:scale(.97); }
-.logout-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(230,57,70,.35); }
-.logout-btn .fi{ font-size:20px; line-height:1; }  /* tamaño del icono */
+.logout-btn:focus-visible{
+outline:none;
+box-shadow:0 0 0 3px rgba(230,57,70,.35); }
+.logout-btn .fi{ font-size:20px; line-height:1; }
 
 
 .avatar {
@@ -263,10 +274,6 @@ header input {
     text-overflow: ellipsis;
   }
 
-  header{
-    padding: 15px
-
-  }
   header .brand h1{
       font-size: 18px;
       margin: 0;
@@ -313,22 +320,67 @@ header input {
     max-width: 100%;
     flex: 0 0 auto;
   }
+
+  :root{
+      --sb-w: 200px;
+      --hdr-h: 52px;
+      --gap: 30px;
+    }
+
+    .sidebar{
+      width: var(--sb-w);
+    }
+
+    header{
+      left: calc(var(--sb-w) + var(--gap));
+      height: var(--hdr-h);
+    }
+
+    .main{
+      padding-top: var(--hdr-h);
+    }
+  }
+
+  /* Ocultar scrollbar de la página, manteniendo el scroll */
+  html, body {
+    overflow-y: auto;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
+
+  body { -ms-overflow-style: none; }
+
+  /* Chrome, Edge, Safari, Opera */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 /* =========================
-   SM (Móviles)  <= 767px
+   SM (Moviles)  <= 767px
    ========================= */
 @media (max-width: 767px){
 
   /* Estructura vertical */
-  body{ flex-direction: column; }
+  body{
+    flex-direction: column;
+  }
 
   /* Sidebar arriba a 100% */
   .sidebar{
     width: 100%;
     padding: 12px 16px;
   }
-  .sidebar h2{ font-size: 18px; margin-bottom: 10px; }
+
+  .sidebar h2
+  {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
   .sidebar a{ margin-bottom: 8px; }
 
   /* Main debajo del sidebar */
@@ -352,12 +404,24 @@ header input {
     }
 
     /* Fila superior */
-    #menuBtn{ grid-column: 1; grid-row: 1; }
-    header .brand{ grid-column: 2; grid-row: 1; justify-self: center; }
+    #menuBtn{
+      grid-column: 1;
+      grid-row: 1;
+    }
+    header .brand
+    {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: center;
+    }
+
     header .user-info{
-      grid-column: 3; grid-row: 1;
+      grid-column: 3;
+      grid-row: 1;
       justify-self: end;
-      display: flex; align-items: center; gap: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .menu-btn{ display:flex; }
@@ -378,7 +442,9 @@ header input {
     }
 
     /* Ajuste del layout cuando sidebar es flotante */
-    body{ flex-direction: column; }
+    body{
+      flex-direction: column;
+    }
     .main{ width:100%; }
 
     header > input{
@@ -390,12 +456,21 @@ header input {
       justify-self: stretch;
     }
 
-    .brand h1{ font-size: 16px; text-align: center; }
+    .brand h1{
+       font-size: 16px;
+       text-align: center;
+    }
     .menu-btn{ display:flex; }
 
   /* Tarjetas en columna */
-  .stats{ padding: 12px; gap: 12px; }
-    .row{ flex-direction: column; gap: 12px; }
+  .stats{
+     padding: 12px;
+     gap: 12px;
+  }
+    .row{
+       flex-direction: column;
+       gap: 12px;
+    }
     .top-row .card.large,
     .bottom-row .card.small{
       flex: 1 1 100%;
@@ -404,27 +479,60 @@ header input {
       border-bottom-width: 6px;
   }
 
-  /* Reports ya están en columna por la regla de 1024 */
   .reports{ padding: 12px; gap: 12px; }
 
-  /* Lista de documentos: botones a ancho completo */
+  /* Lista de documentos */
   .recent ul{ padding: 10px 16px; }
   .recent li{ gap: 10px; }
   .recent button{ width: 50%; }
 
   /* Tipos ligeramente menores */
-  .chart h3, .recent h3{ font-size: 16px; padding: 8px 12px; }
-  .card h2{ font-size: 24px; margin-bottom: 20px; }
+  .chart h3, .recent h3
+  {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .card h2
+  {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  :root{
+      --hdr-h: 56px;
+    }
+
+    header{
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--hdr-h);
+      z-index: 1000;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+    }
+
+    /* Empuja el contenido para que no quede bajo el header */
+    body{
+      padding-top: var(--hdr-h);
+    }
+
+    /* Sidebar off-canvas: comienza debajo del header fijo */
+    .sidebar{
+      top: var(--hdr-h);
+      height: calc(100svh - var(--hdr-h));
+    }
+
+    .backdrop{ z-index: 998; }
 }
 
-/* Chart: contenedor con título + canvas auto */
 .reports .chart{
   display: grid;
   grid-template-rows: auto 1fr;
   min-height: clamp(260px, 40vh, 420px);
 }
 
-/* Canvas siempre lleno del panel (solo CSS) */
 #barChart{
   width: 100% !important;
   height: auto !important;
@@ -439,7 +547,6 @@ header input{
   max-width: 100%;
 }
 
-/* 2ª fila de stats: scroll lateral interno */
 .bottom-row{
   display:flex;
   flex-wrap:nowrap;
@@ -500,13 +607,14 @@ header input{
   font-size:20px; line-height:1;
 }
 
-/* Backdrop (overlay) */
 .backdrop{
-  position:fixed; inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,.4);
-  opacity:0; pointer-events:none;
+  opacity:0;
+  pointer-events:none;
   transition:opacity .2s ease;
-  z-index: 998;                  /* debajo del panel */
+  z-index: 998;
 }
 .backdrop.backdrop--show{ opacity:1; pointer-events:auto; }
 
@@ -521,4 +629,48 @@ header input{
 /* MOVIL: muestra hamburguesa */
 @media (max-width: 767px){
   .menu-btn{ display: flex; }
+}
+
+/* ===== Fijar sidebar y header en MD/LG ===== */
+@media (min-width: 768px){
+  :root{
+    --sb-w: 230px;
+    --hdr-h: 56px;
+    --gap: 30px;
+  }
+
+  body{
+    padding-left: calc(var(--sb-w) + var(--gap));
+  }
+
+  /* Sidebar fijo*/
+  .sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sb-w);
+    height: 100svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 950;
+    box-shadow: 2px 0 0 rgba(0,0,0,.06);
+  }
+
+  /* Header fijo solo sobre el área de contenido  */
+  header{
+    position: fixed;
+    top: 0;
+    left: calc(var(--sb-w) + var(--gap));
+    right: 0;
+    height: var(--hdr-h);
+    z-index: 900;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Contenido por debajo del header y separado del sidebar por el gap */
+  .main{
+    padding-top: var(--hdr-h);
+    min-height: 100svh;
+  }
 }
