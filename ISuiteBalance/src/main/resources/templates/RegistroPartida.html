@@ -11,31 +11,25 @@
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>Dashboard</h2>
-    <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
-    </ul>
+<div class="contenedor-general">
+    <aside class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a th:href="@{/dashboard}">Inicio</a></li>
+            <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+            <li><a th:href="@{/subir-doc}">Documentos</a></li>
+            <li><a th:href="@{/partida}">Partidas</a></li>
+            <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+            <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+            <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        </ul>
+    </aside>
 </div>
-
-
-<!-- Contenedor principal -->
     <div class="container_principal">
-
-        <!-- Barra superior -->
         <header class="barra-superior">
             <h1>ISuite Balance | ISB</h1>
-            <div class="barra-busqueda">
-                <input type="text" placeholder="Buscar..." />
-            </div>
-            <div class="info-usuario">
-                <span>Diego</span>
+            <div class="barra-busqueda"><input type="text" placeholder="Buscar..." /></div>
+            <div class="info-usuario"><span>Diego</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
             </div>
         </header>
@@ -137,7 +131,7 @@
             </div>
         </main>
     </div>
-</div>
+
 
 <script src="/JS/app.js"></script>
 </body>
