@@ -36,7 +36,7 @@
         </div>
         <input type="text" placeholder="Buscar...">
         <div class="user-info">
-            <span th:text="${nombreUsuario}">Ariana Flores</span>
+            <span th:text="${nombreUsuario}">Invitado</span>
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -50,9 +50,9 @@
         <!-- Primera fila -->
         <div class="row top-row">
             <div class="card large">
-                <h3>Welcome <span th:text="${nombreUsuario}">Ariana</span></h3>
+                <h3>Welcome <span th:text="${nombreUsuario}">Invitado</span></h3>
                 <p>Tiempo de Actividad</p>
-                <h2 th:text="${tiempoActividad}">2h:43m:25s</h2>
+                <h2 th:text="${tiempoActividad}" id="tiempoActividad">0h:00m:00s</h2>
             </div>
             <div class="card large">
                 <h3>Revisiones Pendientes</h3>
@@ -172,10 +172,26 @@
         });
 
         if (isConfirmed) {
-          window.location.href = '/logout'; // o '/salir' si tienes ese endpoint
+          window.location.href = '/logout';
         }
       });
     });
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const t0 = /*[[${session.loginTime}]]*/ 0;
+    if (t0 > 0) {
+      const inicio = new Date(t0);
+      setInterval(() => {
+        const seg = Math.floor((Date.now() - inicio) / 1000);
+        const h = Math.floor(seg / 3600);
+        const m = Math.floor((seg % 3600) / 60);
+        const s = seg % 60;
+        document.getElementById("tiempoActividad").textContent =
+          `${h}h:${String(m).padStart(2,"0")}m:${String(s).padStart(2,"0")}s`;
+      }, 1000);
+    }
+    /*]]>*/
 </script>
 </body>
 </html>
