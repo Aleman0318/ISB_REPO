@@ -9,11 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
         <li><a th:href="@{/subir-doc}">Documentos</a></li>
         <li><a th:href="@{/partida}">Partidas</a></li>
@@ -22,6 +21,10 @@
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
     </ul>
 </div>
+
+<!-- Backdrop para cerrar al tocar fuera -->
+<div id="backdrop" class="backdrop"></div>
+
 
     <div class="container_principal">
         <header class="barra-superior">

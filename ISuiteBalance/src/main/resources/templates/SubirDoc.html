@@ -13,7 +13,7 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
         <li><a th:href="@{/subir-doc}">Documentos</a></li>
         <li><a th:href="@{/partida}">Partidas</a></li>
@@ -23,20 +23,37 @@
     </ul>
 </div>
 
-    <!-- Contenedor principal -->
-    <div class="container_principal">
-
-        <!-- Barra superior -->
-        <header class="barra-superior">
-            <h1>ISuite Balance | ISB</h1>
-            <div class="barra-busqueda">
-                <input type="text" placeholder="Buscar..." />
+<!-- Backdrop para cerrar al tocar fuera -->
+<div id="backdrop" class="backdrop"></div>
+    <div class="main">
+        <header>
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+            <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+                <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+            </button>
+            <div class="brand">
+                <h1>Suite Balance | ISB</h1>
             </div>
-            <div class="info-usuario">
-                <span>Diego</span>
+            <input type="text" placeholder="Buscar...">
+            <div class="user-info">
+                <span th:text="${nombreUsuario}">Invitado</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+                <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+                <!-- Botón de logout -->
+                <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                    <i class="fi fi-sr-power" aria-hidden="true"></i>
+                </button>
+
+                <!-- 🔒 Form oculto para POST /logout con CSRF -->
+                <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                </form>
             </div>
         </header>
+        <!-- Contenedor principal -->
+        <div class="container_principal">
 
         <!-- Contenido principal -->
         <main class="subir-documento">
@@ -65,9 +82,11 @@
                 </div>
             </div>
         </main>
-
-
+        </div>
     </div>
 </div>
+
+
+
 </body>
 </html>

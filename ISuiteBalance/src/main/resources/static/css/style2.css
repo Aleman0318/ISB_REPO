@@ -1,11 +1,4 @@
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #f4f4f4;
-  padding:0;
-  margin:0;
-}
-
 /* ---------- CONTENEDOR GENERAL ---------- */
 .contenedor-general {
   display: flex;
@@ -15,38 +8,7 @@ body {
   height:auto;
 }
 
-/* === SIDEBAR === */
-.sidebar {
-  flex: 0 0 230px;                           /* <- respeta ancho, no crece */
-  background: #1e1f25;
-  color: #fff;
-  min-height: 100vh;                         /* <- clave: llena el alto de pantalla */
-  padding: 20px;
-  overflow-y: auto;                           /* scroll interno si el contenido crece */
-}
 
-.sidebar h2 {
-  font-size: 22px;
-  margin-bottom: 25px;
-}
-
-.sidebar ul { list-style: none; padding: 0; }
-
-.sidebar a {
-
-  display: block;
-  color: white;
-  text-decoration: none;
-  padding: 10px 15px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  transition: background 0.3s;
-}
-
-.sidebar a.active,
-.sidebar a:hover { background: #e63946; }
-
-.brand { font-size: 12px; }
 
 /* ---------- CONTENEDOR PRINCIPAL ---------- */
 .container_principal {
@@ -59,43 +21,7 @@ body {
 }
 
 
-/* ---------- BARRA SUPERIOR ---------- */
-.barra-superior {
 
-  background-color: #e03131;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 30px;
-  color: white;
-}
-
-.barra-superior h1 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.barra-busqueda input {
-  padding: 8px 15px;
-  border-radius: 30px;
-  border: none;
-  outline: none;
-  width: clamp(180px, 20vw, 250px);
-  font-size: clamp(0.9rem, 1vw, 1.1rem);
-}
-
-.info-usuario {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: clamp(35px, 4vw, 45px);
-  height: clamp(35px, 4vw, 45px);
-  background-color: #000;
-  border-radius: 50%;
-}
 
 /* ---------- FORMULARIO ---------- */
 .formulario-usuario {
@@ -280,14 +206,14 @@ body {
 
 /* ---------- LIBRO DIARIO ---------- */
 .libro-diario {
-  padding: 6px;
+  padding:2rem;
   background-color: #f4f0e6;
   height:100%;
 }
 
 .titulo-libro {
   text-align: center;
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-size: clamp(1.8rem, 3vw, 3rem);
   color: #000;
   margin-bottom: 1.5rem;
 }
