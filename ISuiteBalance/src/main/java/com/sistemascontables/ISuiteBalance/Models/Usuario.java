@@ -90,6 +90,13 @@ public class Usuario implements UserDetails{
         return passwordHash; // Spring usa esto como "password"
     }
 
+    public Long getId_usuario() {
+        return id_usuario;
+    }
+
+    public void setId_usuario(Long id_usuario) {
+        this.id_usuario = id_usuario;
+    }
 
     @Override
     public boolean isAccountNonExpired() { return true; }

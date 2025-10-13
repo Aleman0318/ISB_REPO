@@ -2,11 +2,13 @@ package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,21 +27,35 @@ public class DashController {
     //
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, @AuthenticationPrincipal UserDetails user, HttpSession session) {
+    public String dashboard(Model model, @AuthenticationPrincipal Object principal, HttpSession session) {
+
+        // 1) Determinar nombre a mostrar
         String nombre = "Invitado";
-        if (user != null) {
-            if (user instanceof Usuario u) {
-                nombre = u.getNombre();
-            } else {
-                nombre = user.getUsername();
+
+        if (principal instanceof Usuario u) {
+            // Si tu UserDetailsService retorna la entidad Usuario
+            nombre = (u.getNombre() != null && !u.getNombre().isBlank()) ? u.getNombre() : u.getCorreo();
+        } else if (principal instanceof UserDetails ud) {
+            // Si retorna un UserDetails genérico, usamos el username (normalmente el correo)
+            nombre = ud.getUsername();
+        } else {
+            // Último intento por si @AuthenticationPrincipal no inyectó
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                Object p = auth.getPrincipal();
+                if (p instanceof Usuario u2) {
+                    nombre = (u2.getNombre() != null && !u2.getNombre().isBlank()) ? u2.getNombre() : u2.getCorreo();
+                } else if (p instanceof UserDetails ud2) {
+                    nombre = ud2.getUsername();
+                }
             }
         }
 
+        // 2) Asegurar loginTime en sesión para evitar NPE
         Long loginTimeObj = (Long) session.getAttribute("loginTime");
         if (loginTimeObj == null) {
-            // si no existe, inicialízalo aquí para evitar NPE
-            loginTimeObj = System.currentTimeMillis();
-            session.setAttribute("loginTime", loginTimeObj);
+            loginTimeObj = System.currentTimeMillis();        // inicializa si no existe
+            session.setAttribute("loginTime", loginTimeObj);  // guarda para futuras vistas
         }
 
         long diff = System.currentTimeMillis() - loginTimeObj;
@@ -55,6 +71,7 @@ public class DashController {
         model.addAttribute("reportesRechazados", 220);
         model.addAttribute("reportesRevision", 150);
         model.addAttribute("bitacoraTotal", "2.3k");
+
         return "dashboard";
     }
 
@@ -65,9 +82,7 @@ public class DashController {
     }
 
     @GetMapping("/bitacora")
-    public String bitacora() {
-        return "Bitacora";
-    }
+    public String bitacora() { return "Bitacora"; }
 
     // ✅ GET: muestra el formulario con un objeto vacío para el binding
     @GetMapping("/crear-usuario")
@@ -88,14 +103,10 @@ public class DashController {
     }
 
     @GetMapping("/eliminar-usuario")
-    public String eliminarUsuario() {
-        return "EliminarUsuario";
-    }
+    public String eliminarUsuario() { return "EliminarUsuario"; }
 
     @GetMapping("/generar-reporte")
-    public String generarReporte() {
-        return "GenerarReporte";
-    }
+    public String generarReporte() { return "GenerarReporte"; }
 
     //  Ahora aquí cargamos los usuarios para la vista
     @GetMapping("/gestion-usuario")
@@ -105,25 +116,18 @@ public class DashController {
     }
 
     @GetMapping("/modificar-usuario")
-    public String modificarUsuario() {
-        return "ModificarUsuario";
-    }
+    public String modificarUsuario() { return "ModificarUsuario"; }
 
     @GetMapping("/registro-libro-diario")
-    public String registroLibroDiario() {return "RegistroLibroDiario";}
+    public String registroLibroDiario() { return "RegistroLibroDiario"; }
 
     @GetMapping("/subir-doc")
-    public String subirDoc() {
-        return "SubirDoc";
-    }
+    public String subirDoc() { return "SubirDoc"; }
 
     @GetMapping("/partida")
-    public String registroPartida() {
-        return "RegistroPartida";
-    }
+    public String registroPartida() { return "RegistroPartida"; }
 
-    @GetMapping("/logout")
-    public String logout() {
-        return "redirect:/logout";   // Spring Security hace el logout y redirige
-    }
+    // ❌ No definas /logout aquí: lo maneja Spring Security
+    // @GetMapping("/logout")
+    // public String logout() { return "redirect:/logout"; }
 }
