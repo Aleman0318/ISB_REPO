@@ -26,23 +26,23 @@ public class DashController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, @AuthenticationPrincipal UserDetails user, HttpSession session) {
-
-        // Nombre por defecto si no hay sesion
         String nombre = "Invitado";
-
         if (user != null) {
-            //tomamos el "nombre" (no el correo)
-            if (user instanceof Usuario) {
-                nombre = ((Usuario) user).getNombre();
+            if (user instanceof Usuario u) {
+                nombre = u.getNombre();
             } else {
-                // Si no, usamos el username (el correo)
                 nombre = user.getUsername();
             }
         }
 
-        // Calcular tiempo de actividad
-        long loginTime = (Long) session.getAttribute("loginTime");
-        long diff = System.currentTimeMillis() - loginTime;
+        Long loginTimeObj = (Long) session.getAttribute("loginTime");
+        if (loginTimeObj == null) {
+            // si no existe, inicialízalo aquí para evitar NPE
+            loginTimeObj = System.currentTimeMillis();
+            session.setAttribute("loginTime", loginTimeObj);
+        }
+
+        long diff = System.currentTimeMillis() - loginTimeObj;
         long h = diff / (1000 * 60 * 60);
         long m = (diff / (1000 * 60)) % 60;
         long s = (diff / 1000) % 60;
@@ -57,6 +57,7 @@ public class DashController {
         model.addAttribute("bitacoraTotal", "2.3k");
         return "dashboard";
     }
+
 
     @GetMapping("/")
     public String index() {
