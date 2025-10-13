@@ -22,15 +22,27 @@
     </ul>
 </div>
 
+<!-- Backdrop para cerrar al tocar fuera -->
+<div id="backdrop" class="backdrop"></div>
+
 <div class="main">
     <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
         <div class="brand">
             <h1>Suite Balance | ISB</h1>
         </div>
         <input type="text" placeholder="Buscar...">
         <div class="user-info">
-            <span th:text="${nombreUsuario}">Ariana Flores</span>
+            <span th:text="${nombreUsuario}">Invitado</span>
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            </button>
         </div>
     </header>
 
@@ -38,9 +50,9 @@
         <!-- Primera fila -->
         <div class="row top-row">
             <div class="card large">
-                <h3>Welcome <span th:text="${nombreUsuario}">Ariana</span></h3>
+                <h3>Welcome <span th:text="${nombreUsuario}">Invitado</span></h3>
                 <p>Tiempo de Actividad</p>
-                <h2 th:text="${tiempoActividad}">2h:43m:25s</h2>
+                <h2 th:text="${tiempoActividad}" id="tiempoActividad">0h:00m:00s</h2>
             </div>
             <div class="card large">
                 <h3>Revisiones Pendientes</h3>
@@ -93,27 +105,93 @@
     </section>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Chart.js
     const ctx = document.getElementById('barChart');
     new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['JUL', 'JUN', 'AGO', 'SEP', 'OCT'],
-            datasets: [{
-                label: 'Reportes',
-                data: [546, 390, 487, 254, 673],
-                backgroundColor: '#2b6cb0'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
+      type: 'bar',
+      data: {
+        labels: ['JUL','JUN','AGO','SEP','OCT'],
+        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+      },
+      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
     });
+
+    // Hamburguesa
+      (function(){
+        const btn = document.getElementById('menuBtn');
+        const sidebar = document.querySelector('.sidebar');
+        const backdrop = document.getElementById('backdrop');
+
+        if(!btn || !sidebar || !backdrop) return;
+
+        function openMenu(){
+          sidebar.classList.add('sidebar--open');
+          backdrop.classList.add('backdrop--show');
+          document.body.classList.add('no-scroll');
+          btn.setAttribute('aria-expanded','true');
+        }
+        function closeMenu(){
+          sidebar.classList.remove('sidebar--open');
+          backdrop.classList.remove('backdrop--show');
+          document.body.classList.remove('no-scroll');
+          btn.setAttribute('aria-expanded','false');
+        }
+        function toggleMenu(){
+          const isOpen = sidebar.classList.contains('sidebar--open');
+          isOpen ? closeMenu() : openMenu();
+        }
+
+        btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
+        backdrop.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
+
+        // Si cambias a desktop, cierra el panel
+        window.addEventListener('resize', ()=>{
+          if (window.innerWidth > 767) closeMenu();
+        });
+      })();
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('logoutBtn');
+      if (!btn) return;
+
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Se cerrará tu sesión actual.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#e63946'
+        });
+
+        if (isConfirmed) {
+          window.location.href = '/logout';
+        }
+      });
+    });
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const t0 = /*[[${session.loginTime}]]*/ 0;
+    if (t0 > 0) {
+      const inicio = new Date(t0);
+      setInterval(() => {
+        const seg = Math.floor((Date.now() - inicio) / 1000);
+        const h = Math.floor(seg / 3600);
+        const m = Math.floor((seg % 3600) / 60);
+        const s = seg % 60;
+        document.getElementById("tiempoActividad").textContent =
+          `${h}h:${String(m).padStart(2,"0")}m:${String(s).padStart(2,"0")}s`;
+      }, 1000);
+    }
+    /*]]>*/
 </script>
 </body>
 </html>
