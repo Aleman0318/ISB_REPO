@@ -1,101 +1,27 @@
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #f4f4f4;
-}
-
 /* ---------- CONTENEDOR GENERAL ---------- */
 .contenedor-general {
   display: flex;
+  min-height: 100vh;
+  display: flex;                       /* <- clave: ocupa el alto de la ventana */
   background-color: #f4f4f4;
-  height:auto
+  height:auto;
 }
 
-/* ---------- PANEL LATERAL ---------- */
-.panel-lateral {
-  background-color: #212121;
-  color: white;
-  width: 13%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 25px;
-}
 
-.panel-lateral h2 {
-  font-size: clamp(1rem, 1.3vw, 1.5rem);
-  font-weight: 600;
-  margin-bottom: 40px;
-  color: #ccc;
-}
-
-.panel-lateral button {
-  width: 85%;
-  background-color: #e03131;
-  border: none;
-  color: white;
-  font-size: clamp(0.9rem, 1vw, 1.1rem);
-  text-align: center;
-  padding: 12px 20px;
-  margin: 8px 0;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.panel-lateral button:hover {
-  background-color: #c62828;
-}
 
 /* ---------- CONTENEDOR PRINCIPAL ---------- */
 .container_principal {
-  flex-grow: 1;
+  flex: 1;                                    /* <- ocupa todo el espacio restante */
   display: flex;
+  margin:0;
   flex-direction: column;
+  min-width: 0;                               /* evita desbordes horizontales */
+ height:auto;
 }
 
-/* ---------- BARRA SUPERIOR ---------- */
-.barra-superior {
-  background-color: #e03131;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 30px;
-  color: white;
-}
 
-.barra-superior h1 {
-  font-size: 20px;
-  font-weight: 600;
-}
 
-.barra-busqueda input {
-  padding: 8px 15px;
-  border-radius: 30px;
-  border: none;
-  outline: none;
-  width: clamp(180px, 20vw, 250px);
-  font-size: clamp(0.9rem, 1vw, 1.1rem);
-}
-
-.info-usuario {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: clamp(35px, 4vw, 45px);
-  height: clamp(35px, 4vw, 45px);
-  background-color: #000;
-  border-radius: 50%;
-}
 
 /* ---------- FORMULARIO ---------- */
 .formulario-usuario {
@@ -280,14 +206,14 @@ body {
 
 /* ---------- LIBRO DIARIO ---------- */
 .libro-diario {
-  padding: 1rem;
+  padding:2rem;
   background-color: #f4f0e6;
-  height:auto
+  height:100%;
 }
 
 .titulo-libro {
   text-align: center;
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-size: clamp(1.8rem, 3vw, 3rem);
   color: #000;
   margin-bottom: 1.5rem;
 }
@@ -595,8 +521,9 @@ body {
 
 /* ---------- AUDITORÍA ---------- */
 .auditoria {
-  padding: 3rem;
+  padding: 1rem;
   background-color: #f4f0e6;
+  height:100%;
 }
 
 .titulo-auditoria {
@@ -950,3 +877,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 16px;
 }
+
+ .celda-hash{
+   max-width: 520px;     /* ajusta al ancho de tu tabla */
+   word-break: break-all; /* parte líneas si es necesario */
+   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+   font-size: 12px;
+   line-height: 1.2;
+ }
