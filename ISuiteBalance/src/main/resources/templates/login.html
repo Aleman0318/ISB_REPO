@@ -11,6 +11,50 @@
     <!-- Fuentes -->
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+
+          // Thymeleaf: si existe ?error, ?logout o ?registered en la URL
+          const hayError    = /*[[${param.error != null}]]*/ false;
+          const hayLogout   = /*[[${param.logout != null}]]*/ false;
+          const registrado  = /*[[${param.registered != null}]]*/ false;
+
+          console.log("SweetAlert check:", {hayError, hayLogout, registrado}); // <-- Puedes borrar esto luego
+
+          if (hayError) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Credenciales inválidas',
+              text: 'Correo o contraseña incorrectos. Inténtalo nuevamente.',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Intentar de nuevo'
+            });
+          }
+
+          if (hayLogout) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Sesión cerrada',
+              text: 'Has salido correctamente.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }
+
+          if (registrado) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Registro exitoso',
+              text: 'Ahora puedes iniciar sesión.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }
+        });
+        /*]]>*/
+    </script>
 </head>
 <body>
 <main class="login-shell">
