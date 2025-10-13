@@ -249,3 +249,60 @@ html, body {
   .panel-registro { order: 1; }
   .panel-izq-registro { order: 2; }
 }
+
+/* ===== Ajuste responsivo de la ilustración y paddings ===== */
+
+/* Tablets medianas (<= 992px): bajamos un poco tamaños */
+@media (max-width: 992px) {
+  .login-frame { gap: 28px; }
+  .panel-izq, .panel-der { padding: 40px 24px; }
+  .ilustracion { max-width: 320px; }
+  .marca-ISB { font-size: clamp(36px, 5.5vw, 64px); }
+}
+
+/* Móviles (<= 768px): apilado, imagen más pequeña que el cuadro de login */
+@media (max-width: 768px) {
+  .login-frame {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+    gap: 20px;                 /* menos separación entre tarjetas */
+  }
+
+  .panel-izq {                 /* menos padding y altura controlada */
+    padding: 24px 20px;
+  }
+
+  .panel-der {
+    padding: 28px 20px;
+  }
+
+  .ilustracion-wrap {
+    margin-top: 8px;
+  }
+
+  .ilustracion {
+    /* limita el ancho y la altura en móvil para que no “crezca” más que el login */
+    max-width: clamp(160px, 55vw, 240px);
+    max-height: clamp(140px, 28vh, 200px);
+    width: auto;               /* respeta el aspecto del PNG */
+    height: auto;
+    object-fit: contain;
+  }
+
+  .marca-ISB {
+    font-size: clamp(28px, 10vw, 44px);
+  }
+}
+
+/* Móviles pequeños (<= 400px): aún más compacto */
+@media (max-width: 400px) {
+  .panel-izq { padding: 20px 16px; }
+  .panel-der { padding: 24px 16px; }
+
+  .ilustracion {
+    max-width: clamp(140px, 60vw, 200px);
+    max-height: 160px;
+  }
+}
+
+
