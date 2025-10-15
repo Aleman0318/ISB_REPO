@@ -10,9 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class DashController {
@@ -75,7 +72,6 @@ public class DashController {
         return "dashboard";
     }
 
-
     @GetMapping("/")
     public String index() {
         return "redirect:/dashboard";
@@ -84,22 +80,11 @@ public class DashController {
     @GetMapping("/bitacora")
     public String bitacora() { return "Bitacora"; }
 
-    // ✅ GET: muestra el formulario con un objeto vacío para el binding
-    @GetMapping("/crear-usuario")
-    public String crearUsuarioForm(Model model) {
-        model.addAttribute("usuario", new Usuario());
-        return "CrearUsuario"; // templates/CrearUsuario.html
-    }
-
-    // ✅ POST: recibe el form, guarda y redirige con mensaje flash
-    @PostMapping("/crear-usuario")
-    public String crearUsuarioSubmit(
-            @ModelAttribute("usuario") Usuario usuario,
-            RedirectAttributes ra) {
-
-        usuarioService.saveUsuario(usuario); // hashea internamente passwordHash
-        ra.addFlashAttribute("msg", "Usuario creado correctamente");
-        return "redirect:/gestion-usuario";
+    // Listado de usuarios
+    @GetMapping("/gestion-usuario")
+    public String gestionUsuario(Model model) {
+        model.addAttribute("usuarios", usuarioService.listarTodos());
+        return "GestionUsuario"; // src/main/resources/templates/GestionUsuario.html
     }
 
     @GetMapping("/eliminar-usuario")
@@ -108,26 +93,11 @@ public class DashController {
     @GetMapping("/generar-reporte")
     public String generarReporte() { return "GenerarReporte"; }
 
-    //  Ahora aquí cargamos los usuarios para la vista
-    @GetMapping("/gestion-usuario")
-    public String gestionUsuario(Model model) {
-        model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "GestionUsuario"; // src/main/resources/templates/GestionUsuario.html
-    }
-
     @GetMapping("/modificar-usuario")
     public String modificarUsuario() { return "ModificarUsuario"; }
 
     @GetMapping("/registro-libro-diario")
     public String registroLibroDiario() { return "RegistroLibroDiario"; }
 
-    @GetMapping("/subir-doc")
-    public String subirDoc() { return "SubirDoc"; }
 
-    @GetMapping("/partida")
-    public String registroPartida() { return "RegistroPartida"; }
-
-    // ❌ No definas /logout aquí: lo maneja Spring Security
-    // @GetMapping("/logout")
-    // public String logout() { return "redirect:/logout"; }
 }
