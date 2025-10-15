@@ -1,78 +1,47 @@
 package com.sistemascontables.ISuiteBalance.Services;
 
 import com.sistemascontables.ISuiteBalance.Models.DetallePartida;
+import com.sistemascontables.ISuiteBalance.Models.LineaDetalle;
 import com.sistemascontables.ISuiteBalance.Models.Partida;
+import com.sistemascontables.ISuiteBalance.Models.PartidaRequest;
 import com.sistemascontables.ISuiteBalance.Repositorios.DetallePartidaDAO;
-import com.sistemascontables.ISuiteBalance.Repositorios.DetallePartidaView;
 import com.sistemascontables.ISuiteBalance.Repositorios.PartidaDAO;
-import com.sistemascontables.ISuiteBalance.Repositorios.PartidaResumen;
+import com.sistemascontables.ISuiteBalance.Services.DocumentoService;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class PartidaService {
+    private final PartidaDAO partidaRepo;
+    private final DetallePartidaDAO detalleRepo;
+    private final DocumentoService documentoService;
 
-    private final PartidaDAO partidaDAO;
-    private final DetallePartidaDAO detalleDAO;
-
-    public PartidaService(PartidaDAO partidaDAO, DetallePartidaDAO detalleDAO) {
-        this.partidaDAO = partidaDAO;
-        this.detalleDAO = detalleDAO;
-    }
-
-    public List<DetallePartidaView> obtenerLineasConNombre(Integer idPartida){
-        return detalleDAO.listarLineasConNombre(idPartida);
-    }
-
-    public Page<PartidaResumen> listarResumen(int page, int size) {
-        return partidaDAO.listarResumen(PageRequest.of(page, size));
-    }
-
-    public List<DetallePartida> obtenerLineas(Integer idPartida) {
-        return detalleDAO.findByIdPartida(idPartida);
+    public PartidaService(PartidaDAO p, DetallePartidaDAO d, DocumentoService doc) {
+        this.partidaRepo = p; this.detalleRepo = d; this.documentoService = doc;
     }
 
     @Transactional
-    public Partida crearPartida(Partida p, List<DetallePartida> lineas) {
-        Partida guardada = partidaDAO.save(p);
-        if (lineas != null) {
-            for (DetallePartida l : lineas) {
-                l.setIdPartida(guardada.getIdPartida());
-                if (l.getMontoDebe() == null)  l.setMontoDebe(BigDecimal.ZERO);
-                if (l.getMontoHaber() == null) l.setMontoHaber(BigDecimal.ZERO);
-                detalleDAO.save(l);
-            }
+    public Long guardarPartida(PartidaRequest req, Long idDocumento) {
+        // 1) Cabecera
+        Partida p = new Partida();
+        p.setFecha(req.getFecha());                         // puedes tomar la del primer detalle si no envías una de cabecera
+        p.setConcepto(req.getConcepto());
+        p.setIdUsuario(req.getIdUsuario());                 // si ya tienes usuario logueado puedes inyectarlo aquí
+        p = partidaRepo.save(p);
+
+        // 2) Detalles
+        for (LineaDetalle ld : req.getDetalles()) {
+            DetallePartida d = new DetallePartida();
+            d.setIdPartida(p.getId());
+            d.setIdCuenta(ld.getIdCuenta());
+            d.setMontoDebe(ld.getDebe());
+            d.setMontoHaber(ld.getHaber());
+            detalleRepo.save(d);
         }
-        return guardada;
-    }
 
-    @Transactional
-    public void actualizarPartida(Integer idPartida, Partida p, List<DetallePartida> lineas) {
-        Partida existente = partidaDAO.findById(idPartida).orElseThrow();
-        existente.setFecha(p.getFecha());
-        existente.setConcepto(p.getConcepto());
-        existente.setIdUsuario(p.getIdUsuario());
-        partidaDAO.save(existente);
+        // 3) Vincular documento (obligatorio 1 x partida)
+        documentoService.vincularADPartida(idDocumento, p.getId());
 
-        detalleDAO.deleteByIdPartida(idPartida);
-        if (lineas != null) {
-            for (DetallePartida l : lineas) {
-                l.setIdPartida(idPartida);
-                if (l.getMontoDebe() == null)  l.setMontoDebe(BigDecimal.ZERO);
-                if (l.getMontoHaber() == null) l.setMontoHaber(BigDecimal.ZERO);
-                detalleDAO.save(l);
-            }
-        }
-    }
-
-    @Transactional
-    public void eliminarPartida(Integer idPartida) {
-        detalleDAO.deleteByIdPartida(idPartida); // hijos primero
-        partidaDAO.deleteById(idPartida);        // luego la partida
+        return p.getId();
     }
 }

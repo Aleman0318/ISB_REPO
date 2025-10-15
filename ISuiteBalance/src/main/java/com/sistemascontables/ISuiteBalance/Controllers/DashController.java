@@ -106,11 +106,6 @@ public class DashController {
     @GetMapping("/registro-libro-diario")
     public String registroLibroDiario() { return "RegistroLibroDiario"; }
 
-    @GetMapping("/subir-doc")
-    public String subirDoc() { return "SubirDoc"; }
-
-    @GetMapping("/partida")
-    public String registroPartida() { return "RegistroPartida"; }
 
     @GetMapping("/partida/{id}/ver")
     public String verDetallePartida(@PathVariable Integer id, Model model) {
