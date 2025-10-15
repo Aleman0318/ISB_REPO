@@ -121,5 +121,80 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js
+    const ctx = document.getElementById('barChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['JUL','JUN','AGO','SEP','OCT'],
+        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+      },
+      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+    });
+
+    // Hamburguesa
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+
+      if(!btn || !sidebar || !backdrop) return;
+
+      function openMenu(){
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+        btn.setAttribute('aria-expanded','true');
+      }
+      function closeMenu(){
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+        btn.setAttribute('aria-expanded','false');
+      }
+      function toggleMenu(){
+        const isOpen = sidebar.classList.contains('sidebar--open');
+        isOpen ? closeMenu() : openMenu();
+      }
+
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
+
+      // Si cambias a desktop, cierra el panel
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+</script>
+
+<!-- Logout con confirmación + submit del form oculto -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('logoutBtn');
+      if (!btn) return;
+
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Se cerrará tu sesión actual.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#e63946'
+        });
+
+        if (isConfirmed) {
+          const f = document.getElementById('logoutForm');
+          if (f) f.submit();  // POST /logout con CSRF
+        }
+      });
+    });
+</script>
+
 </body>
 </html>

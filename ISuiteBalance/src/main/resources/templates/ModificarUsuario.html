@@ -25,60 +25,189 @@
 
 <!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
+ <div class="main">
 
 
+
+     <header>
+         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+         </button>
+         <div class="brand">
+             <h1>Suite Balance | ISB</h1>
+         </div>
+         <input type="text" placeholder="Buscar...">
+         <div class="user-info">
+             <span th:text="${nombreUsuario}">Invitado</span>
+             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+             <!-- Botón de logout -->
+             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                 <i class="fi fi-sr-power" aria-hidden="true"></i>
+             </button>
+
+             <!-- 🔒 Form oculto para POST /logout con CSRF -->
+             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+             </form>
+         </div>
+     </header>
     <div class="container_principal">
-        <header class="barra-superior">
-            <h1>ISuite Balance | ISB</h1>
-            <div class="barra-busqueda">
-                <input type="text" placeholder="Buscar..." />
-            </div>
-            <div class="info-usuario">
-                <span>Diego</span>
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
-            </div>
-        </header>
         <div class="formulario-usuario">
             <h1>Modificar Usuario</h1>
+            <!-- Mensajes flash opcionales -->
+            <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
+            <div th:if="${ok}" class="alerta-exito" th:text="${ok}"></div>
 
-            <form>
+            <form th:action="@{/usuario/editar}" method="post" autocomplete="off">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="id" th:value="${usuario.id_usuario}">
+                <!-- hidden para indicar la acción -->
+                <input type="hidden" name="action" id="actionField" value="">
+
                 <div class="form-grupo">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" placeholder="Diego Alejandro">
-                </div>
-
-                <div class="form-grupo">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" id="apellido" placeholder="Flores Montesinos">
+                    <input type="text" id="nombre" name="nombre"
+                           placeholder="Nombre" required
+                           th:value="${usuario.nombre}">
                 </div>
 
                 <div class="form-grupo">
                     <label for="correo">Correo:</label>
-                    <input type="email" id="correo" placeholder="FM22026@UES.UED.SV">
+                    <input type="email" id="correo" name="correo"
+                           placeholder="correo@ejemplo.com" required
+                           th:value="${usuario.correo}">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" id="contrasenal" placeholder="No se cambiar la contraseña desde aquí debido al cifrado de seguridad">
+                    <label for="contrasenal">Contraseña:</label>
+                    <input
+                            type="text"
+                            id="contrasenal"
+                            placeholder="No se puede cambiar desde aquí"
+                            readonly
+                            aria-readonly="true">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="rol">Asignar Rol:</label>
-                    <select id="rol">
-                        <option>Seleccionar Rol del Usuario</option>
-                        <option>Administrador</option>
-                        <option>Contador</option>
-                        <option>Supervisor</option>
+                    <label for="rol">Cambiar rol:</label>
+                    <select id="rol" name="rol" required>
+                        <option value="">Seleccionar Rol del Usuario</option>
+                        <option value="ADMIN" th:selected="${usuario.rol == 'ADMIN'}">Administrador</option>
+                        <option value="CONTADOR" th:selected="${usuario.rol == 'CONTADOR'}">Contador</option>
+                        <option value="AUDITOR" th:selected="${usuario.rol == 'AUDITOR'}">Auditor</option>
                     </select>
                 </div>
 
                 <div class="botones">
-                    <button type="submit" class="btn-agregar">Modificar Usuario</button>
-                    <button type="button" class="btn-cancelar">Cancelar</button>
+                    <!-- GUARDAR: no es submit; enviamos nosotros -->
+                    <button
+                            type="button"
+                            class="btn-agregar"
+                            id="btnGuardar"
+                            onclick="
+                                const f = this.form;
+                                if (!f.reportValidity()) return;      // valida HTML5
+                                const a = document.getElementById('actionField');
+                                if (!a) { alert('Falta input oculto actionField'); return; }
+                                a.value = 'guardar';
+                                if (f.requestSubmit) { f.requestSubmit(); }
+                                else { f.submit(); }
+                              ">
+                        Modificar Usuario
+                    </button>
+
+                    <!-- CANCELAR: NO envía el form -->
+                    <button
+                            type="button"
+                            class="btn-cancelar"
+                            th:onclick="|window.location='@{/gestion-usuario}'|">
+                        Cancelar
+                    </button>
                 </div>
             </form>
+
+
         </div>
     </div>
+
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js
+    const ctx = document.getElementById('barChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['JUL','JUN','AGO','SEP','OCT'],
+        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+      },
+      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+    });
+
+    // Hamburguesa
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+
+      if(!btn || !sidebar || !backdrop) return;
+
+      function openMenu(){
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+        btn.setAttribute('aria-expanded','true');
+      }
+      function closeMenu(){
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+        btn.setAttribute('aria-expanded','false');
+      }
+      function toggleMenu(){
+        const isOpen = sidebar.classList.contains('sidebar--open');
+        isOpen ? closeMenu() : openMenu();
+      }
+
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
+
+      // Si cambias a desktop, cierra el panel
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+</script>
+
+<!-- Logout con confirmación + submit del form oculto -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('logoutBtn');
+      if (!btn) return;
+
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Se cerrará tu sesión actual.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#e63946'
+        });
+
+        if (isConfirmed) {
+          const f = document.getElementById('logoutForm');
+          if (f) f.submit();  // POST /logout con CSRF
+        }
+      });
+    });
+</script>
+
 </body>
 </html>
