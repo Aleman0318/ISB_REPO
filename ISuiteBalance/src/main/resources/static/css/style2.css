@@ -885,3 +885,28 @@
    font-size: 12px;
    line-height: 1.2;
  }
+
+.btn-opcion.ver {
+  background-color: #2563eb;  /* azul */
+  color: white;
+}
+.btn-opcion.ver:hover {
+  background-color: #1e3a8a;
+}
+
+/* Quita subrayados de todos los botones tipo enlace */
+.btn-opcion,
+.btn-agregar,
+.btn-opcion:link,
+.btn-opcion:visited,
+.btn-agregar:link,
+.btn-agregar:visited {
+  text-decoration: none;    /* sin subrayado */
+  display: inline-block;    /* permite padding y bordes */
+}
+
+/* Por si algún navegador los reactiva al hacer hover */
+.btn-opcion:hover,
+.btn-agregar:hover {
+  text-decoration: none;
+}

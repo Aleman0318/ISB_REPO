@@ -2,6 +2,7 @@ package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
+import com.sistemascontables.ISuiteBalance.Services.PartidaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,10 +21,12 @@ public class DashController {
 
     //modificado por daigo
     private final UsuarioService usuarioService;
+    private final PartidaService partidaService;
 
     // Inyección por constructor
-    public DashController(UsuarioService usuarioService) {
+    public DashController(UsuarioService usuarioService, PartidaService partidaService) {
         this.usuarioService = usuarioService;
+        this.partidaService = partidaService;
     }
     //
 
@@ -126,6 +130,21 @@ public class DashController {
 
     @GetMapping("/partida")
     public String registroPartida() { return "RegistroPartida"; }
+
+    @GetMapping("/partida/{id}/ver")
+    public String verDetallePartida(@PathVariable Integer id, Model model) {
+        model.addAttribute("idPartida", id);
+        model.addAttribute("lineas", partidaService.obtenerLineas(id)); // trae TODAS las líneas
+        return "DetallePartida";
+    }
+
+    // 👉 Redirige desde /gestion-partida al listado real de partidas
+    /*@GetMapping("/gestion-partida")
+    public String redirigirGestionPartida() {
+        return "redirect:/libro-diario";
+    }*/
+
+
 
     // ❌ No definas /logout aquí: lo maneja Spring Security
     // @GetMapping("/logout")
