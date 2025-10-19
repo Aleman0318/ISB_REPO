@@ -115,6 +115,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/JS/menu.js"></script>
 <script>
     // Chart.js
     const ctx = document.getElementById('barChart');
@@ -126,39 +127,6 @@
       },
       options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
     });
-
-    // Hamburguesa
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-
-      if(!btn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('sidebar--open');
-        backdrop.classList.add('backdrop--show');
-        document.body.classList.add('no-scroll');
-        btn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        sidebar.classList.remove('sidebar--open');
-        backdrop.classList.remove('backdrop--show');
-        document.body.classList.remove('no-scroll');
-        btn.setAttribute('aria-expanded','false');
-      }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
 </script>
 
 <!-- Logout con confirmación + submit del form oculto -->
