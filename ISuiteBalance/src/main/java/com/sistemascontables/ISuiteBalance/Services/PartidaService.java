@@ -6,9 +6,13 @@ import com.sistemascontables.ISuiteBalance.Models.Partida;
 import com.sistemascontables.ISuiteBalance.Models.PartidaRequest;
 import com.sistemascontables.ISuiteBalance.Repositorios.DetallePartidaDAO;
 import com.sistemascontables.ISuiteBalance.Repositorios.PartidaDAO;
-import com.sistemascontables.ISuiteBalance.Services.DocumentoService;
+import com.sistemascontables.ISuiteBalance.Repositorios.*;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import java.util.List;
+
 
 @Service
 public class PartidaService {
@@ -18,6 +22,30 @@ public class PartidaService {
 
     public PartidaService(PartidaDAO p, DetallePartidaDAO d, DocumentoService doc) {
         this.partidaRepo = p; this.detalleRepo = d; this.documentoService = doc;
+    }
+
+
+    // Listado paginado para Gestión de Partidas
+    public Page<PartidaResumen> listarResumen(int page, int size) {
+        return partidaRepo.listarResumen(PageRequest.of(page, size));
+    }
+
+    // Detalle con nombre de cuenta (para la vista)
+    public List<DetallePartidaView> obtenerLineasConNombre(Integer idPartida) {
+        return detalleRepo.lineasConNombre(idPartida.longValue());
+    }
+
+    // Alias para que compile tu DashController actual
+    public List<DetallePartidaView> obtenerLineas(Integer idPartida) {
+        return obtenerLineasConNombre(idPartida);
+    }
+
+    // Eliminar partida + sus detalles
+    @Transactional
+    public void eliminarPartida(Integer idPartida) {
+        Long id = idPartida.longValue();
+        detalleRepo.deleteByIdPartida(id);
+        partidaRepo.deleteById(id);
     }
 
     @Transactional
