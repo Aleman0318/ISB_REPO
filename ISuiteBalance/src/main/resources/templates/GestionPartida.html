@@ -64,6 +64,7 @@
                     <th>Usuario</th>
                     <th>Debe</th>
                     <th>Haber</th>
+                    <th>Documento</th>
                     <th>Opciones</th>
                 </tr>
                 </thead>
@@ -76,6 +77,14 @@
                     <td th:text="${p.nombreUsuario}">Usuario</td>
                     <td th:text="${#numbers.formatDecimal(p.totalDebe,1,'COMMA',2,'POINT')}">0.00</td>
                     <td th:text="${#numbers.formatDecimal(p.totalHaber,1,'COMMA',2,'POINT')}">0.00</td>
+                    <td>
+                        <span th:if="${p.docNombre == null or #strings.isEmpty(p.docNombre)}">—</span>
+                        <a th:if="${p.docNombre != null and !#strings.isEmpty(p.docNombre)}"
+                           th:href="@{|/documento/partida/${p.idPartida}|}"
+                           th:text="${p.docNombre}"
+                           title="Abrir documento">
+                        </a>
+                    </td>
                     <td class="opciones">
                         <a class="btn-opcion ver"     th:href="@{|/partidas/${p.idPartida}/ver|}"    title="Ver">👁️</a>
                         <a class="btn-opcion editar"  th:href="@{|/partidas/${p.idPartida}/editar|}" title="Editar">✏️</a>

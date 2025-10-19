@@ -121,7 +121,6 @@ public class DashController {
     }*/
 
 
-
     // ❌ No definas /logout aquí: lo maneja Spring Security
     // @GetMapping("/logout")
     // public String logout() { return "redirect:/logout"; }

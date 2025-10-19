@@ -9,4 +9,5 @@ public interface PartidaResumen {
     String getNombreUsuario();
     BigDecimal getTotalDebe();
     BigDecimal getTotalHaber();
+    String getDocNombre();
 }
