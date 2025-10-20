@@ -7,16 +7,19 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSRF (necesario para POST) -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
 <body>
 
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/subir-doc}" class="active">Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
@@ -25,36 +28,36 @@
 
 <!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
-    <div class="main">
-        <header>
-            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
-            <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
-                <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+<div class="main">
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand">
+            <h1>Suite Balance | ISB</h1>
+        </div>
+        <input type="text" placeholder="Buscar...">
+        <div class="user-info">
+            <span th:text="${nombreUsuario}">Invitado</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+            <!-- Botón de logout -->
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
-            <div class="brand">
-                <h1>Suite Balance | ISB</h1>
-            </div>
-            <input type="text" placeholder="Buscar...">
-            <div class="user-info">
-                <span th:text="${nombreUsuario}">Invitado</span>
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
-                <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+            <!-- 🔒 Form oculto para POST /logout con CSRF -->
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
 
-                <!-- Botón de logout -->
-                <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
-                    <i class="fi fi-sr-power" aria-hidden="true"></i>
-                </button>
-
-                <!-- 🔒 Form oculto para POST /logout con CSRF -->
-                <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                </form>
-            </div>
-        </header>
-        <!-- Contenedor principal -->
-        <div class="container_principal">
-
+    <!-- Contenedor principal -->
+    <div class="container_principal">
         <!-- Contenido principal -->
         <main class="subir-documento">
             <h1 class="titulo-subida">Subir Documento PDF</h1>
@@ -75,30 +78,45 @@
                     <p>Nombre del documento: <span id="nombreDocumento">---</span></p>
                 </div>
 
+                <!-- 🆕 Clasificación -->
+                <div class="vista-previa" style="margin-top: 12px;">
+                    <label>Clasificación del documento</label>
+                    <select id="selClasificacion" class="input" style="width: 100%;">
+                        <!-- Si el controlador manda 'clasificaciones' (id, nombre), Thymeleaf pinta aquí -->
+                        <option value="" selected th:if="${#lists.isEmpty(clasificaciones)}">Seleccione una clasificación</option>
+                        <option th:each="c : ${clasificaciones}"
+                                th:value="${c.idClasificacion}"
+                                th:text="${c.nombreclasificacion}">
+                        </option>
+                    </select>
+                    <small class="sub" style="display:block;margin-top:6px;">Ej.: Factura de compra, Recibo, Nota de crédito…</small>
+                </div>
+
+                <!-- Botones -->
                 <!-- Botones -->
                 <div class="botones-subida">
-                    <button class="btn-subir">Subir documento</button>
-                    <button class="btn-adjuntar-partida">Adjuntar a Partida</button>
+                    <button class="btn-subir-adjuntar" type="button">Subir y adjuntar a Partida</button>
                 </div>
             </div>
         </main>
-        </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Chart.js
+    // Chart.js (protegido si no existe el canvas)
     const ctx = document.getElementById('barChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['JUL','JUN','AGO','SEP','OCT'],
-        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-      },
-      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-    });
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['JUL','JUN','AGO','SEP','OCT'],
+          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+        },
+        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+      });
+    }
 
     // Hamburguesa
     (function(){
@@ -128,8 +146,6 @@
       btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
       backdrop.addEventListener('click', closeMenu);
       document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
       window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
     })();
 </script>
@@ -160,6 +176,55 @@
     });
 </script>
 
+<!-- === Lógica de subir y adjuntar documento === -->
+<script>
+    (function(){
+      const input     = document.getElementById('archivoPDF');
+      const lblNombre = document.getElementById('nombreDocumento');
+      const selClasif = document.getElementById('selClasificacion');
+      const btnSubir  = document.querySelector('.btn-subir-adjuntar'); // <- clase correcta
 
+      const token  = document.querySelector('meta[name="_csrf"]')?.content || '';
+      const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+
+      // Vista previa del nombre (se había perdido)
+      input?.addEventListener('change', ()=>{
+        lblNombre.textContent = input.files?.[0]?.name || '---';
+      });
+
+      btnSubir?.addEventListener('click', async () => {
+        const file = input?.files?.[0];
+        if (!file) { Swal.fire('Selecciona un PDF', '', 'info'); return; }
+        if (file.type !== 'application/pdf') {
+          Swal.fire('Archivo inválido', 'Solo se permite PDF.', 'warning');
+          return;
+        }
+
+        const fd = new FormData();
+        fd.append('archivo', file);
+        const idClasif = selClasif?.value || '';
+        if (idClasif) fd.append('idClasificacion', idClasif);
+
+        try {
+          const resp = await fetch('/documento/subir', {
+            method: 'POST',
+            headers: { [header]: token },
+            body: fd
+          });
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          const data = await resp.json();
+          if (!data.ok) throw new Error('Respuesta no OK');
+
+          // Redirige a Registrar Partida con el docId
+          const params = new URLSearchParams(location.search);
+          const back = params.get('returnTo') || '/partida';
+          window.location.href = `${back}?doc=${encodeURIComponent(data.documentId)}`;
+        } catch (e) {
+          console.error(e);
+          Swal.fire('Error','No se pudo subir el documento.','error');
+        }
+      });
+    })();
+</script>
 </body>
 </html>
