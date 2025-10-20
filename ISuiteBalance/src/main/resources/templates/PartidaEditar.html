@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${idPartida} != null ? 'Editar Partida | ISB' : 'Registrar Partida | ISB'">Registrar Partida | ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos mínimos para el form de líneas (no rompen tu layout) */
+        .form-card { background:#fff; border-radius:12px; box-shadow:0 8px 18px rgba(0,0,0,.06); padding:16px; }
+        .form-row { display:grid; grid-template-columns: 1fr 2fr; gap:10px; margin-bottom:12px; }
+        .form-row label { align-self:center; }
+        .linea { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+        .linea select, .linea input { padding:6px 10px; }
+        .linea .btn-opcion { line-height:1; }
+        .acciones-lineas { display:flex; gap:8px; margin-top:8px; }
+        .totales { margin-top:10px; display:flex; gap:18px; color:#374151; font-weight:600; }
+        .muted { color:#6b7280; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}" class="active">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}">Gestión de Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+<div id="backdrop" class="backdrop"></div>
+
+<!-- Main -->
+<div class="main">
+    <!-- Header -->
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <input type="text" placeholder="Buscar...">
+        <div class="user-info">
+            <span th:text="${nombreUsuario}">Invitado</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
+
+    <div class="container_principal">
+        <main class="gestion-usuarios">
+            <h1 class="titulo-gestion">Editar Partida</h1>
+
+            <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
+
+            <form th:action="@{'/partidas/' + ${idPartida}}" method="post" enctype="multipart/form-data" class="form-card">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="idPartida" th:value="${idPartida}"/>
+
+                <div class="form-row">
+                    <label>Fecha</label>
+                    <input type="date" name="fecha" th:value="${fecha}" required>
+                </div>
+
+                <div class="form-row">
+                    <label>Concepto</label>
+                    <input type="text" name="concepto" th:value="${concepto}" required>
+                </div>
+
+                <div class="form-row">
+                    <label>Documento</label>
+                    <div>
+                        <div class="muted" th:if="${docNombre}">Actual: <span th:text="${docNombre}">documento.pdf</span></div>
+                        <input type="file" name="pdf" accept="application/pdf">
+                        <select name="idClasificacion" th:value="${docClasif}">
+                            <option th:value="1" th:selected="${docClasif==1}">Factura</option>
+                            <option th:value="2" th:selected="${docClasif==2}">Vale</option>
+                            <option th:value="3" th:selected="${docClasif==3}">Cheque</option>
+                            <option th:value="4" th:selected="${docClasif==4}">Otro</option>
+                        </select>
+                        <small class="muted">Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)</small>
+                    </div>
+                </div>
+
+                <section>
+                    <h3>Detalle</h3>
+                    <div id="lineas">
+                        <div class="linea" th:each="l : ${lineas}">
+                            <select name="idCuenta[]" required>
+                                <!-- Reemplaza por tu catálogo real -->
+                                <option th:value="1" th:selected="${l.idCuenta == 1}">Caja</option>
+                                <option th:value="2" th:selected="${l.idCuenta == 2}">Banco</option>
+                                <option th:value="3" th:selected="${l.idCuenta == 3}">Inventarios</option>
+                                <option th:value="4" th:selected="${l.idCuenta == 4}">Clientes</option>
+                                <option th:value="5" th:selected="${l.idCuenta == 5}">Ventas</option>
+                                <option th:value="6" th:selected="${l.idCuenta == 6}">Gastos de servicios</option>
+                            </select>
+                            <input type="number" step="0.01" name="debe[]"  th:value="${l.montoDebe}"  placeholder="Debe"  oninput="calcularTotales()">
+                            <input type="number" step="0.01" name="haber[]" th:value="${l.montoHaber}" placeholder="Haber" oninput="calcularTotales()">
+                            <button class="btn-opcion eliminar" type="button" onclick="quitarLinea(this)">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="acciones-lineas">
+                        <button class="btn-opcion editar" type="button" onclick="agregarLinea()">+ Línea</button>
+                    </div>
+
+                    <div class="totales">
+                        <div>Debe: <span id="sumDebe">0.00</span></div>
+                        <div>Haber: <span id="sumHaber">0.00</span></div>
+                    </div>
+                </section>
+
+                <div class="contenedor-boton" style="gap:8px; display:flex; flex-wrap:wrap;">
+                    <button class="btn-agregar" type="submit">Actualizar</button>
+                    <a class="btn-agregar" th:href="@{'/partidas/' + ${idPartida} + '/ver'}">Cancelar</a>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Scripts mínimos -->
+<script>
+    // Hamburguesa
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+      if(!btn||!sidebar||!backdrop) return;
+      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); }
+      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); }
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open')?closeMenu():openMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+
+    // ====== LÓGICA DE LÍNEAS ======
+    function agregarLinea(){
+      const cont = document.getElementById('lineas');
+      const div = document.createElement('div');
+      div.className = 'linea';
+      div.innerHTML = `
+        <select name="idCuenta[]" required>
+          <option value="1">Caja</option>
+          <option value="2">Banco</option>
+          <option value="3">Inventarios</option>
+          <option value="4">Clientes</option>
+          <option value="5">Ventas</option>
+          <option value="6">Gastos de servicios</option>
+        </select>
+        <input type="number" step="0.01" name="debe[]"  placeholder="Debe"  oninput="calcularTotales()">
+        <input type="number" step="0.01" name="haber[]" placeholder="Haber" oninput="calcularTotales()">
+        <button class="btn-opcion eliminar" type="button" title="Quitar línea" onclick="quitarLinea(this)">🗑️</button>
+      `;
+      cont.appendChild(div);
+    }
+
+    function quitarLinea(btn){
+      const linea = btn.closest('.linea');
+      if(linea && document.querySelectorAll('#lineas .linea').length > 1){
+        linea.remove();
+        calcularTotales();
+      }
+    }
+
+    function calcularTotales(){
+      let sumDebe = 0, sumHaber = 0;
+      document.querySelectorAll('input[name="debe[]"]').forEach(i => sumDebe += parseFloat(i.value || 0));
+      document.querySelectorAll('input[name="haber[]"]').forEach(i => sumHaber += parseFloat(i.value || 0));
+      document.getElementById('sumDebe').textContent  = sumDebe.toFixed(2);
+      document.getElementById('sumHaber').textContent = sumHaber.toFixed(2);
+    }
+</script>
+</body>
+</html>

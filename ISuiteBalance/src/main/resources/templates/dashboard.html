@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suite Balance | ISB</title>
+    <title>Suite Balance</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,8 +15,8 @@
     <ul>
         <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/subir-doc}">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
@@ -114,6 +115,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/JS/menu.js"></script>
 <script>
     // Chart.js
     const ctx = document.getElementById('barChart');
@@ -125,39 +127,6 @@
       },
       options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
     });
-
-    // Hamburguesa
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-
-      if(!btn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('sidebar--open');
-        backdrop.classList.add('backdrop--show');
-        document.body.classList.add('no-scroll');
-        btn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        sidebar.classList.remove('sidebar--open');
-        backdrop.classList.remove('backdrop--show');
-        document.body.classList.remove('no-scroll');
-        btn.setAttribute('aria-expanded','false');
-      }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
 </script>
 
 <!-- Logout con confirmación + submit del form oculto -->

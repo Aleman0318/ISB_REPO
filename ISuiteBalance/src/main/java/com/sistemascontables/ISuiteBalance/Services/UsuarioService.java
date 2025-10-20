@@ -1,11 +1,11 @@
 package com.sistemascontables.ISuiteBalance.Services;
 
-import org.springframework.transaction.annotation.Transactional;
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Repositorios.UsuarioDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,36 +17,71 @@ public class UsuarioService {
     private UsuarioDAO usuarioDAO;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // usa tu bean de Application
+    private BCryptPasswordEncoder passwordEncoder; // Bean definido en tu Config
 
-    /** Guarda usuario en BD con contraseña encriptada */
+    /** CREA usuario: encripta contraseña y guarda. */
+    @Transactional
     public void saveUsuario(Usuario usuario) {
-        usuario.setCorreo(usuario.getCorreo().toLowerCase());
+        if (usuario.getCorreo() != null) {
+            usuario.setCorreo(usuario.getCorreo().trim().toLowerCase());
+        }
+        // passwordHash llega en texto plano desde el controller de "crear"
         String hash = passwordEncoder.encode(usuario.getPasswordHash());
         usuario.setPasswordHash(hash);
-        usuarioDAO.save(usuario);
+        usuarioDAO.saveAndFlush(usuario);
     }
 
-    //Usamos optional para manejar el Exceptnullpointer o en resumen como puede existir como no
-    public Optional<Usuario> finByCorreo(String correo){
+    /** EDITA usuario: guarda nombre/correo/rol SIN tocar passwordHash. */
+    @Transactional
+    public Usuario saveSoloDatosBasicos(Usuario u) {
+        if (u.getCorreo() != null) {
+            u.setCorreo(u.getCorreo().trim().toLowerCase());
+        }
+        // No tocar u.getPasswordHash() aquí
+        return usuarioDAO.saveAndFlush(u);
+    }
+
+    /** True si existe otro usuario con ese correo (ignora el idActual). */
+    @Transactional(readOnly = true)
+    public boolean existeCorreoEnOtroUsuario(String correo, Long idActual) {
+        if (correo == null) return false;
+        return usuarioDAO.findByCorreo(correo.trim().toLowerCase())
+                .map(u -> !u.getId_usuario().equals(idActual))
+                .orElse(false);
+    }
+
+    // Usamos Optional para búsquedas por correo
+    public Optional<Usuario> finByCorreo(String correo) { // (conservar tu firma existente)
         return usuarioDAO.findByCorreo(correo);
     }
 
-    /** Verifica si el correo ya existe */
+    /** Verifica existencia por correo (para alta). */
+    @Transactional(readOnly = true)
     public boolean verificarExistencia(String correo) {
-        return usuarioDAO.findByCorreo(correo.toLowerCase()).isPresent();
+        return usuarioDAO.findByCorreo(correo == null ? null : correo.trim().toLowerCase()).isPresent();
     }
 
-    //agregado por daigo
-    // ⬇️ NUEVO: listar todos para la vista
+    /** Listado para la vista de gestión. */
     @Transactional(readOnly = true)
     public List<Usuario> listarTodos() {
         return usuarioDAO.findAll();
     }
-    //
 
-    /** Permite buscar por correo desde SecurityConfig */
+    /** Buscar por id. */
+    @Transactional(readOnly = true)
+    public Optional<Usuario> findById(Long id) {
+        return usuarioDAO.findById(id);
+    }
+
+    /** Eliminar por id. */
+    @Transactional
+    public void eliminarPorId(Long id) {
+        usuarioDAO.deleteById(id);
+    }
+
+    /** Buscar por correo Security u otros usos. */
+    @Transactional(readOnly = true)
     public Optional<Usuario> findByCorreo(String correo) {
-        return usuarioDAO.findByCorreo(correo.toLowerCase());
+        return usuarioDAO.findByCorreo(correo == null ? null : correo.trim().toLowerCase());
     }
 }

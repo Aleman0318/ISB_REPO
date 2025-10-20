@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Partida | Suite Balance ISB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Documentos</a></li>
+        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+<div id="backdrop" class="backdrop"></div>
+
+<!-- Main -->
+<div class="main">
+    <!-- Header -->
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <input type="text" placeholder="Buscar...">
+        <div class="user-info">
+            <span th:text="${nombreUsuario}">Invitado</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
+
+    <!-- Contenido central con mismas clases -->
+    <div class="container_principal">
+        <main class="gestion-usuarios">
+            <h1 class="titulo-gestion">
+                Detalle de Partida <span th:text="${idPartida}">#</span>
+            </h1>
+
+            <table class="tabla-usuarios">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cuenta</th>
+                    <th>Debe</th>
+                    <th>Haber</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l, it : ${lineas}">
+                    <td th:text="${it.index + 1}">1</td>
+                    <td>
+                        <span th:text="${l.nombreCuenta}"></span>
+                        <span class="muted">(ID <span th:text="${l.idCuenta}"></span>)</span>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(l.montoDebe,1,'COMMA',2,'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(l.montoHaber,1,'COMMA',2,'POINT')}">0.00</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(lineas)}">
+                    <td colspan="4">Sin líneas en esta partida.</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="2" style="text-align:right;">TOTAL</th>
+                    <th th:text="${#numbers.formatDecimal(totalDebe,1,'COMMA',2,'POINT')}">0.00</th>
+                    <th th:text="${#numbers.formatDecimal(totalHaber,1,'COMMA',2,'POINT')}">0.00</th>
+                </tr>
+                </tfoot>
+            </table>
+
+            <div class="contenedor-boton">
+                <button class="btn-agregar" onclick="window.location.href='/gestion-partida'">Volver a Gestion</button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Scripts mínimos -->
+<script>
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+      if(!btn||!sidebar||!backdrop) return;
+      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); }
+      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); }
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open')?closeMenu():openMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+</script>
+</body>
+</html>
