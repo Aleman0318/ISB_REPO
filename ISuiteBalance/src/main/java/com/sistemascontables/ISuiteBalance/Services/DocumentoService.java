@@ -73,4 +73,43 @@ public class DocumentoService {
         d.setIdPartida(idPartida);
         repo.save(d);
     }
+
+    @Transactional
+    public DocumentoFuente reemplazarPDFParaPartida(Long idPartida, MultipartFile file, Integer idClasificacion) throws IOException {
+        var docOpt = repo.findByIdPartida(idPartida);
+        if (docOpt.isEmpty()) {
+            // Si por alguna razón no hay doc, usa el flujo normal + vincula:
+            DocumentoFuente nuevo = guardarPDF(file, idClasificacion);
+            nuevo.setIdPartida(idPartida);
+            return repo.save(nuevo);
+        }
+
+        DocumentoFuente actual = docOpt.get();
+
+        // Borrar archivo anterior si existe
+        if (actual.getNombreArchivo() != null && !actual.getNombreArchivo().isBlank()) {
+            Path viejo = docsRoot.resolve(actual.getNombreArchivo());
+            try { Files.deleteIfExists(viejo); } catch (Exception ignored) {}
+        }
+
+        // Validar y guardar nuevo PDF (reutilizando reglas)
+        String contentType = file.getContentType() == null ? "" : file.getContentType();
+        if (file.isEmpty() || !contentType.equalsIgnoreCase("application/pdf")) {
+            throw new IllegalArgumentException("Debe subir un PDF válido");
+        }
+
+        String original = java.util.Objects.requireNonNullElse(file.getOriginalFilename(), "documento.pdf");
+        String safeName = java.util.UUID.randomUUID() + "-" + original.replaceAll("\\s+", "_");
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, docsRoot.resolve(safeName), StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        actual.setNombreArchivo(safeName);
+        actual.setFecha(java.time.LocalDate.now());
+        actual.setTipo("PDF");
+        actual.setIdClasificacion(idClasificacion != null ? idClasificacion : this.defaultClasificacionId);
+
+        return repo.save(actual);
+    }
+
 }

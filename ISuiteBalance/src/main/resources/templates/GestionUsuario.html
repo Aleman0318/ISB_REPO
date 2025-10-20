@@ -6,6 +6,7 @@
     <title>Suite Balance | ISB</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -16,6 +17,7 @@
         <li><a th:href="@{/dashboard}">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}" class="active">Gestion Usuario</a></li>
         <li><a th:href="@{/subir-doc}">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
@@ -55,50 +57,50 @@
             </div>
         </header>
 <!-- Contenedor principal -->
-<div class="container_principal">
-        <!-- Contenido central -->
-        <main class="gestion-usuarios">
-            <h1 class="titulo-gestion">Gestión de Usuario</h1>
+    <div class="container_principal">
+            <!-- Contenido central -->
+            <main class="gestion-usuarios">
+                <h1 class="titulo-gestion">Gestión de Usuario</h1>
 
-            <table class="tabla-usuarios">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Contraseña</th>
-                    <th>Rol</th>
-                    <th>Opciones</th>
-                </tr>
-                </thead>
+                <table class="tabla-usuarios">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Contraseña</th>
+                        <th>Rol</th>
+                        <th>Opciones</th>
+                    </tr>
+                    </thead>
 
-                <tbody>
-                <tr th:each="u : ${usuarios}">
-                    <td th:text="${u.id_usuario}">1</td>
-                    <td th:text="${u.nombre}">Nombre</td>
-                    <td th:text="${u.correo}">correo@ejemplo.com</td>
-                    <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
-                    <td th:text="${u.rol}">ROL</td>
-                    <td class="opciones">
-                        <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
-                        <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
-                    </td>
-                </tr>
+                    <tbody>
+                    <tr th:each="u : ${usuarios}">
+                        <td th:text="${u.id_usuario}">1</td>
+                        <td th:text="${u.nombre}">Nombre</td>
+                        <td th:text="${u.correo}">correo@ejemplo.com</td>
+                        <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
+                        <td th:text="${u.rol}">ROL</td>
+                        <td class="opciones">
+                            <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
+                            <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
+                        </td>
+                    </tr>
 
-                <tr th:if="${#lists.isEmpty(usuarios)}">
-                    <td colspan="6">No hay usuarios registrados.</td>
-                </tr>
-                </tbody>
+                    <tr th:if="${#lists.isEmpty(usuarios)}">
+                        <td colspan="6">No hay usuarios registrados.</td>
+                    </tr>
+                    </tbody>
 
-            </table>
+                </table>
 
-            <div class="contenedor-boton">
-                <button class="btn-agregar" onclick="window.location.href='/crear-usuario'">Crear Usuario</button>
-            </div>
-        </main>
+                <div class="contenedor-boton">
+                    <button class="btn-agregar" onclick="window.location.href='/crear-usuario'">Crear Usuario</button>
+                </div>
+            </main>
 
+        </div>
     </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
