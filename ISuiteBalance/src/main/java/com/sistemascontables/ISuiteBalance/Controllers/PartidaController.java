@@ -2,13 +2,14 @@
 package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Models.PartidaRequest;
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Repositorios.DocumentoFuenteDAO;
 import com.sistemascontables.ISuiteBalance.Services.PartidaService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.Map;
 
 @Controller
@@ -33,7 +34,12 @@ public class PartidaController {
 
     @PostMapping(value="/partida", consumes=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Map<String,Object> guardar(@RequestParam("docId") Long docId, @RequestBody PartidaRequest req){
+    public Map<String,Object> guardar(@RequestParam("docId") Long docId,
+                                      @RequestBody PartidaRequest req,
+                                      @AuthenticationPrincipal Usuario usuario) {
+        // Ignorar lo que mande el cliente y usar SIEMPRE el usuario logueado
+        req.setIdUsuario(usuario.getId_usuario());
+
         Long id = partidaService.guardarPartida(req, docId);
         return Map.of("ok", true, "idPartida", id);
     }
