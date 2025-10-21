@@ -674,3 +674,88 @@ header input{
     min-height: 100svh;
   }
 }
+
+/* ================================
+   Gestión de Partidas — Buscador
+   ================================ */
+.buscador-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 8px 0 12px 0;
+}
+
+/* Inputs (texto y fecha) */
+.buscador-wrap input.input {
+  height: 45px;
+  padding: 0 12px;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 38px;
+  outline: none;
+  transition: box-shadow .2s, border-color .2s, background .2s;
+  box-sizing: border-box;
+}
+.buscador-wrap #buscarPartidas {
+  width: min(360px, 100%);
+}
+.buscador-wrap #buscarFecha {
+  width: 170px;
+}
+
+/* Focus */
+.buscador-wrap input.input:focus {
+  border-color: rgba(230,57,70,.55);
+  box-shadow: 0 0 0 4px rgba(230,57,70,.12);
+}
+
+/* Botón Limpiar */
+.buscador-wrap .btn.limpiar {
+  width; 10px;
+  height: 45px;
+  padding: 0 16px;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #FF3030;
+  font-size: 14px;
+  line-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, transform .1s;
+}
+.buscador-wrap .btn.limpiar:hover {
+  background-color: #e02b2b;
+}
+.buscador-wrap .btn.limpiar:active {
+  transform: scale(0.98);
+}
+
+/* Contador */
+#contadorCoincidencias {
+  font-size: .9rem;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .buscador-wrap {
+    gap: 8px;
+  }
+  .buscador-wrap #buscarPartidas {
+    width: 100%;
+  }
+  .buscador-wrap #buscarFecha {
+    flex: 1 0 160px;
+  }
+  .buscador-wrap .btn.limpiar {
+    flex: 0 0 auto;
+  }
+}
+
