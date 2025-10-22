@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Partidas | Suite Balance ISB</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -36,7 +36,6 @@
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
         <div class="brand"><h1>Suite Balance | ISB</h1></div>
-        <input type="text" placeholder="Buscar...">
         <div class="user-info">
             <span th:text="${nombreUsuario}">Invitado</span>
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
@@ -55,7 +54,24 @@
         <main class="gestion-usuarios">
             <h1 class="titulo-gestion">Gestión de Partidas</h1>
 
-            <table class="tabla-usuarios">
+            <div class="buscador-wrap">
+                <input id="buscarPartidas"
+                       class="input"
+                       type="text"
+                       placeholder="Buscar por #partida, usuario o concepto…"
+                       autocomplete="off">
+
+                <input id="buscarFecha"
+                       class="input"
+                       type="date"
+                       aria-label="Filtrar por fecha">
+
+                <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+
+                <span id="contadorCoincidencias"></span>
+            </div>
+
+            <table class="tabla-usuarios" id="tabla-gestion-partidas">
                 <thead>
                 <tr>
                     <th>Nº</th>
@@ -172,6 +188,113 @@
         });
       });
     });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    (function(){
+      const inputTxt   = document.getElementById('buscarPartidas');
+      const inputFecha = document.getElementById('buscarFecha');
+      const btnClean   = document.getElementById('limpiarBusqueda');
+      const tabla      = document.getElementById('tabla-gestion-partidas');
+      const tbody      = tabla?.querySelector('tbody');
+      const badge      = document.getElementById('contadorCoincidencias');
+      if (!tbody) return;
+
+      // columnas a considerar en el filtro de texto
+      const COL_NUM     = 0; // N°
+      const COL_FECHA   = 1; // Fecha (no se usa en texto; se usa input date)
+      const COL_CONCEP  = 2; // Concepto
+      const COL_USUARIO = 3; // Usuario
+      // (ignoramos Documento para que sus dígitos no “ensucien” las coincidencias)
+
+      const norm = (s) => (s ?? '').toString()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .trim().toLowerCase();
+
+      let lastAlertKey = '';
+
+      // debounce
+      let t; const deb = (fn,ms=120)=> (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);};
+
+      function getCellText(tr, idx){
+        const td = tr.cells[idx];
+        return norm(td ? (td.innerText || td.textContent || '') : '');
+      }
+
+      function filtrar(){
+        const qRaw = inputTxt.value || '';
+        const q = norm(qRaw);
+        const fecha = inputFecha.value || ''; // formato yyyy-mm-dd
+        let visibles = 0;
+
+        const soloNumeros = /^\d+$/.test(qRaw.trim());
+
+        for (const tr of tbody.rows){
+          // textos por columna
+          const txtNum     = getCellText(tr, COL_NUM);
+          const txtFecha   = getCellText(tr, COL_FECHA);    // para mostrar/contar, no para buscar por texto
+          const txtConcept = getCellText(tr, COL_CONCEP);
+          const txtUser    = getCellText(tr, COL_USUARIO);
+
+          // ---- filtro por fecha (si se eligió)
+          let pasaFecha = true;
+          if (fecha){
+            // la celda suele venir como "2025-10-21" → comparamos exacto
+            pasaFecha = txtFecha.startsWith(fecha);
+          }
+
+          // ---- filtro por texto
+          let pasaTexto = true;
+          if (q){
+            if (soloNumeros){
+              // buscar sólo en columna N°
+              pasaTexto = txtNum.startsWith(q);
+            }else{
+              // buscar en Usuario y Concepto; también permitimos N° cuando empieza
+              pasaTexto = (
+                txtUser.startsWith(q) ||
+                txtConcept.startsWith(q) ||
+                txtNum.startsWith(q) ||
+                txtUser.includes(q) ||
+                txtConcept.includes(q)
+              );
+            }
+          }
+
+          const show = pasaFecha && pasaTexto;
+          tr.style.display = show ? '' : 'none';
+          if (show) visibles++;
+        }
+
+        // contador
+        if (!q && !fecha) badge.textContent = '';
+        else badge.textContent = `Coincidencias: ${visibles}`;
+
+        // alerta si no hay resultados (evita spam con misma llave)
+        const alertKey = (q || '-') + '|' + (fecha || '-');
+        if (!visibles && alertKey !== lastAlertKey){
+          lastAlertKey = alertKey;
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin coincidencias',
+            text: 'No se encontraron partidas con ese criterio.',
+            confirmButtonText: 'Entendido'
+          });
+        }
+      }
+
+      inputTxt.addEventListener('input', deb(filtrar, 120));
+      inputFecha.addEventListener('change', filtrar);
+      btnClean.addEventListener('click', ()=>{
+        inputTxt.value = '';
+        inputFecha.value = '';
+        filtrar();
+        inputTxt.focus();
+      });
+
+      // atajos
+      inputTxt.addEventListener('keydown', (e)=>{ if (e.key==='Escape'){ btnClean.click(); }});
+    })();
 </script>
 
 </body>

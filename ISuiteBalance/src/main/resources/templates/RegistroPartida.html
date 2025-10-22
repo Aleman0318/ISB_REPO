@@ -37,7 +37,6 @@
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
         <div class="brand"><h1>Suite Balance | ISB</h1></div>
-        <input type="text" placeholder="Buscar...">
         <div class="user-info">
             <span th:text="${nombreUsuario}">Invitado</span>
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
@@ -401,7 +400,6 @@
         const body = {
           fecha: new Date().toISOString().substring(0,10),
           concepto: 'Partida registrada desde UI',
-          idUsuario: 1, // TODO: sustituir por el ID real del usuario logueado
           detalles
         };
 
