@@ -46,12 +46,12 @@
             -->
             <span class="nombre-usuario" data-usuario-target>
         <script th:inline="javascript">
-          document.write(
-            localStorage.getItem('lastUserName') ||
-            /*[[${nombreUsuario}]]*/ 'Invitado' ||
-            'Invitado'
-          );
-        </script>
+    /*<![CDATA[*/
+    var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
+    document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
+    /*]]>*/
+</script>
+
       </span>
 
             <!-- Valor del backend para sembrar IndexedDB al entrar a /dashboard -->
@@ -81,12 +81,12 @@
                     Welcome
                     <span class="nombre-usuario">
             <script th:inline="javascript">
-              document.write(
-                localStorage.getItem('lastUserName') ||
-                /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                'Invitado'
-              );
-            </script>
+    /*<![CDATA[*/
+    var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
+    document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
+    /*]]>*/
+</script>
+
           </span>
                 </h3>
                 <p>Tiempo de Actividad</p>
