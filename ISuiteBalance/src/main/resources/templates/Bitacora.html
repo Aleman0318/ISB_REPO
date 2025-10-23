@@ -24,7 +24,6 @@
     </ul>
 </div>
 
-
 <!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
 <div class="main">
@@ -37,7 +36,19 @@
             <h1>Suite Balance | ISB</h1>
         </div>
         <div class="user-info">
-            <span th:text="${nombreUsuario}">Invitado</span>
+            <!-- === USUARIO SIN PARPADEO + SEMILLA DESDE BACKEND === -->
+            <span class="nombre-usuario" data-usuario-target>
+              <script th:inline="javascript">
+                document.write(
+                  localStorage.getItem('lastUserName') ||
+                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                  'Invitado'
+                );
+              </script>
+            </span>
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <!-- ==================================================== -->
+
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -54,7 +65,7 @@
         </div>
     </header>
 
-        <div class="container_principal">
+    <div class="container_principal">
         <!-- Contenido central -->
         <main class="auditoria">
             <h1 class="titulo-auditoria">Bitácora de Auditoría</h1>
@@ -118,8 +129,8 @@
             </div>
         </main>
 
-        </div>
     </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -170,7 +181,14 @@
     })();
 </script>
 
-<!-- Logout con confirmación + submit del form oculto -->
+<!-- ✅ IndexedDB del usuario: hidratar header -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+
+<!-- 🔒 Logout con limpieza IndexedDB + cache rápido -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
@@ -189,6 +207,14 @@
         });
 
         if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
           const f = document.getElementById('logoutForm');
           if (f) f.submit();  // POST /logout con CSRF
         }

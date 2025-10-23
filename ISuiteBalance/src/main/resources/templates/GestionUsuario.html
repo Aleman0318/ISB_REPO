@@ -29,77 +29,89 @@
 
 <div class="main">
 
-        <!-- Barra superior -->
-        <header>
-            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
-            <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
-                <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
-            </button>
-            <div class="brand">
-                <h1>Suite Balance | ISB</h1>
-            </div>
-            <div class="user-info">
-                <span th:text="${nombreUsuario}">Invitado</span>
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
-
-                <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
-
-                <!-- Botón de logout -->
-                <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
-                    <i class="fi fi-sr-power" aria-hidden="true"></i>
-                </button>
-
-                <!-- 🔒 Form oculto para POST /logout con CSRF -->
-                <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                </form>
-            </div>
-        </header>
-<!-- Contenedor principal -->
-    <div class="container_principal">
-            <!-- Contenido central -->
-            <main class="gestion-usuarios">
-                <h1 class="titulo-gestion">Gestión de Usuario</h1>
-
-                <table class="tabla-usuarios">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Contraseña</th>
-                        <th>Rol</th>
-                        <th>Opciones</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr th:each="u : ${usuarios}">
-                        <td th:text="${u.id_usuario}">1</td>
-                        <td th:text="${u.nombre}">Nombre</td>
-                        <td th:text="${u.correo}">correo@ejemplo.com</td>
-                        <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
-                        <td th:text="${u.rol}">ROL</td>
-                        <td class="opciones">
-                            <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
-                            <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
-                        </td>
-                    </tr>
-
-                    <tr th:if="${#lists.isEmpty(usuarios)}">
-                        <td colspan="6">No hay usuarios registrados.</td>
-                    </tr>
-                    </tbody>
-
-                </table>
-
-                <div class="contenedor-boton">
-                    <button class="btn-agregar" onclick="window.location.href='/crear-usuario'">Crear Usuario</button>
-                </div>
-            </main>
-
+    <!-- Barra superior -->
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand">
+            <h1>Suite Balance | ISB</h1>
         </div>
+        <div class="user-info">
+            <!-- ====== SIN PARPADEO: nombre inline con cache/localStorage y semilla del backend ====== -->
+            <span class="nombre-usuario" data-usuario-target>
+                  <script th:inline="javascript">
+                    document.write(
+                      localStorage.getItem('lastUserName') ||
+                      /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                      'Invitado'
+                    );
+                  </script>
+                </span>
+            <!-- Semilla desde backend (si existe) para que el módulo la persista en IndexedDB -->
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+            <!-- Botón de logout -->
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            </button>
+
+            <!-- 🔒 Form oculto para POST /logout con CSRF -->
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
+    <!-- Contenedor principal -->
+    <div class="container_principal">
+        <!-- Contenido central -->
+        <main class="gestion-usuarios">
+            <h1 class="titulo-gestion">Gestión de Usuario</h1>
+
+            <table class="tabla-usuarios">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Contraseña</th>
+                    <th>Rol</th>
+                    <th>Opciones</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.id_usuario}">1</td>
+                    <td th:text="${u.nombre}">Nombre</td>
+                    <td th:text="${u.correo}">correo@ejemplo.com</td>
+                    <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
+                    <td th:text="${u.rol}">ROL</td>
+                    <td class="opciones">
+                        <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
+                        <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="6">No hay usuarios registrados.</td>
+                </tr>
+                </tbody>
+
+            </table>
+
+            <div class="contenedor-boton">
+                <button class="btn-agregar" onclick="window.location.href='/crear-usuario'">Crear Usuario</button>
+            </div>
+        </main>
+
     </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -149,7 +161,14 @@
     })();
 </script>
 
-<!-- Logout con confirmación + submit del form oculto -->
+<!-- ✅ IndexedDB del usuario: hidratar header -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+
+<!-- 🔒 Logout con limpieza IndexedDB + cache rápido -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
@@ -168,6 +187,14 @@
         });
 
         if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js'); // usa tu archivo renombrado
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');          // limpia cache rápido
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
           const f = document.getElementById('logoutForm');
           if (f) f.submit();  // POST /logout con CSRF
         }

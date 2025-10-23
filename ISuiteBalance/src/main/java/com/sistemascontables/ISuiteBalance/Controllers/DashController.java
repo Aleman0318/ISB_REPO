@@ -16,10 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// [CAMBIO] imports para Advice/ModelAttribute (solo nombreUsuario global)
-import org.springframework.web.bind.annotation.ControllerAdvice;   // [CAMBIO]
-import org.springframework.web.bind.annotation.ModelAttribute;  // [CAMBIO]
-
 @Controller
 public class DashController {
 
@@ -59,7 +55,7 @@ public class DashController {
             }
         }
 
-        // 2) Asegurar loginTime en sesión para evitar NPE  (NO TOCADO)
+        // 2) Asegurar loginTime en sesión para evitar NPE
         Long loginTimeObj = (Long) session.getAttribute("loginTime");
         if (loginTimeObj == null) {
             loginTimeObj = System.currentTimeMillis();        // inicializa si no existe
@@ -128,34 +124,4 @@ public class DashController {
     // ❌ No definas /logout aquí: lo maneja Spring Security
     // @GetMapping("/logout")
     // public String logout() { return "redirect:/logout"; }
-}
-
-/* ===========================================================
-   [CAMBIO] ADVICE GLOBAL (solo 'nombreUsuario', NO toca tiempo)
-   Hace disponible ${nombreUsuario} en TODAS las vistas.
-   =========================================================== */
-@ControllerAdvice  // [CAMBIO]
-class GlobalUserNameAdvice {  // [CAMBIO] clase no pública en el mismo archivo
-
-    @ModelAttribute("nombreUsuario")  // [CAMBIO]
-    public String nombreUsuario(@AuthenticationPrincipal Object principal) {
-        String nombre = "Invitado";
-
-        if (principal instanceof Usuario u) {
-            return (u.getNombre() != null && !u.getNombre().isBlank()) ? u.getNombre() : u.getCorreo();
-        } else if (principal instanceof UserDetails ud) {
-            return ud.getUsername();
-        } else {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-                Object p = auth.getPrincipal();
-                if (p instanceof Usuario u2) {
-                    return (u2.getNombre() != null && !u2.getNombre().isBlank()) ? u2.getNombre() : u2.getCorreo();
-                } else if (p instanceof UserDetails ud2) {
-                    return ud2.getUsername();
-                }
-            }
-        }
-        return nombre;
-    }
 }

@@ -38,7 +38,19 @@
         </button>
         <div class="brand"><h1>Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <span th:text="${nombreUsuario}">Invitado</span>
+            <!-- 👇 Usuario sin parpadeo + semilla del servidor -->
+            <span class="nombre-usuario" data-usuario-target>
+              <script th:inline="javascript">
+                document.write(
+                  localStorage.getItem('lastUserName') ||
+                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                  'Invitado'
+                );
+              </script>
+            </span>
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <!-- 👆 -->
+
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
@@ -162,6 +174,7 @@
         window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
       })();
 
+      // ✅ Logout con limpieza de IndexedDB + cache rápido
       document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
         e.preventDefault();
         const { isConfirmed } = await Swal.fire({
@@ -173,7 +186,16 @@
           cancelButtonText: 'Cancelar',
           confirmButtonColor: '#e63946'
         });
-        if (isConfirmed) document.getElementById('logoutForm')?.submit();
+        if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+          document.getElementById('logoutForm')?.submit();
+        }
       });
 
       // ====== Lógica de Partidas ======
@@ -424,6 +446,13 @@
       });
 
     })();
+</script>
+
+<!-- ✅ IndexedDB del usuario: hidratar header -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
 </script>
 
 </body>

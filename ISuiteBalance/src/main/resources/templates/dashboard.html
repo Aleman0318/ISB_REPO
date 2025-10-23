@@ -32,13 +32,32 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
+
         <div class="brand">
             <h1>Suite Balance | ISB</h1>
         </div>
-        <div class="user-info">
-            <span th:text="${nombreUsuario}">Invitado</span>
-            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
+        <div class="user-info">
+            <!-- ====================== SIN PARPADEO ======================
+                 Escribimos el nombre DURANTE el parseo:
+                 - Primero intenta localStorage.lastUserName
+                 - Si no existe, usa el valor del backend (solo en /dashboard)
+                 - Fallback final "Invitado"
+            -->
+            <span class="nombre-usuario" data-usuario-target>
+        <script th:inline="javascript">
+          document.write(
+            localStorage.getItem('lastUserName') ||
+            /*[[${nombreUsuario}]]*/ 'Invitado' ||
+            'Invitado'
+          );
+        </script>
+      </span>
+
+            <!-- Valor del backend para sembrar IndexedDB al entrar a /dashboard -->
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
             <!-- Botón de logout -->
@@ -57,10 +76,23 @@
         <!-- Primera fila -->
         <div class="row top-row">
             <div class="card large">
-                <h3>Welcome <span th:text="${nombreUsuario}">Invitado</span></h3>
+                <!-- ====================== SIN PARPADEO (WELCOME) ====================== -->
+                <h3>
+                    Welcome
+                    <span class="nombre-usuario">
+            <script th:inline="javascript">
+              document.write(
+                localStorage.getItem('lastUserName') ||
+                /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                'Invitado'
+              );
+            </script>
+          </span>
+                </h3>
                 <p>Tiempo de Actividad</p>
                 <h2 th:text="${tiempoActividad}" id="tiempoActividad">0h:00m:00s</h2>
             </div>
+
             <div class="card large">
                 <h3>Revisiones Pendientes</h3>
                 <p>Admin / Auditor</p>
@@ -115,20 +147,23 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/static/JS/menu.js"></script>
+
 <script>
-    // Chart.js
+    // Chart.js (protección básica por si no existe el canvas)
     const ctx = document.getElementById('barChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['JUL','JUN','AGO','SEP','OCT'],
-        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-      },
-      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-    });
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['JUL','JUN','AGO','SEP','OCT'],
+          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+        },
+        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+      });
+    }
 </script>
 
-<!-- Logout con confirmación + submit del form oculto -->
+<!-- === Logout con confirmación y limpieza de IndexedDB + cache === -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
@@ -136,6 +171,7 @@
 
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -147,8 +183,16 @@
         });
 
         if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js'); // <-- tu archivo renombrado
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');          // <-- limpia cache rápido
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
           const f = document.getElementById('logoutForm');
-          if (f) f.submit();  // POST /logout con CSRF
+          if (f) f.submit(); // POST /logout con CSRF
         }
       });
     });
@@ -170,6 +214,13 @@
       }, 1000);
     }
     /*]]>*/
+</script>
+
+<!-- Cargar el módulo y poblar/sembrar el nombre -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
 </script>
 
 </body>

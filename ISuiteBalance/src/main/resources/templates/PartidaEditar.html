@@ -49,8 +49,26 @@
         </button>
         <div class="brand"><h1>Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <span th:text="${nombreUsuario}">Invitado</span>
+            <!-- 👇 Usuario sin parpadeo + semilla del servidor -->
+            <span class="nombre-usuario" data-usuario-target>
+              <script th:inline="javascript">
+                document.write(
+                  localStorage.getItem('lastUserName') ||
+                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                  'Invitado'
+                );
+              </script>
+            </span>
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <!-- 👆 -->
+
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <!-- 🔘 Botón logout (form ya existe abajo) -->
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            </button>
+
             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
@@ -181,6 +199,32 @@
       document.getElementById('sumDebe').textContent  = sumDebe.toFixed(2);
       document.getElementById('sumHaber').textContent = sumHaber.toFixed(2);
     }
+
+    // ====== Logout (sin SweetAlert; confirm nativo) ======
+    (function(){
+      const btn = document.getElementById('logoutBtn');
+      if(!btn) return;
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!confirm('¿Cerrar sesión? Se cerrará tu sesión actual.')) return;
+        try {
+          const mod = await import('/JS/UsuarioIndexDB.js');
+          await mod.clearUser();
+          localStorage.removeItem('lastUserName');
+        } catch (err) {
+          console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+        }
+        document.getElementById('logoutForm')?.submit();
+      });
+    })();
 </script>
+
+<!-- ✅ IndexedDB del usuario: hidratar header -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+
 </body>
 </html>

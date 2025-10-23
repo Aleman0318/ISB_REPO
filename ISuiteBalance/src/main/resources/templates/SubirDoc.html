@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suite Balance | ISB</title>
+
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
@@ -28,19 +29,42 @@
     </ul>
 </div>
 
-<!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
+
 <div class="main">
     <header>
         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
+
         <div class="brand">
             <h1>Suite Balance | ISB</h1>
         </div>
+
+        <!-- ==============================================
+             🔄 CAMBIO: user-info sin parpadeo
+             ============================================== -->
         <div class="user-info">
+            <!-- ANTES:
             <span th:text="${nombreUsuario}">Invitado</span>
+            -->
+
+            <!-- AHORA (sin parpadeo): escribimos el nombre DURANTE el parseo -->
+            <span class="nombre-usuario" data-usuario-target>
+              <script th:inline="javascript">
+                // Muestra inmediato: cache rápido o valor del backend si existe; fallback "Invitado"
+                document.write(
+                  localStorage.getItem('lastUserName') ||
+                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
+                  'Invitado'
+                );
+              </script>
+            </span>
+
+            <!-- Semilla del backend (si esta vista recibe nombreUsuario, lo usará el módulo para guardarlo en IndexedDB) -->
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -55,16 +79,15 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
         </div>
+        <!-- === FIN CAMBIO HEADER === -->
     </header>
 
     <!-- Contenedor principal -->
     <div class="container_principal">
-        <!-- Contenido principal -->
         <main class="subir-documento">
             <h1 class="titulo-subida">Subir Documento PDF</h1>
 
             <div class="contenedor-blanco">
-                <!-- Área de carga -->
                 <div class="area-carga">
                     <label for="archivoPDF">Cargar archivo</label>
                     <input type="file" id="archivoPDF" accept="application/pdf" style="display: none;" />
@@ -73,17 +96,14 @@
                     </label>
                 </div>
 
-                <!-- Vista previa -->
                 <div class="vista-previa">
                     <label>Vista previa</label>
                     <p>Nombre del documento: <span id="nombreDocumento">---</span></p>
                 </div>
 
-                <!-- 🆕 Clasificación -->
                 <div class="vista-previa" style="margin-top: 12px;">
                     <label>Clasificación del documento</label>
                     <select id="selClasificacion" class="input" style="width: 100%;">
-                        <!-- Si el controlador manda 'clasificaciones' (id, nombre), Thymeleaf pinta aquí -->
                         <option value="" selected th:if="${#lists.isEmpty(clasificaciones)}">Seleccione una clasificación</option>
                         <option th:each="c : ${clasificaciones}"
                                 th:value="${c.idClasificacion}"
@@ -93,8 +113,6 @@
                     <small class="sub" style="display:block;margin-top:6px;">Ej.: Factura de compra, Recibo, Nota de crédito…</small>
                 </div>
 
-                <!-- Botones -->
-                <!-- Botones -->
                 <div class="botones-subida">
                     <button class="btn-subir-adjuntar" type="button">Subir y adjuntar a Partida</button>
                 </div>
@@ -106,20 +124,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Chart.js (protegido si no existe el canvas)
-    const ctx = document.getElementById('barChart');
-    if (ctx) {
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['JUL','JUN','AGO','SEP','OCT'],
-          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-        },
-        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-      });
-    }
-
-    // Hamburguesa
     (function(){
       const btn = document.getElementById('menuBtn');
       const sidebar = document.querySelector('.sidebar');
@@ -151,7 +155,18 @@
     })();
 </script>
 
-<!-- Logout con confirmación + submit del form oculto -->
+<!-- ===================================================== -->
+<!-- 🧠 IndexedDB (hidratar usuario en header) -->
+<!-- ===================================================== -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay(); // confirmará/sembrará y actualizará lastUserName
+</script>
+
+<!-- ===================================================== -->
+<!-- 🔒 Logout (limpieza IndexedDB + cache rápido) -->
+<!-- ===================================================== -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
@@ -159,6 +174,7 @@
 
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -170,25 +186,32 @@
         });
 
         if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js'); // <-- tu archivo real
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');          // limpia cache rápido
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
           const f = document.getElementById('logoutForm');
-          if (f) f.submit();  // POST /logout con CSRF
+          if (f) f.submit(); // POST /logout con CSRF
         }
       });
     });
 </script>
 
-<!-- === Lógica de subir y adjuntar documento === -->
+<!-- === Lógica de subir y adjuntar documento (sin cambios) === -->
 <script>
     (function(){
       const input     = document.getElementById('archivoPDF');
       const lblNombre = document.getElementById('nombreDocumento');
       const selClasif = document.getElementById('selClasificacion');
-      const btnSubir  = document.querySelector('.btn-subir-adjuntar'); // <- clase correcta
+      const btnSubir  = document.querySelector('.btn-subir-adjuntar');
 
       const token  = document.querySelector('meta[name="_csrf"]')?.content || '';
       const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
 
-      // Vista previa del nombre (se había perdido)
       input?.addEventListener('change', ()=>{
         lblNombre.textContent = input.files?.[0]?.name || '---';
       });
@@ -216,7 +239,6 @@
           const data = await resp.json();
           if (!data.ok) throw new Error('Respuesta no OK');
 
-          // Redirige a Registrar Partida con el docId
           const params = new URLSearchParams(location.search);
           const back = params.get('returnTo') || '/partida';
           window.location.href = `${back}?doc=${encodeURIComponent(data.documentId)}`;
@@ -227,5 +249,6 @@
       });
     })();
 </script>
+
 </body>
 </html>
