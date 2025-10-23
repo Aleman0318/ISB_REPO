@@ -73,10 +73,14 @@
                        placeholder="Buscar por #partida, usuario o concepto…"
                        autocomplete="off">
 
-                <input id="buscarPeriodo"
-                       class="input"
-                       type="month"
-                       aria-label="Filtrar por mes y año">
+                <div class="mes">
+                    <input id="buscarPeriodo"
+                           class="input input-mes"
+                           type="month"
+                           aria-label="Filtrar por mes y año"
+                           required>
+                    <span class="place">Elegir mes y año</span>
+                </div>
 
                 <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
 
