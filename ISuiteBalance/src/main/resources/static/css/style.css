@@ -702,8 +702,9 @@ header input{
 .buscador-wrap #buscarPartidas {
   width: min(360px, 100%);
 }
-.buscador-wrap #buscarFecha {
-  width: 170px;
+.buscador-wrap #buscarPeriodo {
+  width: 190px;
+  min-width: 160px;
 }
 
 /* Focus */
@@ -751,8 +752,8 @@ header input{
   .buscador-wrap #buscarPartidas {
     width: 100%;
   }
-  .buscador-wrap #buscarFecha {
-    flex: 1 0 160px;
+  .buscador-wrap #buscarPeriodo {
+      flex: 1 0 160px;
   }
   .buscador-wrap .btn.limpiar {
     flex: 0 0 auto;

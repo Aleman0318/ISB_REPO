@@ -73,10 +73,10 @@
                        placeholder="Buscar por #partida, usuario o concepto…"
                        autocomplete="off">
 
-                <input id="buscarFecha"
+                <input id="buscarPeriodo"
                        class="input"
-                       type="date"
-                       aria-label="Filtrar por fecha">
+                       type="month"
+                       aria-label="Filtrar por mes y año">
 
                 <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
 
@@ -222,65 +222,75 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     (function(){
-      const inputTxt   = document.getElementById('buscarPartidas');
-      const inputFecha = document.getElementById('buscarFecha');
-      const btnClean   = document.getElementById('limpiarBusqueda');
-      const tabla      = document.getElementById('tabla-gestion-partidas');
-      const tbody      = tabla?.querySelector('tbody');
-      const badge      = document.getElementById('contadorCoincidencias');
+      const inputTxt     = document.getElementById('buscarPartidas');
+      const inputPeriodo = document.getElementById('buscarPeriodo'); // <-- CAMBIO
+      const btnClean     = document.getElementById('limpiarBusqueda');
+      const tabla        = document.getElementById('tabla-gestion-partidas');
+      const tbody        = tabla?.querySelector('tbody');
+      const badge        = document.getElementById('contadorCoincidencias');
       if (!tbody) return;
 
-      // columnas a considerar en el filtro de texto
+      // columnas consideradas
       const COL_NUM     = 0; // N°
-      const COL_FECHA   = 1; // Fecha (no se usa en texto; se usa input date)
+      const COL_FECHA   = 1; // Fecha (texto en la celda)
       const COL_CONCEP  = 2; // Concepto
       const COL_USUARIO = 3; // Usuario
-      // (ignoramos Documento para que sus dígitos no “ensucien” las coincidencias)
 
       const norm = (s) => (s ?? '').toString()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .trim().toLowerCase();
 
       let lastAlertKey = '';
-
-      // debounce
       let t; const deb = (fn,ms=120)=> (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);};
 
       function getCellText(tr, idx){
         const td = tr.cells[idx];
-        return norm(td ? (td.innerText || td.textContent || '') : '');
+        return (td ? (td.innerText || td.textContent || '') : '').trim();
+      }
+
+      // Extrae 'yyyy-MM' de la fecha mostrada en la celda (robusto si viene 'yyyy-MM-dd' o 'dd/MM/yyyy')
+      function toYearMonth(str){
+        const s = str.trim();
+        if (!s) return '';
+        // Caso 1: ISO 'yyyy-MM-dd' -> toma los 7 primeros
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(0,7);
+        // Caso 2: 'dd/MM/yyyy' -> reordena
+        const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (m) return `${m[3]}-${m[2]}`; // yyyy-MM
+        // Caso 3: ya viene 'yyyy-MM'
+        if (/^\d{4}-\d{2}$/.test(s)) return s;
+        // Último recurso: intenta parsear 'yyyy-MM' aproximando
+        const m2 = s.match(/(\d{4})[-/](\d{2})/);
+        return m2 ? `${m2[1]}-${m2[2]}` : '';
       }
 
       function filtrar(){
-        const qRaw = inputTxt.value || '';
-        const q = norm(qRaw);
-        const fecha = inputFecha.value || ''; // formato yyyy-mm-dd
-        let visibles = 0;
+        const qRaw    = inputTxt.value || '';
+        const q       = norm(qRaw);
+        const periodo = (inputPeriodo.value || '').trim(); // 'yyyy-MM'
+        let visibles  = 0;
 
         const soloNumeros = /^\d+$/.test(qRaw.trim());
 
         for (const tr of tbody.rows){
-          // textos por columna
-          const txtNum     = getCellText(tr, COL_NUM);
-          const txtFecha   = getCellText(tr, COL_FECHA);    // para mostrar/contar, no para buscar por texto
-          const txtConcept = getCellText(tr, COL_CONCEP);
-          const txtUser    = getCellText(tr, COL_USUARIO);
+          const txtNum     = norm(getCellText(tr, COL_NUM));
+          const txtFecha   = getCellText(tr, COL_FECHA);     // dejamos sin norm para no romper formato
+          const txtYM      = toYearMonth(txtFecha);          // <-- 'yyyy-MM' obtenido de la celda
+          const txtConcept = norm(getCellText(tr, COL_CONCEP));
+          const txtUser    = norm(getCellText(tr, COL_USUARIO));
 
-          // ---- filtro por fecha (si se eligió)
-          let pasaFecha = true;
-          if (fecha){
-            // la celda suele venir como "2025-10-21" → comparamos exacto
-            pasaFecha = txtFecha.startsWith(fecha);
+          // ---- filtro por periodo (mes/año)
+          let pasaPeriodo = true;
+          if (periodo){
+            pasaPeriodo = (txtYM === periodo);
           }
 
           // ---- filtro por texto
           let pasaTexto = true;
           if (q){
             if (soloNumeros){
-              // buscar sólo en columna N°
               pasaTexto = txtNum.startsWith(q);
-            }else{
-              // buscar en Usuario y Concepto; también permitimos N° cuando empieza
+            } else {
               pasaTexto = (
                 txtUser.startsWith(q) ||
                 txtConcept.startsWith(q) ||
@@ -291,17 +301,17 @@
             }
           }
 
-          const show = pasaFecha && pasaTexto;
+          const show = pasaPeriodo && pasaTexto;
           tr.style.display = show ? '' : 'none';
           if (show) visibles++;
         }
 
         // contador
-        if (!q && !fecha) badge.textContent = '';
+        if (!q && !periodo) badge.textContent = '';
         else badge.textContent = `Coincidencias: ${visibles}`;
 
-        // alerta si no hay resultados (evita spam con misma llave)
-        const alertKey = (q || '-') + '|' + (fecha || '-');
+        // alerta si no hay resultados
+        const alertKey = (q || '-') + '|' + (periodo || '-');
         if (!visibles && alertKey !== lastAlertKey){
           lastAlertKey = alertKey;
           Swal.fire({
@@ -314,15 +324,15 @@
       }
 
       inputTxt.addEventListener('input', deb(filtrar, 120));
-      inputFecha.addEventListener('change', filtrar);
+      inputPeriodo.addEventListener('change', filtrar); // <-- CAMBIO
       btnClean.addEventListener('click', ()=>{
         inputTxt.value = '';
-        inputFecha.value = '';
+        inputPeriodo.value = ''; // <-- CAMBIO
         filtrar();
         inputTxt.focus();
       });
 
-      // atajos
+      // atajo ESC
       inputTxt.addEventListener('keydown', (e)=>{ if (e.key==='Escape'){ btnClean.click(); }});
     })();
 </script>
