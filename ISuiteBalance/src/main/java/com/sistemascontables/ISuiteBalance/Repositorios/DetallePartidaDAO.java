@@ -4,6 +4,8 @@ import com.sistemascontables.ISuiteBalance.Models.DetallePartida;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
@@ -23,4 +25,29 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
     List<DetallePartidaView> lineasConNombre(@Param("idPartida") Long idPartida);
 
     void deleteByIdPartida(Long idPartida);
+
+    // >>> filas para Libro Diario (una por detalle), con filtro opcional por MES (rango)
+    @Query("""
+    SELECT
+        d.id           AS idDetalle,
+        d.idCuenta     AS idCuenta,
+        p.id           AS idPartida,
+        p.fecha        AS fecha,
+        c.tipocuenta   AS tipocuenta,
+        CONCAT(c.codigo, ' - ', c.nombrecuenta) AS cuenta,
+        p.concepto     AS descripcion,
+        d.montoDebe    AS debe,
+        d.montoHaber   AS haber,
+        df.id          AS docId,
+        df.nombreArchivo AS docNombre
+    FROM DetallePartida d
+    JOIN Partida p            ON p.id = d.idPartida
+    JOIN CuentaContable c     ON c.idCuenta = d.idCuenta
+    LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
+    WHERE p.fecha BETWEEN COALESCE(:desde, p.fecha) AND COALESCE(:hasta, p.fecha)
+    ORDER BY p.fecha ASC, p.id ASC, d.id ASC
+""")
+    List<LibroDiarioDAO> libroDiario(@Param("desde") LocalDate desde,
+                                     @Param("hasta") LocalDate hasta
+    );
 }

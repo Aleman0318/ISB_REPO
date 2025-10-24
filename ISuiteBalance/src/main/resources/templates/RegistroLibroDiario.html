@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suite Balance | ISB</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -27,19 +27,15 @@
 <!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
 
-<!-- Contenedor principal -->
 <div class="main">
-    <!-- Barra superior -->
     <header>
         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand">
-            <h1>Suite Balance | ISB</h1>
-        </div>
+        <div class="brand"><h1>Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <!-- 👇 usuario sin parpadeo -->
+            <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario" data-usuario-target>
               <script th:inline="javascript">
                 document.write(
@@ -50,79 +46,119 @@
               </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- 👆 -->
 
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
-
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
-
-            <!-- Botón de logout -->
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
-
-            <!-- 🔒 Form oculto para POST /logout con CSRF -->
             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
         </div>
     </header>
 
+    <!-- Contenedor principal -->
     <div class="container_principal">
-        <!-- Contenido central -->
-        <main class="libro-diario">
-            <h1 class="titulo-libro">Registros en de Libro Diario</h1>
+        <main class="gestion-usuarios">
+            <h1 class="titulo-gestion txt-blanco">Registros en de Libro Diario</h1>
 
-            <div class="busqueda-fecha">
-                <label for="fecha">Buscar por fecha:</label>
-                <input type="date" id="fecha" name="fecha" />
-            </div>
+            <!-- Mensaje de validación si llega error -->
+            <div th:if="${errorFiltro}" style="color:#b91c1c;margin:-6px 0 6px" th:text="${errorFiltro}"></div>
 
-            <div class="acciones-superiores">
-                <button class="btn-nueva-partida">Registrar nueva partida</button>
-            </div>
+            <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
+                <section class="filtros-card">
+                    <div class="filtros-card__header">
+                        <h2 class="filtros-card__title">Búsqueda por Fecha</h2>
+                    </div>
 
-            <!-- RECUADRO BLANCO -->
-            <div class="contenedor-blanco">
-                <table class="tabla-libro">
-                    <thead>
-                    <tr>
-                        <th>N° Partida</th>
-                        <th>Fecha</th>
-                        <th>Cuenta</th>
-                        <th>Descripción</th>
-                        <th>Debe</th>
-                        <th>Haber</th>
-                        <th>Documento anexado</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
+                    <div class="filtros-card__body">
+                        <div class="filtros-grid buscador-wrap">
+                            <div class="filtro-col">
+                                <label for="fFecha">Fecha específica</label>
+                                <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">
+                            </div>
 
-                    </tr>
-                    </tfoot>
-                </table>
+                            <div class="filtro-col">
+                                <label for="fPeriodo">Mes y año</label>
+                                <div class="mes">
+                                    <input id="fPeriodo" name="periodo" type="month"
+                                           class="input input-mes"
+                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año">
+                                    <span class="place">Elegir mes y año</span>
+                                </div>
+                            </div>
 
-                <!-- BOTONES DENTRO DEL RECUADRO -->
-                <div class="acciones-internas">
-                    <button class="btn-adjuntar">Adjuntar documento</button>
-                    <button class="btn-cerrar">Cerrar</button>
-                </div>
+                            <div class="filtro-col">
+                                <label>Rango de fechas</label>
+                                <div class="rango">
+                                    <input id="fDesde" name="desde" type="date" class="input" th:value="${desdeStr}" aria-label="Desde">
+                                    <span>–</span>
+                                    <input id="fHasta" name="hasta" type="date" class="input" th:value="${hastaStr}" aria-label="Hasta">
+                                </div>
+                            </div>
+
+                            <div class="filtro-col botones">
+                                <button type="submit" class="btn limpiar">Buscar</button>
+                                <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+
+            <table class="tabla-usuarios" id="tabla-libro-diario">
+                <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Fecha</th>
+                    <th>Tipo de cuenta</th>
+                    <th>Cuenta</th>
+                    <th>Descripción</th>
+                    <th>Debe</th>
+                    <th>Haber</th>
+                    <th>Documento</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${filas}">
+                    <td th:text="${r.idPartida}">1</td>
+                    <td th:text="${#temporals.format(r.fecha, 'yyyy-MM-dd')}">2025-10-22</td>
+                    <td th:text="${r.tipoCuenta}">ACTIVO</td>
+                    <td th:text="${r.cuenta}">101-01 - Caja</td>
+                    <td th:text="${r.descripcion}">Venta al contado</td>
+                    <td th:text="${#numbers.formatDecimal(r.debe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(r.haber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td>
+                        <a th:if="${r.docId != null}"
+                           th:href="@{'/documento/' + ${r.docId} + '/ver'}"
+                           th:text="${r.docNombre != null ? r.docNombre : 'Ver documento'}"></a>
+                        <span th:if="${r.docId == null}">—</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(filas)}">
+                    <td colspan="8" style="text-align:center; padding:12px;">
+                        Sin registros para el criterio seleccionado.
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align:right; font-weight:600;">Totales:</td>
+                    <td th:text="${#numbers.formatDecimal(totalDebe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(totalHaber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td></td>
+                </tr>
+                </tfoot>
+            </table>
+
+            <div class="contenedor-boton">
+                <button class="btn-agregar" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
             </div>
         </main>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -211,6 +247,40 @@
 <script type="module">
     import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
     hydrateUserDisplay();
+</script>
+
+<script>
+    (function(){
+      const form   = document.getElementById('formFiltros');
+      const fFecha = document.getElementById('fFecha');
+      const fPer   = document.getElementById('fPeriodo');
+      const fDesde = document.getElementById('fDesde');
+      const fHasta = document.getElementById('fHasta');
+      const btnClr = document.getElementById('limpiarBusqueda');
+
+      // limpiar exclusividad (lo que ya tienes)
+      const clearOthers = (arr) => arr.forEach(i => i && (i.value = ''));
+      fFecha?.addEventListener('change', ()=> clearOthers([fPer, fDesde, fHasta]));
+      fPer  ?.addEventListener('change', ()=> clearOthers([fFecha, fDesde, fHasta]));
+      fDesde?.addEventListener('change', ()=> clearOthers([fFecha, fPer]));
+      fHasta?.addEventListener('change', ()=> clearOthers([fFecha, fPer]));
+
+      form?.addEventListener('submit', ()=>{
+        [fFecha,fPer,fDesde,fHasta].forEach(inp=>{
+          if (inp && !inp.value) inp.removeAttribute('name');
+        });
+      });
+
+      // 🔧 handler del botón LIMPIAR
+      btnClr?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        [fFecha,fPer,fDesde,fHasta].forEach(inp=>{
+          if (inp){ inp.value=''; inp.removeAttribute('name'); }
+        });
+        // opción 1: recargar la ruta limpia (GET sin parámetros)
+        form ? form.submit() : (window.location.href = '/registro-libro-diario');
+      });
+    })();
 </script>
 
 </body>

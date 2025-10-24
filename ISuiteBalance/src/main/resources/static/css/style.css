@@ -3,10 +3,14 @@ body {
     font-family: 'Inter', sans-serif;
     margin: 0;
     display: flex;
-    background-color: #e3e4e6;
+    background-color: #CFCFCF;
     color: #222;
     min-height: 100svh;
     overflow-x: hidden;
+}
+
+.txt-blanco{
+    color: white !important;
 }
 
 /* === SIDEBAR === */
@@ -47,6 +51,10 @@ body {
 
 .brand {
     font-size: 12px;
+}
+
+.fondo-dash{
+    background: #CFCFCF;
 }
 
 /* === ÁREA PRINCIPAL === */
@@ -806,6 +814,81 @@ header input{
   }
   .buscador-wrap .btn.limpiar {
     flex: 0 0 auto;
+  }
+}
+
+/* ======================= CONTENEDOR DEL CARD ======================= */
+.filtros-card {
+  background: #1e1f25;
+  border-radius: 12px;
+  margin: 18px 0 24px;
+  padding: 18px 22px;
+  font-family: 'Inter', sans-serif;
+  border: 3px solid rgba(230,57,70,.55);
+  box-shadow: 0 0 0 4px rgba(230,57,70,.12);
+  transition: box-shadow .3s ease, border-color .3s ease;
+}
+
+/* Encabezado con el título */
+.filtros-card__header {
+  margin-bottom: 10px;
+}
+
+.filtros-card__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 8px;
+  text-align:center;
+}
+
+/* ======================= CONTENEDOR DE INPUTS ======================= */
+.filtros-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 35px 32px;
+  padding: 10px 8px;
+  justify-content: space-between;
+}
+
+/* Cada columna de filtro */
+.filtro-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.filtro-col label {
+  font-size: 13px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+/* Rango de fechas (dos inputs lado a lado) */
+.filtro-col .rango {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Columna de botones (buscar / limpiar) */
+.filtro-col.botones {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ======================= RESPONSIVE ======================= */
+@media (max-width: 900px) {
+  .filtros-grid {
+    flex-wrap: wrap;
+  }
+  .filtro-col {
+    width: 100%;
+  }
+  .filtro-col.botones {
+    justify-content: flex-start;
+    margin-left: 0;
   }
 }
 

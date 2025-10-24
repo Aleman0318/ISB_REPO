@@ -16,8 +16,7 @@
     <ul>
         <li><a th:href="@{/dashboard}">Inicio</a></li>
         <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
+        <li><a th:href="@{/subir-doc}">Partidas</a></li>
         <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
@@ -64,7 +63,7 @@
     <!-- Contenedor principal (mismas clases) -->
     <div class="container_principal">
         <main class="gestion-usuarios">
-            <h1 class="titulo-gestion">Gestión de Partidas</h1>
+            <h1 class="titulo-gestion txt-blanco">Gestión de Partidas</h1>
 
             <div class="buscador-wrap">
                 <input id="buscarPartidas"
@@ -146,26 +145,47 @@
     </div>
 </div>
 
-<!-- Scripts mínimos -->
+<!-- Scripts-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    (function(){
+    (function () {
       const btn = document.getElementById('menuBtn');
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('backdrop');
-      if(!btn||!sidebar||!backdrop) return;
-      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); }
-      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); }
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open')?closeMenu():openMenu(); });
+
+      if (!btn || !sidebar || !backdrop) return;
+
+      function openMenu() {
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+      }
+
+      function closeMenu() {
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu();
+      });
+
       backdrop.addEventListener('click', closeMenu);
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 767) closeMenu();
+      });
     })();
 
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
       if (!btn) return;
+
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -175,6 +195,7 @@
           cancelButtonText: 'Cancelar',
           confirmButtonColor: '#e63946'
         });
+
         if (isConfirmed) {
           try {
             const mod = await import('/JS/UsuarioIndexDB.js');
@@ -183,11 +204,13 @@
           } catch (err) {
             console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
           }
+
           document.getElementById('logoutForm')?.submit();
         }
       });
     });
 </script>
+
 <script>
     // Confirmación con SweetAlert2 para eliminar
     document.addEventListener('DOMContentLoaded', () => {
