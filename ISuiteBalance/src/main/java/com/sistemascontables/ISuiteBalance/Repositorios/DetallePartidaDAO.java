@@ -50,4 +50,31 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
     List<LibroDiarioDAO> libroDiario(@Param("desde") LocalDate desde,
                                      @Param("hasta") LocalDate hasta
     );
+
+    @Query("""
+       SELECT
+         p.fecha                    AS fecha,
+         p.id                       AS idPartida,
+         p.concepto                 AS descripcion,
+         d.montoDebe                AS debe,
+         d.montoHaber               AS haber,
+         c.idCuenta                 AS idCuenta,
+         c.codigo                   AS codigo,
+         c.nombrecuenta             AS nombrecuenta,
+         df.id                      AS docId,
+         df.nombreArchivo           AS docNombre
+       FROM DetallePartida d
+       JOIN Partida p          ON p.id = d.idPartida
+       JOIN CuentaContable c   ON c.idCuenta = d.idCuenta
+       LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
+       WHERE (:idCuenta IS NULL OR d.idCuenta = :idCuenta)
+         AND (COALESCE(:desde, p.fecha) <= p.fecha)
+         AND (COALESCE(:hasta, p.fecha) >= p.fecha)
+       ORDER BY c.codigo ASC, p.fecha ASC, p.id ASC, d.id ASC
+    """)
+    List<LibroMayorView> mayorMovimientos(
+            @Param("idCuenta") Long idCuenta,
+            @Param("desde") LocalDate desde,
+            @Param("hasta") LocalDate hasta
+    );
 }
