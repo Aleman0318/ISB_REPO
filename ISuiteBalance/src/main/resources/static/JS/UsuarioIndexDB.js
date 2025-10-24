@@ -142,3 +142,56 @@ export async function hydrateUserDisplay() {
   host.textContent = 'Invitado';
   localStorage.removeItem('lastUserName');
 }
+
+// === Guardia de rol en el front (UX) =========================================
+
+/**
+ * Obtiene el rol actual priorizando:
+ * 1) Datos del backend incrustados en el HTML (data-user-role)
+ * 2) IndexedDB (getUser)
+ * Devuelve un string: "Administrador" | "Contador" | "Auditor" | "Invitado" | null
+ */
+export async function getCurrentRole() {
+  const serverRol = document.querySelector('[data-user-role]')?.textContent?.trim();
+  if (serverRol) return serverRol;
+
+  const u = await getUser();
+  return u?.rol ?? null;
+}
+
+/**
+ * Verifica si el rol actual está dentro de allowedRoles.
+ * - allowedRoles: array de strings con tus roles literales (ej: ["Administrador","Contador"])
+ * - redirectOnDeny: si no cumple, redirige a esta ruta (por defecto "/error/403"); si lo pones a null, no redirige.
+ * Retorna true si pasa, false si no.
+ */
+export async function checkRoleAllowed(allowedRoles = [], redirectOnDeny = '/error/403') {
+  try {
+    // normaliza a mayúsculas para comparar sin problemas de casing
+    const normalize = (s) => (s || '').toString().trim().toUpperCase();
+    const allowSet = new Set(allowedRoles.map(normalize));
+
+    // público
+    if (allowSet.size === 0) return true;
+
+    const rol = await getCurrentRole();  // "Administrador" | ...
+    const rolNorm = normalize(rol);
+
+    // Si no hay rol, tratamos como "Invitado"
+    const invitadoNorm = normalize('Invitado');
+
+    // Si incluyen Invitado y no hay rol => permitido
+    if (!rolNorm && allowSet.has(invitadoNorm)) return true;
+
+    // ¿rol permitido?
+    const ok = allowSet.has(rolNorm);
+    if (!ok && redirectOnDeny) {
+      window.location.href = redirectOnDeny;
+      return false;
+    }
+    return ok;
+  } catch {
+    // Si algo falla, no bloquees: deja que el backend decida
+    return true;
+  }
+}
