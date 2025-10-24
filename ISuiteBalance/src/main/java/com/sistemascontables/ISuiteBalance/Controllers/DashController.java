@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 public class DashController {
 
@@ -33,48 +35,75 @@ public class DashController {
     @GetMapping("/dashboard")
     public String dashboard(Model model, @AuthenticationPrincipal Object principal, HttpSession session) {
 
-        // 1) Determinar nombre a mostrar
+        // ===== 1) Datos base tomados del principal =====
         String nombre = "Invitado";
+        String correo = null;
+        String rol    = null;
+        String usernameOrCorreo = null; // normalmente el correo
 
-        if (principal instanceof Usuario u) {
-            // Si tu UserDetailsService retorna la entidad Usuario
+        if (principal instanceof com.sistemascontables.ISuiteBalance.Models.Usuario u) {
             nombre = (u.getNombre() != null && !u.getNombre().isBlank()) ? u.getNombre() : u.getCorreo();
+            correo = u.getCorreo();
+            rol    = u.getRol();                    // <-- String, sin .name()
+            usernameOrCorreo = u.getCorreo();
         } else if (principal instanceof UserDetails ud) {
-            // Si retorna un UserDetails genérico, usamos el username (normalmente el correo)
-            nombre = ud.getUsername();
+            usernameOrCorreo = ud.getUsername();    // suele ser el correo
+            nombre = usernameOrCorreo;
         } else {
-            // Último intento por si @AuthenticationPrincipal no inyectó
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
                 Object p = auth.getPrincipal();
-                if (p instanceof Usuario u2) {
+                if (p instanceof com.sistemascontables.ISuiteBalance.Models.Usuario u2) {
                     nombre = (u2.getNombre() != null && !u2.getNombre().isBlank()) ? u2.getNombre() : u2.getCorreo();
+                    correo = u2.getCorreo();
+                    rol    = u2.getRol();          // <-- String
+                    usernameOrCorreo = u2.getCorreo();
                 } else if (p instanceof UserDetails ud2) {
-                    nombre = ud2.getUsername();
+                    usernameOrCorreo = ud2.getUsername();
+                    nombre = usernameOrCorreo;
                 }
             }
         }
 
-        // 2) Asegurar loginTime en sesión para evitar NPE
-        Long loginTimeObj = (Long) session.getAttribute("loginTime");
-        if (loginTimeObj == null) {
-            loginTimeObj = System.currentTimeMillis();        // inicializa si no existe
-            session.setAttribute("loginTime", loginTimeObj);  // guarda para futuras vistas
+// ===== 2) Si faltan correo/rol, completar con la BD usando el correo único =====
+        if ((correo == null || rol == null) && usernameOrCorreo != null && !usernameOrCorreo.isBlank()) {
+            Optional<Usuario> optU = usuarioService.findByCorreo(usernameOrCorreo);
+            if (optU.isPresent()) {
+                Usuario u = optU.get();
+
+                if (u.getNombre() != null && !u.getNombre().isBlank()) {
+                    // “nombre bonito”: muestra nombre si existe; si no, deja el correo
+                    nombre = u.getNombre();
+                }
+                correo = u.getCorreo();
+                rol = u.getRol(); // ⚠️ Es String, así que sin .name()
+            }
         }
 
+
+        // ===== 3) Asegurar loginTime (lo que ya tenías) =====
+        Long loginTimeObj = (Long) session.getAttribute("loginTime");
+        if (loginTimeObj == null) {
+            loginTimeObj = System.currentTimeMillis();
+            session.setAttribute("loginTime", loginTimeObj);
+        }
         long diff = System.currentTimeMillis() - loginTimeObj;
         long h = diff / (1000 * 60 * 60);
         long m = (diff / (1000 * 60)) % 60;
         long s = (diff / 1000) % 60;
         String tiempoActividad = String.format("%dh:%02dm:%02ds", h, m, s);
 
-        model.addAttribute("nombreUsuario", nombre);
-        model.addAttribute("tiempoActividad", tiempoActividad);
-        model.addAttribute("revisionesPendientes", 150);
-        model.addAttribute("reportesAprobados", 960);
+        // ===== 4) Atributos para la vista =====
+        model.addAttribute("nombreUsuario",  nombre);  // visible en header
+        model.addAttribute("correoUsuario",  correo);  // oculto para IndexedDB
+        model.addAttribute("rolUsuario",     rol);     // oculto para IndexedDB
+
+        model.addAttribute("tiempoActividad",    tiempoActividad);
+        model.addAttribute("revisionesPendientes",150);
+        model.addAttribute("reportesAprobados",  960);
         model.addAttribute("reportesRechazados", 220);
-        model.addAttribute("reportesRevision", 150);
-        model.addAttribute("bitacoraTotal", "2.3k");
+        model.addAttribute("reportesRevision",   150);
+        model.addAttribute("bitacoraTotal",     "2.3k");
 
         return "dashboard";
     }

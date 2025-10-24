@@ -907,3 +907,15 @@
 .btn-agregar:hover {
   text-decoration: none;
 }
+/*ESTO ES PA LOS BOTONES DE GESTION USUARIOS*/
+.opciones a {
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.icono-opcion {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}

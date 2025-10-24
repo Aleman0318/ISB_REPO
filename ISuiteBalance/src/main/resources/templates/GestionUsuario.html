@@ -92,8 +92,14 @@
                     <td class="celda-hash" th:text="${u.passwordHash}">••••••••</td>
                     <td th:text="${u.rol}">ROL</td>
                     <td class="opciones">
-                        <a class="btn-opcion editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">✏️</a>
-                        <a class="btn-opcion eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">🗑️</a>
+
+                        <a class="btn-opcion_editar" th:href="@{'/usuario/editar/' + ${u.id_usuario}}">
+                            <img th:src="@{/img/editar.png}" alt="Editar" class="icono-opcion">
+                        </a>
+
+                        <a class="btn-opcion_eliminar" th:href="@{'/usuario/eliminar/' + ${u.id_usuario}}">
+                            <img th:src="@{/img/eliminar.png}" alt="Eliminar" class="icono-opcion">
+                        </a>
                     </td>
                 </tr>
 

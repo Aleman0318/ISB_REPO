@@ -56,6 +56,8 @@
 
             <!-- Valor del backend para sembrar IndexedDB al entrar a /dashboard -->
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <span data-user-email   th:text="${correoUsuario}" style="display:none;"></span>  <!-- ADDED -->
+            <span data-user-role    th:text="${rolUsuario}"   style="display:none;"></span>  <!-- ADDED -->
 
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
