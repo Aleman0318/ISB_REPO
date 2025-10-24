@@ -130,6 +130,7 @@
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid;
+  margin-top: 20px;
 }
 
 .tabla-usuarios th,
@@ -157,6 +158,18 @@
 .tabla-usuarios th:last-child,
 .tabla-usuarios td:last-child {
   border-right: none;
+}
+
+.tabla-usuarios tbody tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+.tabla-usuarios tbody tr:nth-child(even) {
+  background-color: #e8e8e8;
+}
+
+.tabla-usuarios tbody tr:hover {
+  background-color: #d9e2ec;
 }
 
 /* ---------- BOTONES OPCIONES ---------- */
