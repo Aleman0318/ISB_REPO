@@ -140,6 +140,8 @@ public class DashController {
     @GetMapping("/perfil")
     public String perfil() { return "Perfil"; }
 
+    @GetMapping("/about")
+    public String about() { return "About"; }
 
     @GetMapping("/partida/{id}/ver")
     public String verDetallePartida(@PathVariable Integer id, Model model) {
