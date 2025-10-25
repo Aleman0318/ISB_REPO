@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,14 +28,49 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}" class="active">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}">Gestión de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        <!-- Inicio: solo usuarios autenticados -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">Inicio</a>
+        </li>
+
+        <!-- Solo Administrador -->
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">Gestion Usuario</a>
+        </li>
+
+        <!-- Administrador o Contador -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">Documentos</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/partida}" class="active">Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">Gestión de Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">Libro Diario</a>
+        </li>
+        <!-- NUEVOS -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">Libro Mayor</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/balanza-comprobacion}">Balanza de Comprobación</a>
+        </li>
+
+        <!-- Administrador o Auditor -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/generar-reporte}">Reportes</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">Auditoría</a>
+        </li>
+
+        <!-- About (visible para todos los roles, incluso invitado) -->
+        <li>
+            <a th:href="@{/about}">About</a>
+        </li>
     </ul>
 </div>
 <div id="backdrop" class="backdrop"></div>

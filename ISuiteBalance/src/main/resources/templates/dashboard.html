@@ -51,9 +51,9 @@
             <a th:href="@{/bitacora}">Auditoría</a>
         </li>
 
-        <!-- Invitado: solo “Acerca de nosotros” -->
-        <li sec:authorize="isAnonymous()">
-            <a th:href="@{/acerca}">Acerca de nosotros</a>
+        <!-- About (visible para todos los roles, incluso invitado) -->
+        <li>
+            <a th:href="@{/about}">About</a>
         </li>
     </ul>
 </div>
