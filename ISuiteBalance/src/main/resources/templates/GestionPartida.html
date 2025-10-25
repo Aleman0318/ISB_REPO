@@ -14,14 +14,20 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        <li><a th:href="@{/dashboard}">
+            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">
+            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">
+            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}" class="active">
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">
+            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">
+            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">
+            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a></li>
     </ul>
 </div>
 
@@ -39,18 +45,17 @@
         <div class="user-info">
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario" data-usuario-target>
-              <script th:inline="javascript">
-                document.write(
-                  localStorage.getItem('lastUserName') ||
-                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                  'Invitado'
-                );
-              </script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
+            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
+            /*]]>*/
+        </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <!-- 👆 -->
 
-            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+        <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
@@ -114,8 +119,12 @@
                         </a>
                     </td>
                     <td class="opciones">
-                        <a class="btn-opcion ver"     th:href="@{|/partidas/${p.idPartida}/ver|}"    title="Ver">👁️</a>
-                        <a class="btn-opcion editar"  th:href="@{|/partidas/${p.idPartida}/editar|}" title="Editar">✏️</a>
+                        <a class="btn-opcion_editar"     th:href="@{|/partidas/${p.idPartida}/ver|}"    title="Ver">
+                            <img th:src="@{/img/luupa.png}" alt="Editar" class="icono-opcion">
+                        </a>
+                        <a class="btn-opcion_editar"  th:href="@{|/partidas/${p.idPartida}/editar|}" title="Editar">
+                            <img th:src="@{/img/nota.png}" alt="Editar" class="icono-opcion">
+                        </a>
 
                         <!-- 👇🏻 clase y data-id para SweetAlert2 -->
                         <form class="form-eliminar"
@@ -124,7 +133,9 @@
                               th:attr="data-id=${p.idPartida}"
                               style="display:inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button class="btn-opcion eliminar" type="submit" title="Eliminar">🗑️</button>
+                            <a class="btn-opcion_editar" type="submit" title="Eliminar">
+                                <img th:src="@{/img/borra.png}" alt="Editar" class="icono-opcion">
+                            </a>
                         </form>
                     </td>
                 </tr>

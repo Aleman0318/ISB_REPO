@@ -116,6 +116,8 @@ public class DashController {
     @GetMapping("/bitacora")
     public String bitacora() { return "Bitacora"; }
 
+
+
     // Listado de usuarios
     @GetMapping("/gestion-usuario")
     public String gestionUsuario(Model model) {
@@ -134,6 +136,9 @@ public class DashController {
 
     @GetMapping("/registro-libro-diario")
     public String registroLibroDiario() { return "RegistroLibroDiario"; }
+
+    @GetMapping("/perfil")
+    public String perfil() { return "Perfil"; }
 
 
     @GetMapping("/partida/{id}/ver")

@@ -13,13 +13,20 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        <li><a th:href="@{/dashboard}" class="active">
+            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">
+            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">
+            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}">
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">
+            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a></li>
+        <li><a th:href="@{/generar-reporte}">
+            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">
+            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a></li>
     </ul>
 </div>
 
@@ -38,12 +45,6 @@
         </div>
 
         <div class="user-info">
-            <!-- ====================== SIN PARPADEO ======================
-                 Escribimos el nombre DURANTE el parseo:
-                 - Primero intenta localStorage.lastUserName
-                 - Si no existe, usa el valor del backend (solo en /dashboard)
-                 - Fallback final "Invitado"
-            -->
             <span class="nombre-usuario" data-usuario-target>
         <script th:inline="javascript">
     /*<![CDATA[*/
@@ -59,7 +60,7 @@
             <span data-user-email   th:text="${correoUsuario}" style="display:none;"></span>  <!-- ADDED -->
             <span data-user-role    th:text="${rolUsuario}"   style="display:none;"></span>  <!-- ADDED -->
 
-            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
             <!-- Botón de logout -->

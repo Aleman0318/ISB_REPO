@@ -759,3 +759,10 @@ header input{
   }
 }
 
+
+.icono-opcion_aside {
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  margin-right:20px;
+}
