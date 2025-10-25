@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +29,46 @@
             <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a></li>
         <li><a th:href="@{/bitacora}">
             <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a></li>
+        <!-- Inicio: solo usuarios autenticados -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">Inicio</a>
+        </li>
+
+        <!-- Solo Administrador -->
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">Gestion Usuario</a>
+        </li>
+
+        <!-- Administrador o Contador -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">Gestion de Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}" class="active">Libro Diario</a>
+        </li>
+        <!-- NUEVOS -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">Libro Mayor</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/balanza-comprobacion}">Balanza de Comprobación</a>
+        </li>
+
+        <!-- Administrador o Auditor -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/generar-reporte}">Reportes</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">Auditoría</a>
+        </li>
+
+        <!-- About visible para todos (incluye invitado) -->
+        <li>
+            <a th:href="@{/about}">About</a>
+        </li>
     </ul>
 </div>
 
