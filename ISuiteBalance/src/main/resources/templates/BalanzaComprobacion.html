@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanza de Comprobación | Suite Balance ISB</title>
+
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a th:href="@{/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
+        <li><a th:href="@{/subir-doc}">Partidas</a></li>
+        <li><a th:href="@{/gestion-partida}">Gestión de Partidas</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/libro-mayor}">Libro Mayor</a></li>
+        <li><a th:href="@{/balanza-comprobacion}" class="active">Balanza</a></li>
+        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
+        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    </ul>
+</div>
+<div id="backdrop" class="backdrop"></div>
+
+<div class="main">
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="user-info">
+      <span class="nombre-usuario" data-usuario-target>
+        <script th:inline="javascript">
+          document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+        </script>
+      </span>
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            </button>
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
+
+    <div class="container_principal">
+        <main class="gestion-usuarios">
+            <h1 class="fuente-titulos2 titulo-gestion txt-blanco">Balanza de Comprobacion</h1>
+
+            <!-- Filtros -->
+            <form th:action="@{/balanza-comprobacion}" method="get" id="formFiltros">
+                <div class="filtros-card__body">
+                    <div class="buscador-wrap filtros-row">
+                        <div class="filtro-col">
+                            <span class="filtro-label">Rango de fechas</span>
+                            <div class="rango">
+                                <label for="fDesde">Desde</label>
+                                <input id="fDesde" name="desde" type="date" class="input" th:value="${desde}">
+                                <span>–</span>
+                                <label for="fHasta">Hasta</label>
+                                <input id="fHasta" name="hasta" type="date" class="input" th:value="${hasta}">
+                            </div>
+                        </div>
+
+                        <div class="filtro-col botones">
+                            <button type="submit" class="btn limpiar">Buscar</button>
+                            <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                            <button type="button" class="btn limpiar" onclick="window.print()">Imprimir / Exportar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div style="margin:.5rem 0;">
+                <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
+                <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
+            </div>
+
+            <!-- Resultados -->
+            <div id="balanzaResultados">
+                <div class="tabla-wrapper">
+                    <table class="tabla-usuarios">
+                        <thead>
+                        <tr>
+                            <th style="min-width:140px;">Código</th>
+                            <th>Cuenta</th>
+                            <th class="mono">Saldo Inicial</th>
+                            <th class="mono">Débitos</th>
+                            <th class="mono">Créditos</th>
+                            <th class="mono">Saldo Final Deudor</th>
+                            <th class="mono">Saldo Final Acreedor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(filas)}">
+                            <td colspan="7" style="text-align:center;">No hay datos para el rango seleccionado.</td>
+                        </tr>
+
+                        <tr th:each="r : ${filas}">
+                            <td th:text="${r.codigo}">101-01</td>
+                            <td th:text="${r.nombre}">Caja</td>
+                            <td class="mono" th:text="${#numbers.formatDecimal(r.saldoInicial, 1, 'POINT', 2, 'POINT')}">0.00</td>
+                            <td class="mono" th:text="${#numbers.formatDecimal(r.debitos, 1, 'POINT', 2, 'POINT')}">0.00</td>
+                            <td class="mono" th:text="${#numbers.formatDecimal(r.creditos, 1, 'POINT', 2, 'POINT')}">0.00</td>
+
+                            <!-- Saldo Final Deudor -->
+                            <td class="mono"
+                                th:text="${r.saldoFinal.signum() >= 0
+                                  ? #numbers.formatDecimal(r.saldoFinal, 1, 'POINT', 2, 'POINT')
+                                  : '0.00'}">0.00
+                            </td>
+
+                                                <!-- Saldo Final Acreedor -->
+                            <td class="mono" th:text="${r.saldoFinal.signum() < 0
+                                  ? #numbers.formatDecimal(r.saldoFinal.negate(), 1, 'POINT', 2, 'POINT')
+                                  : '0.00'}">0.00
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="2" style="text-align:right;">Totales</th>
+                            <th class="mono" th:text="${#numbers.formatDecimal(totalSaldoInicial, 1, 'POINT', 2, 'POINT')}">0.00</th>
+                            <th class="mono" th:text="${#numbers.formatDecimal(totalDebitos, 1, 'POINT', 2, 'POINT')}">0.00</th>
+                            <th class="mono" th:text="${#numbers.formatDecimal(totalCreditos, 1, 'POINT', 2, 'POINT')}">0.00</th>
+                            <th class="mono" th:text="${#numbers.formatDecimal(totalFinalDeudor, 1, 'POINT', 2, 'POINT')}">0.00</th>
+                            <th class="mono" th:text="${#numbers.formatDecimal(totalFinalAcreedor, 1, 'POINT', 2, 'POINT')}">0.00</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <small style="display:block;margin-top:.6rem;opacity:.8;">
+                    Nota: Saldo Final = Saldo Inicial + Débitos − Créditos. Si resulta &gt; 0 se muestra como Deudor; si &lt; 0, como Acreedor.
+                </small>
+            </div>
+            <!-- /balanzaResultados -->
+        </main>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    (function () {
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+      if (!btn || !sidebar || !backdrop) return;
+
+      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); }
+      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); }
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('logoutBtn');
+      if (!btn) return;
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Se cerrará tu sesión actual.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#e63946'
+        });
+        if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) { console.warn('No se pudo limpiar IndexedDB/localStorage:', err); }
+          document.getElementById('logoutForm')?.submit();
+        }
+      });
+    });
+</script>
+
+<script>
+    (function(){
+      const form   = document.getElementById('formFiltros');
+      const btnClr = document.getElementById('limpiarBusqueda');
+      const fDesde = document.getElementById('fDesde');
+      const fHasta = document.getElementById('fHasta');
+      const CONT   = '#balanzaResultados';
+
+      function baseUrl(){ return (form.getAttribute('action') || window.location.pathname).split('?')[0]; }
+
+      async function fetchAndSwap(url){
+        const cont = document.querySelector(CONT);
+        cont?.classList.add('fade');
+        try{
+          const res  = await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' }});
+          const html = await res.text();
+          const doc  = new DOMParser().parseFromString(html, 'text/html');
+          const nuevo = doc.querySelector(CONT);
+          const actual = document.querySelector(CONT);
+          if(nuevo && actual){ actual.replaceWith(nuevo); history.replaceState({}, '', url); }
+          else { window.location.href = url; }
+        } finally { document.querySelector(CONT)?.classList.remove('fade'); }
+      }
+
+      form?.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const qs = new URLSearchParams();
+        if (fDesde?.value) qs.set('desde', fDesde.value);
+        if (fHasta?.value) qs.set('hasta', fHasta.value);
+        const url = qs.toString() ? `${baseUrl()}?${qs}` : baseUrl();
+        fetchAndSwap(url);
+      });
+
+      btnClr?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        form.reset();
+        const url = baseUrl(); // sin parámetros
+        history.replaceState({}, '', url);
+        fetchAndSwap(url);
+      });
+    })();
+</script>
+
+<!-- Hidratar header con IndexedDB -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+</body>
+</html>

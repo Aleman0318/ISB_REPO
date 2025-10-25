@@ -937,3 +937,45 @@ input[type="date"] {
   }
 }
 
+/* =======================
+   BALANZA DE COMPROBACION
+   ======================= */
+.mono {
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                 "Liberation Mono", "Courier New", monospace;
+    text-align: right;
+}
+
+.badge-ok {
+    display: inline-block;
+    padding: .2rem .5rem;
+    border-radius: 6px;
+    background: #e8f5e9;
+}
+
+.badge-err {
+    display: inline-block;
+    padding: .2rem .5rem;
+    border-radius: 6px;
+    background: #ffebee;
+}
+
+.tabla-wrapper {
+    margin-top: 12px;
+}
+
+@media print {
+    .sidebar,
+    header,
+    .filtros-card__body,
+    .btn,
+    #backdrop {
+        display: none !important;
+    }
+
+    body {
+        margin: .5cm;
+    }
+}
+
