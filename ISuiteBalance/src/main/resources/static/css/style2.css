@@ -70,10 +70,11 @@
 
 /* ---------- BOTONES ---------- */
 .botones {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-top: 2rem;
+   display: flex;
+   justify-content: flex-start;
+   align-items: center;
+   gap: 1rem;
+   margin-top: 0;
 }
 
 .btn-agregar,
@@ -144,6 +145,7 @@
   border-right: 2px solid #ddd;
 }
 
+
 .tabla-usuarios th {
   background-color: #4682b4;
   color: #fff;
@@ -175,22 +177,23 @@
 /* ====== PIE DE TOTALES (celeste suave intermedio) ====== */
 .tabla-usuarios tfoot th,
 .tabla-usuarios tfoot td {
-  background-color: #cfe2f3;   /* celeste intermedio */
-  color: #1f1f1f;              /* texto oscuro para contraste */
+  background-color: #cfe2f3;
+  color: #1f1f1f;
   font-weight: 600;
-  border-top: 2px solid #b0c6da; /* línea de separación más tenue */
+  border-top: 2px solid #b0c6da;
 }
 
 
 /* ====== SECCIONES DEL LIBRO MAYOR ====== */
 .mayor-section {
-  margin-bottom: 18px;
+  margin-bottom: 13px;
+  margin-top: 45px;
 }
 
 .mayor-header {
   background: #e9f4fb;
   border-left: 4px solid #2a7bbb;
-  padding: 10px 14px;
+  padding: 10px 10px;
   border-radius: 12px;
   font-weight: 600;
   display: flex;
@@ -210,17 +213,6 @@
 .tabla-wrapper {
   margin-top: 10px;
 }
-
-/* ====== FORMATO DE LA TABLA ====== */
-.tabla-usuarios td:nth-child(4),
-.tabla-usuarios td:nth-child(5),
-.tabla-usuarios td:nth-child(6),
-.tabla-usuarios tfoot th:nth-child(4),
-.tabla-usuarios tfoot th:nth-child(5),
-.tabla-usuarios tfoot th:nth-child(6) {
-  text-align: right;
-}
-
 
 /* ---------- BOTONES OPCIONES ---------- */
 .opciones {

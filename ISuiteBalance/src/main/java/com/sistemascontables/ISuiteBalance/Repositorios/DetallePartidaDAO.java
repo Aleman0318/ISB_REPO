@@ -33,7 +33,7 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
         d.idCuenta     AS idCuenta,
         p.id           AS idPartida,
         p.fecha        AS fecha,
-        c.tipocuenta   AS tipocuenta,
+        c.tipocuenta   AS tipoCuenta,
         CONCAT(c.codigo, ' - ', c.nombrecuenta) AS cuenta,
         p.concepto     AS descripcion,
         d.montoDebe    AS debe,

@@ -19,6 +19,7 @@
         <li><a th:href="@{/subir-doc}">Partidas</a></li>
         <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/libro-mayor}">Libro Mayor</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
     </ul>
@@ -76,7 +77,7 @@
     <!-- Contenido central -->
     <main>
         <div class="formulario-usuario">
-            <h1>Crear Usuario</h1>
+            <h1 class="fuente-titulos2 txt-blanco">Crear Usuario</h1>
 
             <!-- Mensaje de error (flash) -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>

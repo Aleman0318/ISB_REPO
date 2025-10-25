@@ -20,6 +20,7 @@
         <li><a th:href="@{/subir-doc}">Partidas</a></li>
         <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
     </ul>
@@ -251,7 +252,7 @@
 <script>
     (function(){
       const inputTxt     = document.getElementById('buscarPartidas');
-      const inputPeriodo = document.getElementById('buscarPeriodo'); // <-- CAMBIO
+      const inputPeriodo = document.getElementById('buscarPeriodo');
       const btnClean     = document.getElementById('limpiarBusqueda');
       const tabla        = document.getElementById('tabla-gestion-partidas');
       const tbody        = tabla?.querySelector('tbody');
@@ -352,7 +353,7 @@
       }
 
       inputTxt.addEventListener('input', deb(filtrar, 120));
-      inputPeriodo.addEventListener('change', filtrar); // <-- CAMBIO
+      inputPeriodo.addEventListener('change', filtrar);
       btnClean.addEventListener('click', ()=>{
         inputTxt.value = '';
         inputPeriodo.value = ''; // <-- CAMBIO

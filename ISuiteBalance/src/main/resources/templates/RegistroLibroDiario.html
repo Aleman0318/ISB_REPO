@@ -19,6 +19,7 @@
         <li><a th:href="@{/subir-doc}">Partidas</a></li>
         <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}" class="active">Libro Diario</a></li>
+        <li><a th:href="@{/libro-mayor}">Libro Mayor</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
     </ul>
@@ -61,7 +62,7 @@
     <!-- Contenedor principal -->
     <div class="container_principal">
         <main class="gestion-usuarios">
-            <h1 class="titulo-gestion txt-blanco">Registros en de Libro Diario</h1>
+            <h1 class="titulo-gestion fuente-titulos2 txt-blanco">Registros en el Libro Diario</h1>
 
             <!-- Mensaje de validación si llega error -->
             <div th:if="${errorFiltro}" style="color:#b91c1c;margin:-6px 0 6px" th:text="${errorFiltro}"></div>
@@ -73,7 +74,7 @@
                     </div>
 
                     <div class="filtros-card__body">
-                        <div class="filtros-grid buscador-wrap">
+                        <div class="filtros-row buscador-wrap">
                             <div class="filtro-col">
                                 <label for="fFecha">Fecha específica</label>
                                 <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">
@@ -82,9 +83,11 @@
                             <div class="filtro-col">
                                 <label for="fPeriodo">Mes y año</label>
                                 <div class="mes">
-                                    <input id="fPeriodo" name="periodo" type="month"
+                                    <input id="fPeriodo" name="periodo"
                                            class="input input-mes"
-                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año">
+                                           type="month"
+                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año"
+                                           required>
                                     <span class="place">Elegir mes y año</span>
                                 </div>
                             </div>

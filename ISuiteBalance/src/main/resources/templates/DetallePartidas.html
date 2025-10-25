@@ -21,6 +21,7 @@
         <li><a th:href="@{/partida}">Partidas</a></li>
         <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
         <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
+        <li><a th:href="@{/libro-mayor}" class="active">Libro Mayor</a></li>
         <li><a th:href="@{/generar-reporte}">Reportes</a></li>
         <li><a th:href="@{/bitacora}">Auditoría</a></li>
     </ul>
@@ -67,7 +68,7 @@
     <!-- Contenido central con mismas clases -->
     <div class="container_principal">
         <main class="gestion-usuarios">
-            <h1 class="titulo-gestion">
+            <h1 class="titulo-gestion fuente-titulos2 txt-blanco">
                 Detalle de Partida <span th:text="${idPartida}">#</span>
             </h1>
 

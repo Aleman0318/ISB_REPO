@@ -731,7 +731,7 @@ header input{
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: black;
   font-size: 14px;
   pointer-events: none;
   transition: opacity .15s ease;
@@ -772,7 +772,7 @@ header input{
 
 /* Botón Limpiar */
 .buscador-wrap .btn.limpiar {
-  width; 10px;
+  width: auto;
   height: 45px;
   padding: 0 16px;
   border: none;
@@ -817,68 +817,113 @@ header input{
   }
 }
 
-/* ======================= CONTENEDOR DEL CARD ======================= */
+/* =======================
+   CONTENEDOR DEL CARD
+   ======================= */
 .filtros-card {
-  background: #1e1f25;
+  background: #2a2d33;
   border-radius: 12px;
   margin: 18px 0 24px;
   padding: 18px 22px;
   font-family: 'Inter', sans-serif;
-  border: 3px solid rgba(230,57,70,.55);
-  box-shadow: 0 0 0 4px rgba(230,57,70,.12);
-  transition: box-shadow .3s ease, border-color .3s ease;
 }
 
-/* Encabezado con el título */
-.filtros-card__header {
-  margin-bottom: 10px;
-}
+.filtros-card__header { margin-bottom: 10px; }
 
 .filtros-card__title {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 8px;
+  margin: 0 5px 25px;
   text-align:center;
 }
 
-/* ======================= CONTENEDOR DE INPUTS ======================= */
-.filtros-grid {
+/* =======================
+   FILTROS (Mayor/Diario)
+   ======================= */
+
+/* Fila de filtros para Libro Mayor/Diario */
+.filtros-row {
   display: flex;
+  gap: 12px;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 35px 32px;
-  padding: 10px 8px;
   justify-content: space-between;
 }
 
-/* Cada columna de filtro */
+/* Columna genérica */
 .filtro-col {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  justify-content: flex-end;
+  color: white;
 }
 
-.filtro-col label {
-  font-size: 13px;
-  color: #fff;
-  margin-bottom: 6px;
+/* Columna de botones: sin empujes hacia abajo */
+.filtro-col.botones {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
-/* Rango de fechas (dos inputs lado a lado) */
+/* Neutraliza .botones global dentro del card (por si existiera) */
+.filtros-card .botones {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Rango de fechas con labels en línea */
 .filtro-col .rango {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-/* Columna de botones (buscar / limpiar) */
-.filtro-col.botones {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+.filtro-col .rango label {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 14px;
+  color: black;
 }
 
-/* ======================= RESPONSIVE ======================= */
+/* Subtítulo pequeño */
+.filtro-label {
+  font-size: 15px;
+  color: black;
+  line-height: 1;
+}
+
+/* Alturas coherentes */
+.input,
+.btn {
+  height: 36px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0 14px;
+}
+input[type="date"] {
+  height: 36px;
+  line-height: 36px;
+  padding: 0 10px;
+}
+
+.filtros-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 35px 32px;
+  padding: 10px 8px;
+  justify-content: flex-start;
+}
+
+/* =======================
+   RESPONSIVE
+   ======================= */
 @media (max-width: 900px) {
   .filtros-grid {
     flex-wrap: wrap;
