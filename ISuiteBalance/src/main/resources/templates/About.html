@@ -14,8 +14,8 @@
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <h2>Dashboard</h2>
-    <ul>
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
         <!-- Inicio: solo usuarios autenticados -->
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
@@ -110,19 +110,16 @@
 <!-- Contenido principal -->
 <div class="container_principal">
     <main>
-        <div class="formulario-usuario">
-            <h1>ABOUT ISB</h1>
+        <div class="about_espacio">
+            <h1 class="fuente-titulos2">ABOUT</h1>
 
-            <div class="texto" style="padding-top:10px;">
-                <img th:src="@{/img/conta-illustration.png}" alt="Editar" class="icono-opcion">
-            </div>
+            <div class="about_p" style="margin-top:25px;">
+                <div class="about_img" >
+                    <img th:src="@{/img/conta-illustration.png}" alt="Editar" class="about">
+                </div>
 
-            <!-- 📘 Aquí escribe tu información del About -->
-            <div class="form-grupo" style="margin-top:25px;">
-                <p style="font-size:1rem; line-height:1.6; text-align:justify; color:#333;">
-                    <!-- ✍️ Escribe aquí el texto que describa el propósito del sistema,
-                         quiénes lo desarrollaron, la institución, la versión, o cualquier
-                         información de presentación general que quieras mostrar. -->
+                <p>
+
                 </p>
             </div>
 

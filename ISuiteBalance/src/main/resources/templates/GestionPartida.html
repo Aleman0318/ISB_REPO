@@ -13,8 +13,8 @@
 <body>
 
 <div class="sidebar">
-    <h2>Dashboard</h2>
-    <ul>
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
         <!-- Inicio: solo usuarios autenticados -->
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
@@ -175,9 +175,9 @@
                               th:attr="data-id=${p.idPartida}"
                               style="display:inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <a class="btn-opcion_editar" type="submit" title="Eliminar">
+                            <button class="btn-opcion" type="submit" title="Eliminar">
                                 <img th:src="@{/img/borra.png}" alt="Editar" class="icono-opcion">
-                            </a>
+                            </button>
                         </form>
                     </td>
                 </tr>

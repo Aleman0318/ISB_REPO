@@ -227,6 +227,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  background:transparent;
 }
 
 .eliminar {
@@ -973,4 +974,31 @@
   height: 30px;
   vertical-align: middle;
   transition: transform 0.2s ease;
+}
+
+.about{
+    width:200px;
+    height:200px;
+}
+
+.about_espacio {
+  padding: clamp(1rem, 3vw, 3rem);
+  border-radius: 30px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.about_p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  background-color: #404040;
+  border-radius: 8px;
+  padding: clamp(1rem, 2vw, 2rem) clamp(0.8rem, 2vw, 1.5rem);
+  gap: 30px;
+}
+
+.about_img {
+
 }

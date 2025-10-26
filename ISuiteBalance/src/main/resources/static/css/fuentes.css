@@ -77,3 +77,10 @@ font-family: 'Fuente-semi';
 font-size: 0.8rem;
 text-align: center; }
 
+.fuente-semita{
+font-family: 'Fuente-semi';
+font-size: 1.3rem; }
+
+.rojo{
+    color:#FF3030 !important;
+}
