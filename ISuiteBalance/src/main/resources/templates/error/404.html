@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>404 | ISB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/style2.css}" rel="stylesheet">
+    <link th:href="@{/css/fuentes.css}" rel="stylesheet">
+    <style>
+        :root{
+          --shift: 23.5%;   /* tu ajuste que quedó centrado */
+          --text-up: 6%;   /* cuánto sube el texto; baja este número si sube demasiado */
+        }
+
+        html, body {
+          height: 100%;
+          margin: 0;
+          background: #fff;
+        }
+
+        .wrap {
+          min-height: 100svh;
+          display: grid;
+          place-items: center;
+          background: #fff;
+          padding: 24px;
+          text-align: center;
+        }
+
+        .stack {
+          width: min(920px, 92vw);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 18px;
+          transform: translateX(var(--shift)); /* mueve todo (GIF + botones + texto) */
+        }
+
+        .figure {
+          position: relative;
+          width: 100%;
+          max-width: 860px;
+          margin: 0 auto;
+          overflow: visible;
+        }
+
+        .gif {
+          display: block;
+          width: 100%;
+          height: auto;
+          margin: 0 auto;
+          transform: scale(1.1);
+          transform-origin: center center;
+        }
+
+        .overlay {
+          position: absolute;
+          left: 50%;
+          top: var(--text-up); /* sube el texto */
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          text-align: center;
+          padding: 0 12px;
+          z-index: 1;
+        }
+
+        .overlay h1 {
+          font-size: clamp(44px, 7vw, 72px);
+          line-height: 1;
+          margin: 0 0 6px;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+        }
+
+        .overlay p {
+          margin: 0;
+          font-size: clamp(16px, 2.2vw, 20px);
+          opacity: 0.9;
+        }
+
+        .actions {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .btn {
+          pointer-events: auto;
+          display: inline-block;
+          padding: 12px 18px;
+          border-radius: 12px;
+          border: 1px solid #dcdcdc;
+          text-decoration: none;
+          font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="stack">
+        <div class="figure">
+            <img class="gif" th:src="@{/img/error.gif}" alt="Error 404 animado">
+            <div class="overlay">
+                <h1>404</h1>
+                <p>No se encontró esta página.</p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a class="btn" href="#" onclick="return goBack()">Regresar</a>
+            <a class="btn" th:href="@{/dashboard}">Ir al dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function goBack() {
+      if (window.history.length > 1) { window.history.back(); }
+      else { window.location.href = /*[[@{/dashboard}]]*/ '/dashboard'; }
+      return false;
+    }
+</script>
+</body>
+</html>
