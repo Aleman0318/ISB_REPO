@@ -134,8 +134,8 @@ public class DashController {
     @GetMapping("/modificar-usuario")
     public String modificarUsuario() { return "ModificarUsuario"; }
 
-    @GetMapping("/registro-libro-diario")
-    public String registroLibroDiario() { return "RegistroLibroDiario"; }
+    //@GetMapping("/registro-libro-diario")
+    //public String registroLibroDiario() { return "RegistroLibroDiario"; }
 
     @GetMapping("/perfil")
     public String perfil() { return "Perfil"; }
