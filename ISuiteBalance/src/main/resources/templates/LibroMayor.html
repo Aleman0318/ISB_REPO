@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,14 +17,57 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}">Gestión de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/libro-mayor}" class="active">Libro Mayor</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+        <!-- Inicio: solo usuarios autenticados -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+        </li>
+
+        <!-- Solo Administrador -->
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        </li>
+
+        <!-- Administrador o Contador -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        </li>
+        <!-- NUEVO: Libro Mayor -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}" class="active">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        </li>
+        <!-- NUEVO: Balanza de Comprobación -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/balanza-comprobacion}">
+                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza de Comprobación</a>
+        </li>
+
+        <!-- Administrador o Auditor -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/generar-reporte}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        </li>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        </li>
+
+        <!-- About (visible para todos los roles, incluso invitado) -->
+        <li>
+            <a th:href="@{/about}">
+                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+        </li>
     </ul>
 </div>
 <div id="backdrop" class="backdrop"></div>
@@ -132,7 +176,9 @@
                                         </a>
                                     </td>
                                     <td class="opciones">
-                                        <a class="btn-opcion ver" th:href="@{|/partidas/${f.idPartida}/ver-mayor|}" title="Ver">👁️</a>
+                                        <a class="btn-opcion_editar" th:href="@{|/partidas/${f.idPartida}/ver-mayor|}" title="Ver">
+                                            <img th:src="@{/img/luupa.png}" alt="Editar" class="icono-opcion">
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
