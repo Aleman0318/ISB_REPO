@@ -92,9 +92,9 @@
     </span>
 
         <!-- Semillas ocultas para tu hydrateUserDisplay() -->
-        <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-        <span data-user-email    th:text="${usuario?.correo}" style="display:none;"></span>
-        <span data-user-role     th:text="${usuario?.rol}"    style="display:none;"></span>
+        <span data-usuario-server th:if="${nombreUsuario != null}" th:text="${nombreUsuario}" style="display:none;"></span>
+        <span data-user-email    th:if="${usuario?.correo != null}" th:text="${usuario.correo}" style="display:none;"></span>
+        <span data-user-role     th:if="${usuario?.rol != null}"    th:text="${usuario.rol}"    style="display:none;"></span>
 
         <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -115,8 +115,7 @@
             <h1>Perfil de usuario</h1>
 
             <div class="texto" style="padding-top:10px;">
-                <img th:src="@{/img/logo-institucional.png}" src="/img/logo-institucional.png"
-                     alt="Logo" style="width:110px; height:auto; border-radius:10px;">
+                <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
             </div>
 
             <!-- Nombre -->
@@ -149,12 +148,11 @@
                 <input id="perfil-empresa" type="text" readonly th:value="${usuario?.empresa}" value="">
             </div>
 
-            <div class="botones">
-                <a class="btn-cancelar" th:href="@{/dashboard}"
-                   style="text-align:center; line-height:normal; display:inline-block;">
+            <div class="contenedor-boton">
+                <a class="btn-agregar" th:href="@{/dashboard}"
+                   style="text-align:center;">
                     Volver
                 </a>
-                <span style="flex:1;"></span>
             </div>
         </div>
     </main>
