@@ -70,10 +70,11 @@
 
 /* ---------- BOTONES ---------- */
 .botones {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-top: 2rem;
+   display: flex;
+   justify-content: flex-start;
+   align-items: center;
+   gap: 1rem;
+   margin-top: 0;
 }
 
 .btn-agregar,
@@ -130,6 +131,7 @@
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid;
+  margin-top: 20px;
 }
 
 .tabla-usuarios th,
@@ -143,10 +145,11 @@
   border-right: 2px solid #ddd;
 }
 
+
 .tabla-usuarios th {
-  background-color: #f7f7f7;
-  border-top: 2px solid #000000;
-  border-bottom: 2px solid #000000;
+  background-color: #4682b4;
+  color: #fff;
+  border: none;
 }
 
 .tabla-usuarios th:first-child,
@@ -157,6 +160,58 @@
 .tabla-usuarios th:last-child,
 .tabla-usuarios td:last-child {
   border-right: none;
+}
+
+.tabla-usuarios tbody tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+.tabla-usuarios tbody tr:nth-child(even) {
+  background-color: #e8e8e8;
+}
+
+.tabla-usuarios tbody tr:hover {
+  background-color: #d9e2ec;
+}
+
+/* ====== PIE DE TOTALES (celeste suave intermedio) ====== */
+.tabla-usuarios tfoot th,
+.tabla-usuarios tfoot td {
+  background-color: #cfe2f3;
+  color: #1f1f1f;
+  font-weight: 600;
+  border-top: 2px solid #b0c6da;
+}
+
+
+/* ====== SECCIONES DEL LIBRO MAYOR ====== */
+.mayor-section {
+  margin-bottom: 13px;
+  margin-top: 45px;
+}
+
+.mayor-header {
+  background: #e9f4fb;
+  border-left: 4px solid #2a7bbb;
+  padding: 10px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mayor-header .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2a7bbb;
+  display: inline-block;
+}
+
+/* Contenedor de la tabla */
+.tabla-wrapper {
+  margin-top: 10px;
 }
 
 /* ---------- BOTONES OPCIONES ---------- */

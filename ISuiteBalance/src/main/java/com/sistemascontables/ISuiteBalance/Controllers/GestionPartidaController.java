@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @Controller
 public class GestionPartidaController {
 
@@ -50,11 +52,31 @@ public class GestionPartidaController {
         return "DetallePartidas";
     }
 
-
-
     @PostMapping("/partidas/{id}/eliminar")
     public String eliminar(@PathVariable Integer id) {
         service.eliminarPartida(id);
         return "redirect:/gestion-partida";
     }
+
+    @GetMapping("/partidas/{id}/ver-mayor")
+    public String verDesdeMayor(@PathVariable Integer id, Model model) {
+        model.addAttribute("idPartida", id);
+
+        var lineas = service.obtenerLineasConNombre(id);
+
+        BigDecimal totalDebe = lineas.stream()
+                .map(l -> l.getMontoDebe() == null ? BigDecimal.ZERO : l.getMontoDebe())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalHaber = lineas.stream()
+                .map(l -> l.getMontoHaber() == null ? BigDecimal.ZERO : l.getMontoHaber())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("lineas", lineas);
+        model.addAttribute("totalDebe", totalDebe);
+        model.addAttribute("totalHaber", totalHaber);
+
+        return "DetallePartidaMayor";
+    }
+
 }
