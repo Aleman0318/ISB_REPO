@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 @Controller
@@ -47,9 +45,10 @@ public class LibroDiarioController {
             h = ym.atEndOfMonth();
             desde = hasta = null;
         } else if (desde != null || hasta != null) {  // 3) rango
-            d = (desde != null) ? LocalDate.parse(desde) : LocalDate.MIN;
-            h = (hasta != null) ? LocalDate.parse(hasta) : LocalDate.MAX;
+            d = (desde != null) ? LocalDate.parse(desde) : null;
+            h = (hasta != null) ? LocalDate.parse(hasta) : null;
         }
+        // Si NO hay filtros, d/h quedan en null -> se sincroniza y se muestra TODO
 
         Map<String,Object> data = libroDiarioService.consultar(d, h);
         model.addAllAttributes(data);
@@ -62,5 +61,4 @@ public class LibroDiarioController {
 
         return "RegistroLibroDiario";
     }
-
 }

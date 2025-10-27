@@ -15,61 +15,63 @@
 <div class="sidebar">
     <h2>Dashboard</h2>
     <ul>
-        <!-- Inicio: solo usuarios autenticados -->
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
-                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+                <img th:src="@{/img/home.png}" alt="Inicio" class="icono-opcion_aside">Inicio
+            </a>
         </li>
 
-        <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
-                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="Gestion Usuario" class="icono-opcion_aside">Gestión Usuario
+            </a>
         </li>
 
-        <!-- Administrador o Contador -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
-                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas
+            </a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/gestion-partida}">
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+                <img th:src="@{/img/carga-de-archivos.png}" alt="Gestión Partidas" class="icono-opcion_aside">Gestión de Partidas
+            </a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/registro-libro-diario}" class="active">
-                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro Diario" class="icono-opcion_aside">Libro Diario
+            </a>
         </li>
-        <!-- NUEVO: Libro Mayor -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/libro-mayor}">
-                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+                <img th:src="@{/img/mayor.png}" alt="Libro Mayor" class="icono-opcion_aside">Libro Mayor
+            </a>
         </li>
-        <!-- NUEVO: Balanza de Comprobación -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/balanza-comprobacion}">
-                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza de Comprobación</a>
+                <img th:src="@{/img/balanza.png}" alt="Balanza" class="icono-opcion_aside">Balanza de Comprobación
+            </a>
         </li>
 
-        <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/generar-reporte}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes
+            </a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
-                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+                <img th:src="@{/img/revisar.png}" alt="Auditoría" class="icono-opcion_aside">Auditoría
+            </a>
         </li>
 
-        <!-- About (visible para todos los roles, incluso invitado) -->
         <li>
             <a th:href="@{/about}">
-                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+                <img th:src="@{/img/nosotros.png}" alt="About" class="icono-opcion_aside">About
+            </a>
         </li>
     </ul>
 </div>
 
-<!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
 
 <div class="main">
@@ -80,18 +82,19 @@
         </button>
         <div class="brand"><h1>Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario" data-usuario-target>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
-            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-            /*]]>*/
-        </script>
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
+                    document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
+                    /*]]>*/
+                </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
 
-            <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
+            <a onclick="window.location.href='/perfil'" title="Perfil">
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </a>
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
@@ -103,13 +106,9 @@
         </div>
     </header>
 
-    <!-- Contenedor principal -->
     <div class="container_principal">
         <main class="gestion-usuarios">
             <h1 class="titulo-gestion fuente-titulos2 txt-blanco">Registros en el Libro Diario</h1>
-
-            <!-- Mensaje de validación si llega error -->
-            <div th:if="${errorFiltro}" style="color:#b91c1c;margin:-6px 0 6px" th:text="${errorFiltro}"></div>
 
             <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
                 <section class="filtros-card">
@@ -127,11 +126,8 @@
                             <div class="filtro-col">
                                 <label for="fPeriodo">Mes y año</label>
                                 <div class="mes">
-                                    <input id="fPeriodo" name="periodo"
-                                           class="input input-mes"
-                                           type="month"
-                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año"
-                                           required>
+                                    <input id="fPeriodo" name="periodo" class="input input-mes" type="month"
+                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año">
                                     <span class="place">Elegir mes y año</span>
                                 </div>
                             </div>
@@ -139,9 +135,11 @@
                             <div class="filtro-col">
                                 <label>Rango de fechas</label>
                                 <div class="rango">
-                                    <input id="fDesde" name="desde" type="date" class="input" th:value="${desdeStr}" aria-label="Desde">
+                                    <input id="fDesde" name="desde" type="date" class="input"
+                                           th:value="${desdeStr}" aria-label="Desde">
                                     <span>–</span>
-                                    <input id="fHasta" name="hasta" type="date" class="input" th:value="${hastaStr}" aria-label="Hasta">
+                                    <input id="fHasta" name="hasta" type="date" class="input"
+                                           th:value="${hastaStr}" aria-label="Hasta">
                                 </div>
                             </div>
 
@@ -177,8 +175,7 @@
                     <td th:text="${#numbers.formatDecimal(r.debe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
                     <td th:text="${#numbers.formatDecimal(r.haber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
                     <td>
-                        <a th:if="${r.docId != null}"
-                           th:href="@{'/documento/' + ${r.docId} + '/ver'}"
+                        <a th:if="${r.docId != null}" th:href="@{'/documento/' + ${r.docId} + '/ver'}"
                            th:text="${r.docNombre != null ? r.docNombre : 'Ver documento'}"></a>
                         <span th:if="${r.docId == null}">—</span>
                     </td>
@@ -206,106 +203,17 @@
     </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Chart.js (si no existe canvas no hace nada)
-    const ctx = document.getElementById('barChart');
-    if (ctx) {
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['JUL','JUN','AGO','SEP','OCT'],
-          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-        },
-        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-      });
-    }
-
-    // Hamburguesa
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-
-      if(!btn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('sidebar--open');
-        backdrop.classList.add('backdrop--show');
-        document.body.classList.add('no-scroll');
-        btn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        sidebar.classList.remove('sidebar--open');
-        backdrop.classList.remove('backdrop--show');
-        document.body.classList.remove('no-scroll');
-        btn.setAttribute('aria-expanded','false');
-      }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
-</script>
-
-<!-- Logout con confirmación + limpieza IndexedDB/localStorage + submit -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const btn = document.getElementById('logoutBtn');
-      if (!btn) return;
-
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const { isConfirmed } = await Swal.fire({
-          title: '¿Cerrar sesión?',
-          text: 'Se cerrará tu sesión actual.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, cerrar',
-          cancelButtonText: 'Cancelar',
-          confirmButtonColor: '#e63946'
-        });
-
-        if (isConfirmed) {
-          try {
-            const mod = await import('/JS/UsuarioIndexDB.js');
-            await mod.clearUser();
-            localStorage.removeItem('lastUserName');
-          } catch (err) {
-            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
-          }
-          document.getElementById('logoutForm')?.submit();  // POST /logout con CSRF
-        }
-      });
-    });
-</script>
-
-<!-- ✅ Hidratar el nombre desde IndexedDB en el header -->
-<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
-<script type="module">
-    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
-    hydrateUserDisplay();
-</script>
 
 <script>
     (function(){
-      const form   = document.getElementById('formFiltros');
+      const form = document.getElementById('formFiltros');
       const fFecha = document.getElementById('fFecha');
-      const fPer   = document.getElementById('fPeriodo');
+      const fPer = document.getElementById('fPeriodo');
       const fDesde = document.getElementById('fDesde');
       const fHasta = document.getElementById('fHasta');
       const btnClr = document.getElementById('limpiarBusqueda');
 
-      // limpiar exclusividad (lo que ya tienes)
       const clearOthers = (arr) => arr.forEach(i => i && (i.value = ''));
       fFecha?.addEventListener('change', ()=> clearOthers([fPer, fDesde, fHasta]));
       fPer  ?.addEventListener('change', ()=> clearOthers([fFecha, fDesde, fHasta]));
@@ -318,14 +226,12 @@
         });
       });
 
-      // 🔧 handler del botón LIMPIAR
       btnClr?.addEventListener('click', (e)=>{
         e.preventDefault();
         [fFecha,fPer,fDesde,fHasta].forEach(inp=>{
           if (inp){ inp.value=''; inp.removeAttribute('name'); }
         });
-        // opción 1: recargar la ruta limpia (GET sin parámetros)
-        form ? form.submit() : (window.location.href = '/registro-libro-diario');
+        window.location.href = '/registro-libro-diario';
       });
     })();
 </script>

@@ -47,7 +47,7 @@
         </li>
         <!-- NUEVO: Balanza de Comprobación -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/balanza-comprobacion}" class="active">
+            <a th:href="@{/balanza-comprobacion}">
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza de Comprobación</a>
         </li>
 
@@ -57,7 +57,7 @@
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/bitacora}">
+            <a th:href="@{/bitacora}"  class="active">
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
