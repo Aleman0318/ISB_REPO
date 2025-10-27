@@ -26,31 +26,31 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
 
     void deleteByIdPartida(Long idPartida);
 
-    // >>> filas para Libro Diario (una por detalle), con filtro opcional por MES (rango)
+    // ===== Libro Diario (tal cual ya lo tenías) =====
     @Query("""
-    SELECT
-        d.id           AS idDetalle,
-        d.idCuenta     AS idCuenta,
-        p.id           AS idPartida,
-        p.fecha        AS fecha,
-        c.tipocuenta   AS tipoCuenta,
-        CONCAT(c.codigo, ' - ', c.nombrecuenta) AS cuenta,
-        p.concepto     AS descripcion,
-        d.montoDebe    AS debe,
-        d.montoHaber   AS haber,
-        df.id          AS docId,
-        df.nombreArchivo AS docNombre
-    FROM DetallePartida d
-    JOIN Partida p            ON p.id = d.idPartida
-    JOIN CuentaContable c     ON c.idCuenta = d.idCuenta
-    LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
-    WHERE p.fecha BETWEEN COALESCE(:desde, p.fecha) AND COALESCE(:hasta, p.fecha)
-    ORDER BY p.fecha ASC, p.id ASC, d.id ASC
-""")
+        SELECT
+            d.id             AS idDetalle,
+            d.idCuenta       AS idCuenta,
+            p.id             AS idPartida,
+            p.fecha          AS fecha,
+            c.tipocuenta     AS tipoCuenta,
+            CONCAT(c.codigo, ' - ', c.nombrecuenta) AS cuenta,
+            p.concepto       AS descripcion,
+            d.montoDebe      AS debe,
+            d.montoHaber     AS haber,
+            df.id            AS docId,
+            df.nombreArchivo AS docNombre
+        FROM DetallePartida d
+        JOIN Partida p            ON p.id = d.idPartida
+        JOIN CuentaContable c     ON c.idCuenta = d.idCuenta
+        LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
+        WHERE p.fecha BETWEEN COALESCE(:desde, p.fecha) AND COALESCE(:hasta, p.fecha)
+        ORDER BY p.fecha ASC, p.id ASC, d.id ASC
+    """)
     List<LibroDiarioDAO> libroDiario(@Param("desde") LocalDate desde,
-                                     @Param("hasta") LocalDate hasta
-    );
+                                     @Param("hasta") LocalDate hasta);
 
+    // ===== Movimientos para Libro Mayor (tal cual ya lo tenías) =====
     @Query("""
        SELECT
          p.fecha                    AS fecha,
@@ -72,9 +72,28 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
          AND (COALESCE(:hasta, p.fecha) >= p.fecha)
        ORDER BY c.codigo ASC, p.fecha ASC, p.id ASC, d.id ASC
     """)
-    List<LibroMayorView> mayorMovimientos(
-            @Param("idCuenta") Long idCuenta,
-            @Param("desde") LocalDate desde,
-            @Param("hasta") LocalDate hasta
-    );
+    List<LibroMayorView> mayorMovimientos(@Param("idCuenta") Long idCuenta,
+                                          @Param("desde") LocalDate desde,
+                                          @Param("hasta") LocalDate hasta);
+
+    // ===== NUEVO: saldos iniciales por cuenta (para el corrido del mayor) =====
+    // Se usa solo si 'desde' NO es null; si 'desde' es null, el service toma saldoInicial = 0.
+    @Query("""
+        SELECT
+            d.idCuenta                                   AS idCuenta,
+            COALESCE(SUM(d.montoDebe - d.montoHaber), 0) AS saldo
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE (:idCuenta IS NULL OR d.idCuenta = :idCuenta)
+          AND ( :desde IS NOT NULL AND p.fecha < :desde )
+        GROUP BY d.idCuenta
+    """)
+    List<SaldoInicialRow> saldosInicialesPorCuenta(@Param("idCuenta") Long idCuenta,
+                                                   @Param("desde") LocalDate desde);
+
+    // Proyección simple para el saldo inicial
+    interface SaldoInicialRow {
+        Long getIdCuenta();
+        java.math.BigDecimal getSaldo();
+    }
 }
