@@ -47,10 +47,10 @@
             <a th:href="@{/libro-mayor}" class="active">
                 <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
         </li>
-        <!-- NUEVO: Balanza de Comprobación -->
+        <!-- NUEVO: Balanza -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/balanza-comprobacion}">
-                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza de Comprobación</a>
+                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
         <!-- Administrador o Auditor -->
