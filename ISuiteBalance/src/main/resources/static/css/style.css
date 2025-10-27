@@ -10,7 +10,15 @@ body {
 }
 
 .txt-blanco{
+    color: #ffffff !important;
+}
+
+.txt-negro{
     color: #1e1f25 !important;
+}
+
+.txt-rojo{
+    color: #e63946 !important;
 }
 
 /* === SIDEBAR === */

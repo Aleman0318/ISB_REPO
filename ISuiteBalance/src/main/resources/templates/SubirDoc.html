@@ -84,12 +84,12 @@
         </button>
 
         <div class="brand">
-            <h1>Suite Balance | ISB</h1>
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
         </div>
 
         <div class="user-info">
 
-            <span class="nombre-usuario" data-usuario-target>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
         <script th:inline="javascript">
             /*<![CDATA[*/
             var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
@@ -119,38 +119,39 @@
     </header>
 
     <!-- Contenedor principal -->
-    <div class="container_principal">
+    <div class="container_principal fondo-1">
         <main class="subir-documento">
-            <h1 class="titulo-subida fuente-titulos2 txt-blanco">Subir Documento PDF</h1>
-
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-subida fuente-titulos3 txt-rojo">Subir Documento PDF</h1>
+            </div>
             <div class="contenedor-blanco">
-                <div class="area-carga">
-                    <label for="archivoPDF">Cargar archivo</label>
+                <div class="area-carga fondo-lineas">
+                    <label for="archivoPDF" class="fuente-btn">Cargar archivo</label>
                     <input type="file" id="archivoPDF" accept="application/pdf" style="display: none;" />
                     <label for="archivoPDF">
                         <img src="https://cdn-icons-png.flaticon.com/512/724/724933.png" alt="Subir documento" class="imagen-subida" />
                     </label>
                 </div>
 
-                <div class="vista-previa">
-                    <label>Vista previa</label>
-                    <p>Nombre del documento: <span id="nombreDocumento">---</span></p>
+                <div class="vista-previa fondo-lineas">
+                    <label class="fuente-btn">Vista previa</label>
+                    <p class="fuente-p4">Nombre del documento: <span id="nombreDocumento">---</span></p>
                 </div>
 
-                <div class="vista-previa" style="margin-top: 12px;">
-                    <label>Clasificación del documento</label>
-                    <select id="selClasificacion" class="input" style="width: 100%;">
-                        <option value="" selected th:if="${#lists.isEmpty(clasificaciones)}">Seleccione una clasificación</option>
+                <div class="vista-previa fondo-lineas" style="margin-top: 12px;">
+                    <label class="fuente-btn">Clasificación del documento</label>
+                    <select id="selClasificacion" class="input fuente-p4" style="width: 100%;">
+                        <option value="" selected th:if="${#lists.isEmpty(clasificaciones)}" class="fuente-p1">Seleccione una clasificación</option>
                         <option th:each="c : ${clasificaciones}"
                                 th:value="${c.idClasificacion}"
                                 th:text="${c.nombreclasificacion}">
                         </option>
                     </select>
-                    <small class="sub" style="display:block;margin-top:6px;">Ej.: Factura de compra, Recibo, Nota de crédito…</small>
+                    <small class="sub fuente-p2" style="display:block;margin-top:6px;">Ej.: Factura de compra, Recibo, Nota de crédito…</small>
                 </div>
 
                 <div class="botones-subida">
-                    <button class="btn-subir-adjuntar" type="button">Subir y adjuntar a Partida</button>
+                    <button class="btn-subir-adjuntar btn-agregar fuente-btn centrar-items" type="button">Subir y adjuntar a Partida</button>
                 </div>
             </div>
         </main>
