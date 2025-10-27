@@ -47,6 +47,30 @@
   font-style: normal;
 }
 
+/*titulos 3*/
+@font-face {
+  font-family: 'Fuente-titulos3';
+  src: url('/fonts/Gildeon.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*parrafos 4*/
+@font-face {
+  font-family: 'Fuente-p4';
+  src: url('/fonts/ROCK.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*botones*/
+@font-face {
+  font-family: 'Fuente-btn';
+  src: url('/fonts/GOTHIC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .fuente-titulos1{
 font-family: 'Fuente-titulos1';
 font-size: 6.5rem;
@@ -84,3 +108,22 @@ font-size: 1.3rem; }
 .rojo{
     color:#FF3030 !important;
 }
+.fuente-titulos3{
+font-family: 'Fuente-titulos3';
+font-size: 6rem;
+text-align: center;
+}
+
+.fuente-p4{
+font-family: 'Fuente-p4';
+font-size: 1.30rem;
+}
+
+.fuente-btn{
+font-family: 'Fuente-btn';
+font-size: 1.25rem;
+}
+
+.fuente-semita{
+font-family: 'Fuente-semi';
+font-size: 1.3rem; }
