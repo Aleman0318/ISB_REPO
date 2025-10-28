@@ -79,10 +79,10 @@
         <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
     </button>
 
-    <div class="brand"><h1>Suite Balance | ISB</h1></div>
+    <div class="brand "><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
 
     <div class="user-info">
-    <span class="nombre-usuario" data-usuario-target>
+    <span class="nombre-usuario fuente-p4" data-usuario-target>
         <script th:inline="javascript">
             /*<![CDATA[*/
             var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
@@ -109,47 +109,51 @@
 </header>
 
 <!-- Contenido -->
-<div class="container_principal">
-    <main>
-        <div class="formulario-usuario">
-            <h1>Perfil de usuario</h1>
+<div class="container_principal fondo-1">
+    <main class="gestion-usuarios fondo-1">
 
+        <div class="contenedor-titulo-gestion" style="margin-top:40px;">
+            <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Perfil de usuario</h1>
+        </div>
+
+
+        <div class="formulario-usuario ">
             <div class="texto" style="padding-top:10px;">
-                <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
+
             </div>
 
             <!-- Nombre -->
             <div class="form-grupo">
-                <label>Nombre: </label>
-                <input id="perfil-nombre" type="text" readonly th:value="${usuario?.nombres}" value="">
+                <label class="fuente-btn">Nombre: </label>
+                <input class="fuente-p1" id="perfil-nombre" type="text" readonly th:value="${usuario?.nombres}" value="">
             </div>
 
             <!-- Correo -->
             <div class="form-grupo">
-                <label>Correo: </label>
-                <input id="perfil-correo" type="email" readonly th:value="${usuario?.correo}" value="">
+                <label class="fuente-btn">Correo: </label>
+                <input class="fuente-p1" id="perfil-correo" type="email" readonly th:value="${usuario?.correo}" value="">
             </div>
 
             <!-- Teléfono -->
             <div class="form-grupo">
-                <label>Teléfono: </label>
-                <input id="perfil-telefono" type="text" readonly th:value="${usuario?.telefono}" value="">
+                <label class="fuente-btn">Teléfono: </label>
+                <input class="fuente-p1" id="perfil-telefono" type="text" readonly th:value="${usuario?.telefono}" value="">
             </div>
 
             <!-- Rol -->
             <div class="form-grupo">
-                <label>Rol: </label>
-                <input id="perfil-rol" type="text" readonly th:value="${usuario?.rol}" value="">
+                <label class="fuente-btn">Rol: </label>
+                <input class="fuente-p1" id="perfil-rol" type="text" readonly th:value="${usuario?.rol}" value="">
             </div>
 
             <!-- Empresa -->
             <div class="form-grupo">
-                <label style="min-width:200px;">Empresa: </label>
-                <input id="perfil-empresa" type="text" readonly th:value="${usuario?.empresa}" value="">
+                <label class="fuente_btn" style="min-width:200px;">Empresa: </label>
+                <input class="fuente-p1" id="perfil-empresa" type="text" readonly th:value="${usuario?.empresa}" value="">
             </div>
 
             <div class="contenedor-boton">
-                <a class="btn-agregar" th:href="@{/dashboard}"
+                <a class="btn-agregar fuente-btn" th:href="@{/dashboard}"
                    style="text-align:center;">
                     Volver
                 </a>
