@@ -80,9 +80,9 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <span class="nombre-usuario" data-usuario-target>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
                 <script th:inline="javascript">
                     /*<![CDATA[*/
                     var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
@@ -106,54 +106,58 @@
         </div>
     </header>
 
-    <div class="container_principal">
-        <main class="gestion-usuarios">
-            <h1 class="titulo-gestion fuente-titulos2 txt-blanco">Registros en el Libro Diario</h1>
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios fondo-1">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Registros en el Libro Diario</h1>
+            </div>
 
-            <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
-                <section class="filtros-card">
-                    <div class="filtros-card__header">
-                        <h2 class="filtros-card__title">Búsqueda por Fecha</h2>
-                    </div>
+            <div>
+                <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
+                    <section class="filtros-card">
+                        <div class="filtros-card__header">
+                            <h2 class="filtros-card__title fuente-p1">Búsqueda por Fecha</h2>
+                        </div>
 
-                    <div class="filtros-card__body">
-                        <div class="filtros-row buscador-wrap">
-                            <div class="filtro-col">
-                                <label for="fFecha">Fecha específica</label>
-                                <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">
-                            </div>
-
-                            <div class="filtro-col">
-                                <label for="fPeriodo">Mes y año</label>
-                                <div class="mes">
-                                    <input id="fPeriodo" name="periodo" class="input input-mes" type="month"
-                                           th:value="${periodoStr}" aria-label="Filtrar por mes y año">
-                                    <span class="place">Elegir mes y año</span>
+                        <div class="filtros-card__body ">
+                            <div class="filtros-row buscador-wrap">
+                                <div class="filtro-col fuente-p1">
+                                    <label for="fFecha">Fecha específica</label>
+                                    <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">
                                 </div>
-                            </div>
 
-                            <div class="filtro-col">
-                                <label>Rango de fechas</label>
-                                <div class="rango">
-                                    <input id="fDesde" name="desde" type="date" class="input"
-                                           th:value="${desdeStr}" aria-label="Desde">
-                                    <span>–</span>
-                                    <input id="fHasta" name="hasta" type="date" class="input"
-                                           th:value="${hastaStr}" aria-label="Hasta">
+                                <div class="filtro-col fuente-p1">
+                                    <label for="fPeriodo">Mes y año</label>
+                                    <div class="mes">
+                                        <input id="fPeriodo" name="periodo" class="input input-mes" type="month"
+                                               th:value="${periodoStr}" aria-label="Filtrar por mes y año">
+                                        <span class="place">Elegir mes y año</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="filtro-col botones">
-                                <button type="submit" class="btn limpiar">Buscar</button>
-                                <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                                <div class="filtro-col fuente-p1">
+                                    <label>Rango de fechas</label>
+                                    <div class="rango">
+                                        <input id="fDesde" name="desde" type="date" class="input"
+                                               th:value="${desdeStr}" aria-label="Desde">
+                                        <span>–</span>
+                                        <input id="fHasta" name="hasta" type="date" class="input"
+                                               th:value="${hastaStr}" aria-label="Hasta">
+                                    </div>
+                                </div>
+
+                                <div class="filtro-col botones">
+                                    <button type="submit" class="btn limpiar fuente-btn">Buscar</button>
+                                    <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
-            </form>
+                    </section>
+                </form>
+            </div>
 
             <table class="tabla-usuarios" id="tabla-libro-diario">
-                <thead>
+                <thead class="fuente-btn">
                 <tr>
                     <th>N°</th>
                     <th>Fecha</th>
@@ -165,7 +169,7 @@
                     <th>Documento</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="fuente-p1">
                 <tr th:each="r : ${filas}">
                     <td th:text="${r.idPartida}">1</td>
                     <td th:text="${#temporals.format(r.fecha, 'yyyy-MM-dd')}">2025-10-22</td>
@@ -197,7 +201,7 @@
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
+                <button class="btn-agregar fuente-btn" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
             </div>
         </main>
     </div>
@@ -234,6 +238,70 @@
         window.location.href = '/registro-libro-diario';
       });
     })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    (function () {
+      const btn = document.getElementById('menuBtn');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('backdrop');
+
+      if (!btn || !sidebar || !backdrop) return;
+
+      function openMenu() {
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+      }
+
+      function closeMenu() {
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu();
+      });
+
+      backdrop.addEventListener('click', closeMenu);
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 767) closeMenu();
+      });
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('logoutBtn');
+      if (!btn) return;
+
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Se cerrará tu sesión actual.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#e63946'
+        });
+
+        if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
+          document.getElementById('logoutForm')?.submit();
+        }
+      });
+    });
 </script>
 
 </body>

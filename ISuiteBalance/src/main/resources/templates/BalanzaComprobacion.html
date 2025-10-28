@@ -145,7 +145,7 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
             <span class="nombre-usuario" data-usuario-target>
                 <script th:inline="javascript">
@@ -199,14 +199,14 @@
                 </div>
             </form>
 
-            <div style="margin:.5rem 0;">
+            <div style="margin:.5rem 0;" class="fuente-p1">
                 <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
                 <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
             </div>
 
             <!-- ====== TABLA ====== -->
             <div id="balanzaResultados">
-                <div class="tabla-wrapper">
+                <div class="tabla-wrapper ">
                     <table class="tabla-usuarios">
                         <thead class="fuente-btn">
                         <tr>
