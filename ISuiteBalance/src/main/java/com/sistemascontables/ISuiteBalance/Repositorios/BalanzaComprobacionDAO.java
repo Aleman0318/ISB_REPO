@@ -15,36 +15,37 @@ public interface BalanzaComprobacionDAO extends JpaRepository<CuentaContable, Lo
 
     @Transactional(readOnly = true)
     @Query(value = """
+        WITH si AS (
+            SELECT d.id_cuenta,
+                   SUM(d.montodebe - d.montohaber) AS saldo_inicial
+            FROM public.tbl_detallepartida d
+            JOIN public.tbl_partidas p ON p.id_partida = d.id_partida
+            WHERE p.fecha < :desde
+            GROUP BY d.id_cuenta
+        ),
+        mov AS (
+            SELECT d.id_cuenta,
+                   SUM(d.montodebe)  AS debitos,
+                   SUM(d.montohaber) AS creditos
+            FROM public.tbl_detallepartida d
+            JOIN public.tbl_partidas p ON p.id_partida = d.id_partida
+            WHERE p.fecha >= :desde AND p.fecha <= :hasta
+            GROUP BY d.id_cuenta
+        )
         SELECT
-            c.id_cuenta    AS idCuenta,
-            c.codigo       AS codigo,
-            c.nombrecuenta AS nombre,
-
-            COALESCE((
-                SELECT SUM(d1.montodebe - d1.montohaber)
-                FROM public.tbl_detallepartida d1
-                JOIN public.tbl_partidas p1 ON p1.id_partida = d1.id_partida
-                WHERE d1.id_cuenta = c.id_cuenta
-                  AND p1.fecha < :desde
-            ), 0) AS saldoInicial,
-
-            COALESCE((
-                SELECT SUM(d2.montodebe)
-                FROM public.tbl_detallepartida d2
-                JOIN public.tbl_partidas p2 ON p2.id_partida = d2.id_partida
-                WHERE d2.id_cuenta = c.id_cuenta
-                  AND p2.fecha >= :desde AND p2.fecha <= :hasta
-            ), 0) AS debitos,
-
-            COALESCE((
-                SELECT SUM(d3.montohaber)
-                FROM public.tbl_detallepartida d3
-                JOIN public.tbl_partidas p3 ON p3.id_partida = d3.id_partida
-                WHERE d3.id_cuenta = c.id_cuenta
-                  AND p3.fecha >= :desde AND p3.fecha <= :hasta
-            ), 0) AS creditos
-
+            c.id_cuenta      AS idCuenta,
+            c.codigo         AS codigo,
+            c.nombrecuenta   AS nombre,
+            COALESCE(si.saldo_inicial, 0) AS saldoInicial,
+            COALESCE(mov.debitos,      0) AS debitos,
+            COALESCE(mov.creditos,     0) AS creditos
         FROM public.tbl_cuentacontable c
+        LEFT JOIN si  ON si.id_cuenta  = c.id_cuenta
+        LEFT JOIN mov ON mov.id_cuenta = c.id_cuenta
+        -- 🔴 Solo cuentas afectadas (tienen saldo inicial distinto de 0 o movimientos en el rango)
+        WHERE COALESCE(si.saldo_inicial,0) <> 0
+           OR COALESCE(mov.debitos,0)      <> 0
+           OR COALESCE(mov.creditos,0)     <> 0
         ORDER BY c.codigo ASC
     """, nativeQuery = true)
     List<Balanza> calcularBalanzaCompleta(
