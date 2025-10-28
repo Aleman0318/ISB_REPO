@@ -79,10 +79,12 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
+        </div>
         <div class="user-info">
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
-            <span class="nombre-usuario" data-usuario-target>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
         <script th:inline="javascript">
             /*<![CDATA[*/
             var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
@@ -105,9 +107,12 @@
     </header>
 
     <!-- Contenedor principal (mismas clases) -->
-    <div class="container_principal">
-        <main class="gestion-usuarios">
-            <h1 class="fuente-titulos2 titulo-gestion txt-blanco">Gestion de Partidas</h1>
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios fondo-1">
+
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Gestion de Partidas</h1>
+            </div>
 
             <div class="buscador-wrap">
                 <input id="buscarPartidas"
@@ -125,13 +130,13 @@
                     <span class="place">Elegir mes y año</span>
                 </div>
 
-                <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
 
                 <span id="contadorCoincidencias"></span>
             </div>
 
             <table class="tabla-usuarios" id="tabla-gestion-partidas">
-                <thead>
+                <thead class="fuente-btn">
                 <tr>
                     <th>Nº</th>
                     <th>Fecha</th>
@@ -144,7 +149,7 @@
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody class="fuente-p1">
                 <tr th:each="p : ${partidas}">
                     <td th:text="${p.idPartida}">1</td>
                     <td th:text="${p.fecha}">2025-10-14</td>
@@ -190,7 +195,7 @@
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
+                <button class="btn-agregar fuente-btn" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
             </div>
         </main>
     </div>

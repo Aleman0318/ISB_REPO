@@ -80,9 +80,9 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
-      <span class="nombre-usuario" data-usuario-target>
+      <span class="nombre-usuario fuente-p4" data-usuario-target>
         <script th:inline="javascript">
           document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
         </script>
@@ -100,13 +100,14 @@
         </div>
     </header>
 
-    <div class="container_principal">
-        <main class="gestion-usuarios">
-            <h1 class="fuente-titulos2 titulo-gestion txt-blanco">Balanza de Comprobacion</h1>
-
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios fondo-1">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Balanza de Comprobacion</h1>
+            </div>
             <!-- Filtros -->
             <form th:action="@{/balanza-comprobacion}" method="get" id="formFiltros">
-                <div class="filtros-card__body">
+                <div class="filtros-card__body fuente-p1">
                     <div class="buscador-wrap filtros-row">
                         <div class="filtro-col">
                             <span class="filtro-label">Rango de fechas</span>
@@ -120,35 +121,35 @@
                         </div>
 
                         <div class="filtro-col botones">
-                            <button type="submit" class="btn limpiar">Buscar</button>
-                            <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
-                            <button type="button" class="btn limpiar" onclick="window.print()">Imprimir / Exportar</button>
+                            <button type="submit" class="btn limpiar fuente-btn">Buscar</button>
+                            <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
+                            <button type="button" class="btn limpiar fuente-btn" onclick="window.print()">Imprimir / Exportar</button>
                         </div>
                     </div>
                 </div>
             </form>
 
-            <div style="margin:.5rem 0;">
+            <div style="margin:.5rem 0;" class="fuente-p1">
                 <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
                 <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
             </div>
 
             <!-- Resultados -->
             <div id="balanzaResultados">
-                <div class="tabla-wrapper">
+                <div class="tabla-wrapper ">
                     <table class="tabla-usuarios">
-                        <thead>
+                        <thead class="fuente-btn">
                         <tr>
                             <th style="min-width:140px;">Código</th>
                             <th>Cuenta</th>
-                            <th class="mono">Saldo Inicial</th>
-                            <th class="mono">Débitos</th>
-                            <th class="mono">Créditos</th>
-                            <th class="mono">Saldo Final Deudor</th>
-                            <th class="mono">Saldo Final Acreedor</th>
+                            <th class="mono fuente-p1">Saldo Inicial</th>
+                            <th class="mono fuente-p1">Débitos</th>
+                            <th class="mono fuente-p1">Créditos</th>
+                            <th class="mono fuente-p1">Saldo Final Deudor</th>
+                            <th class="mono fuente-p1">Saldo Final Acreedor</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="fuente-p1">
                         <tr th:if="${#lists.isEmpty(filas)}">
                             <td colspan="7" style="text-align:center;">No hay datos para el rango seleccionado.</td>
                         </tr>
@@ -176,7 +177,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th colspan="2" style="text-align:right;">Totales</th>
+                            <th colspan="2" style="text-align:right;" class="fuente-p1">Totales</th>
                             <th class="mono" th:text="${#numbers.formatDecimal(totalSaldoInicial, 1, 'POINT', 2, 'POINT')}">0.00</th>
                             <th class="mono" th:text="${#numbers.formatDecimal(totalDebitos, 1, 'POINT', 2, 'POINT')}">0.00</th>
                             <th class="mono" th:text="${#numbers.formatDecimal(totalCreditos, 1, 'POINT', 2, 'POINT')}">0.00</th>
@@ -187,7 +188,7 @@
                     </table>
                 </div>
 
-                <small style="display:block;margin-top:.6rem;opacity:.8;">
+                <small style="display:block;margin-top:.6rem;opacity:.8;" class="fuente-p1">
                     Nota: Saldo Final = Saldo Inicial + Débitos − Créditos. Si resulta &gt; 0 se muestra como Deudor; si &lt; 0, como Acreedor.
                 </small>
             </div>

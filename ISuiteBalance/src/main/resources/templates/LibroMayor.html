@@ -78,9 +78,9 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
-      <span class="nombre-usuario" data-usuario-target>
+      <span class="nombre-usuario fuente-p4" data-usuario-target>
         <script th:inline="javascript">
             document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
         </script>
@@ -98,13 +98,13 @@
         </div>
     </header>
 
-    <!-- Contenedor principal y main con las MISMAS clases -->
     <div class="container_principal fondo-1">
         <main class="gestion-usuarios fondo-1">
-            <h1 class="fuente-titulos2 titulo-gestion txt-blanco">Libro Mayor</h1>
-
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Libro Mayor</h1>
+            </div>
             <form th:action="@{/libro-mayor}" method="get" id="formFiltros">
-                <div class="filtros-card__body">
+                <div class="filtros-card__body fuente-p1">
                     <div class="buscador-wrap filtros-row">
                         <div class="filtro-col">
                             <span class="filtro-label">Rango de fechas</span>
@@ -118,8 +118,8 @@
                         </div>
 
                         <div class="filtro-col botones">
-                            <button type="submit" class="btn limpiar">Buscar</button>
-                            <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                            <button type="submit" class="btn limpiar fuente-btn">Buscar</button>
+                            <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
                         </div>
                     </div>
                 </div>
@@ -139,12 +139,12 @@
                     <div class="mayor-section">
                         <div class="mayor-header">
                             <span class="dot"></span>
-                            <span>Cuenta <strong th:text="${g.codigo}"></strong> · <strong th:text="${g.nombrecuenta}"></strong></span>
+                            <span class="fuente-p1">Cuenta <strong th:text="${g.codigo}"></strong> · <strong th:text="${g.nombrecuenta}"></strong></span>
                         </div>
 
                         <div class="tabla-wrapper">
                             <table class="tabla-usuarios">
-                                <thead>
+                                <thead class="fuente-btn">
                                 <tr>
                                     <th>Fecha</th>
                                     <th>ID Partida</th>
@@ -156,7 +156,7 @@
                                     <th>Opcion</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="fuente-p1">
                                 <tr th:if="${#lists.isEmpty(g.filas)}">
                                     <td colspan="8" style="text-align:center;">Sin movimientos para esta cuenta.</td>
                                 </tr>
@@ -184,7 +184,7 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <th colspan="3" style="text-align:right;">Totales</th>
+                                    <th colspan="3" class="fuente-p1" style="text-align:right;">Totales</th>
                                     <th th:text="${#numbers.formatDecimal(g.totalDebe,1,'COMMA',2,'POINT')}">0.00</th>
                                     <th th:text="${#numbers.formatDecimal(g.totalHaber,1,'COMMA',2,'POINT')}">0.00</th>
                                     <th th:text="${#numbers.formatDecimal(g.saldoFinal,1,'COMMA',2,'POINT')}">0.00</th>
