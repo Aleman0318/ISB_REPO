@@ -1,13 +1,19 @@
 package com.sistemascontables.ISuiteBalance.Services;
 
+import com.sistemascontables.ISuiteBalance.Models.EstadoComprobacion;
+import com.sistemascontables.ISuiteBalance.Models.EstadoFinanciero;
 import com.sistemascontables.ISuiteBalance.Repositorios.Balanza;
 import com.sistemascontables.ISuiteBalance.Repositorios.BalanzaComprobacionDAO;
+import com.sistemascontables.ISuiteBalance.Repositorios.EstadoComprobacionDAO;
+import com.sistemascontables.ISuiteBalance.Repositorios.EstadoFinancieroDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -15,10 +21,16 @@ public class BalanzaComprobacionService {
 
     private static final Logger log = LoggerFactory.getLogger(BalanzaComprobacionService.class);
 
-    private final BalanzaComprobacionDAO dao;
+    private final BalanzaComprobacionDAO dao;              // consulta agregada
+    private final EstadoFinancieroDAO estadoFinancieroDAO; // cabecera/pivote
+    private final EstadoComprobacionDAO estadoComprobacionDAO; // totales
 
-    public BalanzaComprobacionService(BalanzaComprobacionDAO dao) {
+    public BalanzaComprobacionService(BalanzaComprobacionDAO dao,
+                                      EstadoFinancieroDAO estadoFinancieroDAO,
+                                      EstadoComprobacionDAO estadoComprobacionDAO) {
         this.dao = dao;
+        this.estadoFinancieroDAO = estadoFinancieroDAO;
+        this.estadoComprobacionDAO = estadoComprobacionDAO;
     }
 
     public static class Fila {
@@ -37,7 +49,6 @@ public class BalanzaComprobacionService {
 
         List<Balanza> agg = dao.calcularBalanzaCompleta(desde, hasta);
 
-        // LOG: cuántas filas devolvió el repositorio
         log.info("[BALANZA] rango {}..{} -> {} filas: {}",
                 desde, hasta, agg.size(),
                 agg.stream().map(Balanza::getCodigo).toList());
@@ -83,4 +94,41 @@ public class BalanzaComprobacionService {
     }
 
     private static BigDecimal nvl(BigDecimal x) { return x == null ? BigDecimal.ZERO : x; }
+
+    /**
+     * Persiste un snapshot de la balanza en:
+     * - tbl_estadofinanciero (cabecera) [tipo=BALANZA_COMPROBACION, periodo=desde..hasta]
+     * - tbl_estadocomprobacion (totales debe/haber vinculados a id_estado)
+     * Devuelve el id_estado (cabecera).
+     */
+    @Transactional
+    public Long guardarSnapshot(LocalDate desde, LocalDate hasta) {
+        Map<String,Object> datos = consultar(desde, hasta);
+        BigDecimal totalDeb = (BigDecimal) datos.get("totalDebitos");
+        BigDecimal totalHab = (BigDecimal) datos.get("totalCreditos");
+
+        String periodo = datos.get("desde") + ".." + datos.get("hasta");
+        String tipo    = "BALANZA_COMPROBACION";
+
+        // Reutiliza si ya existe cabecera para mismo periodo+tipo, si no crea
+        EstadoFinanciero cab = estadoFinancieroDAO
+                .findFirstByTipoEstadoAndPeriodo(tipo, periodo)
+                .orElseGet(() -> {
+                    EstadoFinanciero ef = new EstadoFinanciero();
+                    ef.setTipoEstado(tipo);
+                    ef.setPeriodo(periodo);
+                    ef.setFechaGeneracion(LocalDateTime.now());
+                    return estadoFinancieroDAO.save(ef);
+                });
+
+        // Guarda totales (si prefieres actualizar el último, aquí podrías buscar/borrar antes)
+        EstadoComprobacion ec = new EstadoComprobacion();
+        ec.setEstado(cab);
+        ec.setTotalDebe(totalDeb);
+        ec.setTotalHaber(totalHab);
+        estadoComprobacionDAO.save(ec);
+
+        log.info("[BALANZA][GUARDAR] {} -> Debe={} Haber={}", periodo, totalDeb, totalHab);
+        return cab.getId();
+    }
 }

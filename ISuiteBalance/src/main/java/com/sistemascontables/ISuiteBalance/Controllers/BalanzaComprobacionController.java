@@ -4,7 +4,9 @@ import com.sistemascontables.ISuiteBalance.Services.BalanzaComprobacionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -27,22 +29,32 @@ public class BalanzaComprobacionController {
         LocalDate h = (hasta == null || hasta.isBlank()) ? null : LocalDate.parse(hasta);
 
         if (d == null && h == null) {
-            // PRIMERA CARGA: calculas con tus defaults del service (ej. mes actual)
             Map<String,Object> datos = service.consultar(null, null);
             model.addAllAttributes(datos);
-
-            // pero dejas los inputs vacíos en la vista
             model.addAttribute("desde", null);
             model.addAttribute("hasta", null);
         } else {
-            // FILTRO APLICADO: calculas con el rango indicado
             Map<String,Object> datos = service.consultar(d, h);
             model.addAllAttributes(datos);
-
-            // y reflejas los valores en los inputs
             model.addAttribute("desde", d != null ? d.toString() : null);
             model.addAttribute("hasta", h != null ? h.toString() : null);
         }
         return "BalanzaComprobacion";
+    }
+
+    @PostMapping("/balanza-comprobacion/guardar")
+    public String guardar(@RequestParam(required = false) String desde,
+                          @RequestParam(required = false) String hasta,
+                          RedirectAttributes ra) {
+        LocalDate d = (desde == null || desde.isBlank()) ? null : LocalDate.parse(desde);
+        LocalDate h = (hasta == null || hasta.isBlank()) ? null : LocalDate.parse(hasta);
+
+        Long idEstado = service.guardarSnapshot(d, h);
+        ra.addFlashAttribute("msgOk", "Balanza guardada correctamente. id_estado = " + idEstado);
+
+        String qs = "";
+        if (d != null) qs += (qs.isEmpty() ? "?" : "&") + "desde=" + d;
+        if (h != null) qs += (qs.isEmpty() ? "?" : "&") + "hasta=" + h;
+        return "redirect:/balanza-comprobacion" + qs;
     }
 }

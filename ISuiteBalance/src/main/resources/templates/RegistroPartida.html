@@ -19,19 +19,16 @@
 <div class="sidebar">
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
-        <!-- Inicio: solo usuarios autenticados -->
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}" class="active">
                 <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
-        <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
                 <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
         </li>
 
-        <!-- Administrador o Contador -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
                 <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
@@ -44,18 +41,15 @@
             <a th:href="@{/registro-libro-diario}">
                 <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
         </li>
-        <!-- NUEVO: Libro Mayor -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/libro-mayor}">
                 <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
         </li>
-        <!-- NUEVO: Balanza -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/balanza-comprobacion}">
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
-        <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/generar-reporte}">
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
@@ -65,7 +59,6 @@
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
-        <!-- About (visible para todos los roles, incluso invitado) -->
         <li>
             <a th:href="@{/about}">
                 <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
@@ -81,21 +74,23 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
             <!-- 👇 Usuario sin parpadeo + semilla del servidor -->
-            <span class="nombre-usuario" data-usuario-target>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
-            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-            /*]]>*/
-        </script>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
+              <script th:inline="javascript">
+                /*<![CDATA[*/
+                var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
+                document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
+                /*]]>*/
+              </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <!-- 👆 -->
 
-            <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
+            <a onclick="window.location.href='/perfil'" title="Perfil">
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </a>
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
@@ -106,63 +101,64 @@
         </div>
     </header>
 
-    <div class="container_principal">
+    <div class="container_principal fondo-1">
         <main class="libro-diario">
-            <h1 class="titulo-libro fuente-titulos2 txt-blanco">Registrar Partida</h1>
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Registro de Partidas</h1>
+            </div>
 
             <div class="contenedor-blanco registrar-partida">
                 <div class="cuentas-wrap">
                     <div class="cuentas-header">
-                        <span class="cuentas-titulo">Cuentas afectadas</span>
+                        <span class="cuentas-titulo fuente-btn">Cuentas afectadas</span>
                     </div>
 
-                    <div id="cuentas-container" class="cuentas-container" aria-live="polite">
+                    <div id="cuentas-container" class="cuentas-container fondo-lineas" aria-live="polite">
                         <!-- Tarjeta inicial -->
                         <section class="cuenta-item" data-idx="1">
                             <div class="cuenta-head">
-                                <h3>Cuenta afectada 1</h3>
+                                <h3 class="fuente-btn">Cuenta afectada 1</h3>
                                 <div class="head-actions">
                                     <button class="btn-icon btn-add-card" title="Añadir otra cuenta" type="button">+</button>
                                     <a class="btn-icon btn-delete-card" title="Eliminar cuenta" type="button">
                                         <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
-
-                                        ️</a>
+                                    </a>
                                 </div>
                             </div>
 
                             <div class="cuenta-body">
-                                <label class="sub">Cuenta</label>
-                                <select class="input sel-cuenta">
+                                <label class="sub fuente-btn">Cuenta</label>
+                                <select class="input sel-cuenta fuente-btn">
                                     <option value="" selected>Seleccione la cuenta</option>
                                 </select>
 
-                                <label class="sub">Fecha</label>
-                                <input type="date" class="input inp-fecha" />
+                                <label class="sub fuente-btn">Fecha</label>
+                                <input type="date" class="input inp-fecha fuente-p1" />
 
                                 <div class="fila-form mt-8">
-                                    <label class="radio">
+                                    <label class="radio fuente-p1">
                                         <input type="radio" name="lado-1" value="debe" checked> Debe
                                     </label>
-                                    <label class="radio">
+                                    <label class="radio fuente-p1">
                                         <input type="radio" name="lado-1" value="haber"> Haber
                                     </label>
                                 </div>
 
-                                <label class="sub">Monto</label>
-                                <input class="input monto inp-monto" type="number" min="0" step="0.01" placeholder="$ 0.00">
+                                <label class="sub fuente-btn">Monto</label>
+                                <input class="input monto inp-monto fuente-p1" type="number" min="0" step="0.01" placeholder="$ 0.00">
 
-                                <label class="sub">Descripción (por cuenta)</label>
-                                <textarea class="input inp-desc" rows="2" placeholder="Describe esta línea…"></textarea>
+                                <label class="sub fuente-btn">Descripción (por cuenta)</label>
+                                <textarea class="input inp-desc fuente-p1" rows="2" placeholder="Describe esta línea…"></textarea>
                             </div>
 
                             <div class="cuenta-foot">
-                                <button class="btn btn-primary btn-enviar" type="button">Añadir a tabla</button>
+                                <button class="btn btn-primary btn-enviar fuente-btn" type="button">Añadir a tabla</button>
                             </div>
                         </section>
                     </div>
                 </div>
 
-                <h2 class="subtitulo">Tabla de Partida Doble</h2>
+                <h2 class="subtitulo fuente-btn">Tabla de Partida Doble</h2>
                 <table class="tabla-libro" id="tabla-partida">
                     <thead>
                     <tr>
@@ -177,24 +173,24 @@
                     <tbody id="tbody-partida"></tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="4" class="totales-texto">Totales:</td>
-                        <td id="total-debe">$ 0.00</td>
-                        <td id="total-haber">$ 0.00</td>
+                        <td colspan="4" class="totales-texto fuente-btn">Totales:</td>
+                        <td id="total-debe" class="fuente-p1">$ 0.00</td>
+                        <td id="total-haber" class="fuente-p1">$ 0.00</td>
                     </tr>
                     </tfoot>
                 </table>
 
                 <!-- Documento seleccionado -->
                 <input type="hidden" id="docIdSeleccionado" th:value="${docId}">
-                <p class="doc-seleccionado" th:if="${docNombre != null}">
+                <p class="doc-seleccionado fuente-p1" th:if="${docNombre != null}">
                     Documento adjunto: <strong th:text="${docNombre}">archivo.pdf</strong>
                 </p>
 
                 <div class="acciones-internas">
-                    <button class="btn-adjuntar" type="button">Adjuntar documento</button>
+                    <button class="btn-adjuntar fuente-btn" type="button">Cambiar documento</button>
                     <div class="acciones-derecha">
-                        <button class="btn-cerrar" id="btn-cerrar" type="button">Cancelar</button>
-                        <button class="btn-guardar" id="btn-guardar" type="button">Guardar Partida</button>
+                        <button class="btn-cerrar fuente-btn" id="btn-cerrar" type="button">Cancelar</button>
+                        <button class="btn-guardar fuente-btn" id="btn-guardar" type="button">Guardar Partida</button>
                     </div>
                 </div>
             </div>
@@ -299,17 +295,18 @@
         const _haber = Number(haber || 0);
         tbody.insertAdjacentHTML('beforeend', `
           <tr data-id-cuenta="${String(idCuenta)}" data-debe="${_debe}" data-haber="${_haber}">
-            <td>001</td>
-            <td>${fecha || ''}</td>
-            <td>${etiquetaCuenta || ''}</td>
-            <td>${(descripcion || '').replace(/</g,'&lt;')}</td>
-            <td>${toMoney(_debe)}</td>
-            <td>${toMoney(_haber)}</td>
+            <td class="fuente-p1">001</td>
+            <td class="fuente-p1">${fecha || ''}</td>
+            <td class="fuente-p1">${etiquetaCuenta || ''}</td>
+            <td class="fuente-p1">${(descripcion || '').replace(/</g,'&lt;')}</td>
+            <td class="fuente-p1">${toMoney(_debe)}</td>
+            <td class="fuente-p1">${toMoney(_haber)}</td>
           </tr>
         `);
         recalcTotales();
       }
 
+      // 🔧 Crear tarjeta con TODAS las clases `fuente-*` como la primera
       function crearTarjeta(){
         nextIdx += 1;
         const section = document.createElement('section');
@@ -318,31 +315,34 @@
         const radioName = `lado-${nextIdx}`;
         section.innerHTML = `
           <div class="cuenta-head">
-            <h3>Cuenta afectada ${nextIdx}</h3>
+            <h3 class="fuente-btn">Cuenta afectada ${nextIdx}</h3>
             <div class="head-actions">
               <button class="btn-icon btn-add-card" title="Añadir otra cuenta" type="button">+</button>
-               <a class="btn-icon btn-delete-card" title="Eliminar cuenta" type="button">
+              <a class="btn-icon btn-delete-card" title="Eliminar cuenta" type="button">
                 <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
-
-                ️</a>
+              </a>
             </div>
           </div>
           <div class="cuenta-body">
-            <label class="sub">Cuenta</label>
-            <select class="input sel-cuenta">${cuentasOptionsHTML}</select>
-            <label class="sub">Fecha</label>
-            <input type="date" class="input inp-fecha" />
+            <label class="sub fuente-btn">Cuenta</label>
+            <select class="input sel-cuenta fuente-btn">${cuentasOptionsHTML}</select>
+
+            <label class="sub fuente-btn">Fecha</label>
+            <input type="date" class="input inp-fecha fuente-p1" />
+
             <div class="fila-form mt-8">
-              <label class="radio"><input type="radio" name="${radioName}" value="debe" checked> Debe</label>
-              <label class="radio"><input type="radio" name="${radioName}" value="haber"> Haber</label>
+              <label class="radio fuente-p1"><input type="radio" name="${radioName}" value="debe" checked> Debe</label>
+              <label class="radio fuente-p1"><input type="radio" name="${radioName}" value="haber"> Haber</label>
             </div>
-            <label class="sub">Monto</label>
-            <input class="input monto inp-monto" type="number" min="0" step="0.01" placeholder="$ 0.00">
-            <label class="sub">Descripción (por cuenta)</label>
-            <textarea class="input inp-desc" rows="2" placeholder="Describe esta línea…"></textarea>
+
+            <label class="sub fuente-btn">Monto</label>
+            <input class="input monto inp-monto fuente-p1" type="number" min="0" step="0.01" placeholder="$ 0.00">
+
+            <label class="sub fuente-btn">Descripción (por cuenta)</label>
+            <textarea class="input inp-desc fuente-p1" rows="2" placeholder="Describe esta línea…"></textarea>
           </div>
           <div class="cuenta-foot">
-            <button class="btn btn-primary btn-enviar" type="button">Añadir a tabla</button>
+            <button class="btn btn-primary btn-enviar fuente-btn" type="button">Añadir a tabla</button>
           </div>`;
         return section;
       }
