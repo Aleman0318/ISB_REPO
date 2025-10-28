@@ -79,9 +79,9 @@
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
         <div class="brand">
-            <h1>Suite Balance | ISB</h1>
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
         </div>
-        <div class="user-info">
+        <div class="user-info fuente-p4">
             <!-- === usuario sin parpadeo + semilla backend === -->
             <span class="nombre-usuario" data-usuario-target>
         <script th:inline="javascript">
@@ -110,9 +110,12 @@
         </div>
     </header>
 
-    <div class="container_principal">
+    <div class="container_principal fondo-1">
         <div class="formulario-usuario">
-            <h1 class="fuente-titulos2 txt-blanco">Modificar Usuario</h1>
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Modificar Usuario</h1>
+            </div>
+
             <!-- Mensajes flash opcionales -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
             <div th:if="${ok}" class="alerta-exito" th:text="${ok}"></div>
@@ -124,22 +127,22 @@
                 <input type="hidden" name="action" id="actionField" value="">
 
                 <div class="form-grupo">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre"
+                    <label  class="fuente-btn" for="nombre">Nombre:</label>
+                    <input class="fuente-p1" type="text" id="nombre" name="nombre"
                            placeholder="Nombre" required
                            th:value="${usuario.nombre}">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="correo">Correo:</label>
-                    <input type="email" id="correo" name="correo"
+                    <label class="fuente-btn" for="correo">Correo:</label>
+                    <input class="fuente-p1" type="email" id="correo" name="correo"
                            placeholder="correo@ejemplo.com" required
                            th:value="${usuario.correo}">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="contrasenal">Contraseña:</label>
-                    <input
+                    <label class="fuente-btn" for="contrasenal">Contraseña:</label>
+                    <input class="fuente-p1"
                             type="text"
                             id="contrasenal"
                             placeholder="No se puede cambiar desde aquí"
@@ -148,8 +151,8 @@
                 </div>
 
                 <div class="form-grupo">
-                    <label for="rol">Cambiar rol:</label>
-                    <select id="rol" name="rol" required>
+                    <label class="fuente-btn" for="rol">Cambiar rol:</label>
+                    <select class="fuente-p1" id="rol" name="rol" required>
                         <option value="">Seleccionar Rol del Usuario</option>
                         <option value="Administrador" th:selected="${usuario.rol == 'ADMIN'}">Administrador</option>
                         <option value="Contador" th:selected="${usuario.rol == 'CONTADOR'}">Contador</option>
@@ -157,11 +160,11 @@
                     </select>
                 </div>
 
-                <div class="botones">
+                <div class="botones1">
                     <!-- GUARDAR: no es submit; enviamos nosotros -->
                     <button
                             type="button"
-                            class="btn-agregar"
+                            class="btn-agregar fuente-btn"
                             id="btnGuardar"
                             onclick="
                                 const f = this.form;
@@ -178,7 +181,7 @@
                     <!-- CANCELAR: NO envía el form -->
                     <button
                             type="button"
-                            class="btn-cancelar"
+                            class="btn-agregar fuente-btn"
                             th:onclick="|window.location='@{/gestion-usuario}'|">
                         Cancelar
                     </button>
