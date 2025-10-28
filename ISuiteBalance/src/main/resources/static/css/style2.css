@@ -212,6 +212,7 @@
 /* Contenedor de la tabla */
 .tabla-wrapper {
   margin-top: 10px;
+  margin-bottom: 2rem;
 }
 
 /* ---------- BOTONES OPCIONES ---------- */
@@ -1036,4 +1037,8 @@
 
 .centrar-items{
 margin:auto
+}
+
+.centrar-txt{
+text-align: center;
 }

@@ -118,6 +118,11 @@
                 </h1>
             </div>
 
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">
+                    Detalle de Partida <span th:text="${idPartida}">#</span>
+                </h1>
+            </div>
             <table class="tabla-usuarios">
                 <thead class="fuente-btn">
                 <tr>
@@ -151,7 +156,7 @@
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar fuente-btn" onclick="window.location.href='/gestion-partida'">Volver a Gestion</button>
+                <a class="btn-agregar fuente-btn centrar-txt" th:href="@{/gestion-partida}">Volver a Gestión</a>
             </div>
         </main>
     </div>
