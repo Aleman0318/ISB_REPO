@@ -77,6 +77,15 @@
    margin-top: 0;
 }
 
+.botones1 {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   gap: 1rem;
+   margin-top: 0;
+}
+
+
 .btn-agregar,
 .btn-cancelar {
   width: 40%;
@@ -1043,4 +1052,16 @@ margin:auto
 
 .centrar-txt{
 text-align: center;
+}
+
+
+.btn-agregar2 {
+  width: 10%;
+  padding: clamp(0.6rem, 1.2vw, 0.8rem);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
 }

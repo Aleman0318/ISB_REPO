@@ -70,7 +70,7 @@
 <!-- Backdrop para cerrar al tocar fuera -->
 <div id="backdrop" class="backdrop"></div>
 
-<div class="main">
+<div class="main fondo-1">
 
     <header>
         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -78,11 +78,11 @@
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
         <div class="brand">
-            <h1>Suite Balance | ISB</h1>
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
         </div>
-        <div class="user-info">
+        <div class="user-info fuente-p4">
             <!-- ===== usuario sin parpadeo + semilla backend ===== -->
-            <span class="nombre-usuario" data-usuario-target>
+            <span class="nombre-usuario fuente-4" data-usuario-target>
         <script th:inline="javascript">
             /*<![CDATA[*/
             var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
@@ -109,9 +109,13 @@
         </div>
     </header>
 
-    <div class="container_principal">
+    <div class="container_principal fondo-1">
         <div class="formulario-usuario">
-            <h1 class="fuente-titulos2 txt-blanco">Eliminar Usuario</h1>
+
+            <div class="contenedor-titulo-gestion">
+
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Eliminar Usuario</h1>
+            </div>
 
             <!-- Mensajes flash opcionales -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
@@ -122,29 +126,29 @@
                 <input type="hidden" name="id" th:value="${usuario.id_usuario}">
 
                 <div class="form-grupo">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" placeholder="Nombre" th:value="${usuario.nombre}" readonly>
+                    <label class=" fuente-btn" for="nombre">Nombre:</label>
+                    <input class="fuente-p1" type="text" id="nombre" placeholder="Nombre" th:value="${usuario.nombre}" readonly>
                 </div>
 
                 <div class="form-grupo">
-                    <label for="correo">Correo:</label>
-                    <input type="email" id="correo" placeholder="correo@ejemplo.com" th:value="${usuario.correo}" readonly>
+                    <label class="fuente-btn" for="correo">Correo:</label>
+                    <input class="fuente-p1" type="email" id="correo" placeholder="correo@ejemplo.com" th:value="${usuario.correo}" readonly>
                 </div>
 
                 <div class="form-grupo">
-                    <label for="rol">Rol Asignado:</label>
-                    <input type="text" id="rol" th:value="${usuario.rol}" readonly>
+                    <label class="fuente-btn" for="rol">Rol Asignado:</label>
+                    <input class="fuente-p1" type="text" id="rol" th:value="${usuario.rol}" readonly>
                 </div>
 
-                <h2 class="texto">¿Desea <span class="resaltar">ELIMINAR</span> a este usuario de forma permanente?</h2>
+                <h2 class="texto fuente-p1">¿Desea <span class="resaltar">ELIMINAR</span> a este usuario de forma permanente?</h2>
 
-                <div class="botones">
-                    <button type="submit" class="btn-agregar"
+                <div class="botones1">
+                    <button type="submit" class="btn-agregar  fuente-btn"
                             onclick>
                         Eliminar Usuario
                     </button>
                     <button type="button"
-                            class="btn-cancelar"
+                            class="btn-agregar  fuente-btn"
                             th:onclick="|window.location='@{/gestion-usuario}'|">
                         Cancelar
                     </button>
