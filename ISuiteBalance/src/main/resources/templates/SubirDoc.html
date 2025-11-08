@@ -90,12 +90,9 @@
         <div class="user-info">
 
             <span class="nombre-usuario fuente-p4" data-usuario-target>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
-            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-            /*]]>*/
-        </script>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
             </span>
 
             <!-- Semilla del backend (si esta vista recibe nombreUsuario, lo usará el módulo para guardarlo en IndexedDB) -->

@@ -82,11 +82,7 @@
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario" data-usuario-target>
                 <script th:inline="javascript">
-                    document.write(
-                        localStorage.getItem('lastUserName') ||
-                        /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                        'Invitado'
-                    );
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
                 </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
