@@ -62,12 +62,17 @@ public class BalanzaComprobacionService {
             BigDecimal si  = nvl(a.getSaldoInicial());
             BigDecimal deb = nvl(a.getDebitos());
             BigDecimal hab = nvl(a.getCreditos());
-            BigDecimal sf  = si.add(deb).subtract(hab);
+
+            // 👉 Ajuste clave: signar el saldo inicial según naturaleza
+            BigDecimal siSignado = esAcreedora(a.getTipoCuenta()) ? si.negate() : si;
+
+            // Saldo final con SI ya signado (regla universal: SI + Deb - Hab)
+            BigDecimal sf  = siSignado.add(deb).subtract(hab);
 
             Fila f = new Fila();
             f.codigo = a.getCodigo();
             f.nombre = a.getNombre();
-            f.saldoInicial = si;
+            f.saldoInicial = si;   // se muestra el valor ingresado, sin signo visual
             f.debitos      = deb;
             f.creditos     = hab;
             f.saldoFinal   = sf;
@@ -95,6 +100,20 @@ public class BalanzaComprobacionService {
 
     private static BigDecimal nvl(BigDecimal x) { return x == null ? BigDecimal.ZERO : x; }
 
+    // === Helpers de naturaleza contable (singular/plural tolerante) ===
+    private static boolean esAcreedora(String tipo) {
+        if (tipo == null) return false;
+        String t = tipo.trim().toUpperCase(Locale.ROOT);
+        return t.equals("PASIVO") || t.equals("PATRIMONIO") || t.equals("INGRESO") || t.equals("INGRESOS");
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean esDeudora(String tipo) {
+        if (tipo == null) return true;
+        String t = tipo.trim().toUpperCase(Locale.ROOT);
+        return t.equals("ACTIVO") || t.equals("GASTO") || t.equals("GASTOS") || t.equals("COSTO") || t.equals("COSTOS");
+    }
+
     /**
      * Persiste un snapshot de la balanza en:
      * - tbl_estadofinanciero (cabecera) [tipo=BALANZA_COMPROBACION, periodo=desde..hasta]
@@ -121,7 +140,7 @@ public class BalanzaComprobacionService {
                     return estadoFinancieroDAO.save(ef);
                 });
 
-        // Guarda totales (si prefieres actualizar el último, aquí podrías buscar/borrar antes)
+        // Guarda totales
         EstadoComprobacion ec = new EstadoComprobacion();
         ec.setEstado(cab);
         ec.setTotalDebe(totalDeb);

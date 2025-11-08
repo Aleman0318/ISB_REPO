@@ -22,10 +22,9 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/saldos-iniciales}">
-                <img th:src="@{/img/gestion-de-usuarios.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
             </a>
         </li>
-
 
         <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
