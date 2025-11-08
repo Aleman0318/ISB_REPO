@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -76,7 +77,32 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
                                           @Param("desde") LocalDate desde,
                                           @Param("hasta") LocalDate hasta);
 
-    // ===== NUEVO: saldos iniciales por cuenta (para el corrido del mayor) =====
+    // ===== NUEVO: agregados de Débitos/Créditos por rango (para SaldosService) =====
+    @Query("""
+        SELECT COALESCE(SUM(d.montoDebe), 0)
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE d.idCuenta = :idCuenta
+          AND (:desde IS NULL OR p.fecha >= :desde)
+          AND (:hasta IS NULL OR p.fecha <= :hasta)
+    """)
+    BigDecimal sumDebitos(@Param("idCuenta") Long idCuenta,
+                          @Param("desde") LocalDate desde,
+                          @Param("hasta") LocalDate hasta);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.montoHaber), 0)
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE d.idCuenta = :idCuenta
+          AND (:desde IS NULL OR p.fecha >= :desde)
+          AND (:hasta IS NULL OR p.fecha <= :hasta)
+    """)
+    BigDecimal sumCreditos(@Param("idCuenta") Long idCuenta,
+                           @Param("desde") LocalDate desde,
+                           @Param("hasta") LocalDate hasta);
+
+    // ===== Saldo previo a un rango (si lo ocupas para mayor acumulado) =====
     // Se usa solo si 'desde' NO es null; si 'desde' es null, el service toma saldoInicial = 0.
     @Query("""
         SELECT
@@ -94,6 +120,6 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
     // Proyección simple para el saldo inicial
     interface SaldoInicialRow {
         Long getIdCuenta();
-        java.math.BigDecimal getSaldo();
+        BigDecimal getSaldo();
     }
 }
