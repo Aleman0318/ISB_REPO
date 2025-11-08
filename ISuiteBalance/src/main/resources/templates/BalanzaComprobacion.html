@@ -14,7 +14,6 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
-    <!-- ✅ Estilos para impresión y botón unificado -->
     <style>
         @media print {
             body {
@@ -50,7 +49,7 @@
             th, td {
                 border: 1px solid #999 !important;
                 padding: 5px 8px !important;
-                color: #000 !important; /* 🔧 encabezados y celdas negros */
+                color: #000 !important;
             }
 
             th {
@@ -74,7 +73,6 @@
             }
         }
 
-        /* ✅ Botones unificados */
         .btn {
             background: #e63946;
             color: #fff;
@@ -147,7 +145,7 @@
         </button>
         <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
-            <span class="nombre-usuario" data-usuario-target>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
                 <script th:inline="javascript">
                   document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
                 </script>
@@ -221,7 +219,7 @@
                         </thead>
                         <tbody class="fuente-p1">
                         <tr th:if="${#lists.isEmpty(filas)}">
-                            <td colspan="7" style="text-align:center;" class="fuente-p1">No hay datos para el rango seleccionado.</td>
+                            <td colspan="8" style="text-align:center;" class="fuente-p1">No hay datos para el rango seleccionado.</td>
                         </tr>
                         <tr th:each="r : ${filas}">
                             <td th:text="${r.codigo}">101-01</td>

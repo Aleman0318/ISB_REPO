@@ -91,7 +91,6 @@
         </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- ============================================== -->
 
             <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
 
@@ -112,10 +111,12 @@
     <div class="container_principal fondo-1">
         <!-- Contenido central -->
         <main class="generar-reporte fondo-1">
-            <h1 class="titulo-reporte titulo-gestion fuente-titulos3 txt-rojo">Generar Reporte</h1>
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Generar Reporte</h1>
+            </div>
 
             <div class="grupo-seleccion contenedor-blanco fondo-lineas">
-                <div class="campo">
+                <div class="campo fuente-p1">
                     <label for="periodo" class="fuente-btn">Periodo Contable:</label>
                     <select id="periodo" class="input fuente-p1">
                         <option value="mensual">Mensual</option>
@@ -146,7 +147,7 @@
 
             <div class="vista-previa contenedor-blanco fondo-lineas">
                 <h2 class="fuente-btn">Vista previa</h2>
-                <table class="tabla-reporte fuente-p1">
+                <table class="tabla-usuarios fuente-p1">
                     <thead>
                     <tr>
                         <th class="fuente-btn"></th>
