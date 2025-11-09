@@ -23,6 +23,16 @@
         table td.num, table th.num {text-align:right}
         .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
         .kpi .tile{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+
+        /* ===== Centrar Botón Guardar ===== */
+        .guardar-centro{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            width:100%;
+            margin-top:14px;
+        }
+
         @media (max-width:900px){ .kpi{grid-template-columns:1fr 1fr} }
         @media (max-width:640px){ .kpi{grid-template-columns:1fr} }
     </style>
@@ -71,29 +81,6 @@
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Estado de Resultado</h1>
             </div>
 
-            <!-- Filtros -->
-            <div class="card">
-                <form th:action="@{/estado-resultado}" method="get" class="grid">
-                    <div class="span-2">
-                        <label class="fuente-btn">Desde</label>
-                        <input type="date" name="desde" th:value="${desde}">
-                    </div>
-                    <div class="span-2">
-                        <label class="fuente-btn">Hasta</label>
-                        <input type="date" name="hasta" th:value="${hasta}">
-                    </div>
-                    <div>
-                        <label>&nbsp;</label>
-                        <button class="btn fuente-btn" type="submit">Buscar</button>
-                    </div>
-                    <div>
-                        <label>&nbsp;</label>
-                        <button class="btn fuente-btn" type="button"
-                                onclick="window.location.href='/estado-resultado'">Limpiar</button>
-                    </div>
-                </form>
-            </div>
-
             <!-- KPIs -->
             <div class="kpi">
                 <div class="tile"><div class="fuente-btn">Ingresos</div>
@@ -105,7 +92,7 @@
                 <div class="tile"><div class="fuente-btn">Gastos</div>
                     <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(gastos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
-                <div class="tile"><div class="fuente-btn">Utilidad Neta</div>
+                <div class="tile"><div class="fuente-btn">Utilidad o Pérdida Neta</div>
                     <div class="fuente-titulos3" th:classappend="${utilidad>=0} ? ' txt-verde' : ' txt-rojo'"
                          th:text="${#numbers.formatDecimal(utilidad,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
@@ -132,12 +119,13 @@
                     </tbody>
                 </table>
 
-                <form th:action="@{/estado-resultado/guardar}" method="post" style="margin-top:12px; display:flex; gap:8px;">
-                    <input type="hidden" name="desde" th:value="${desde}">
-                    <input type="hidden" name="hasta" th:value="${hasta}">
-                    <button class="btn fuente-btn" type="submit">Guardar en BD</button>
-                    <span class="muted fuente-p1">Periodo: <span th:text="${desde}">yyyy-mm-dd</span> .. <span th:text="${hasta}">yyyy-mm-dd</span></span>
-                </form>
+                <div class="guardar-centro">
+                    <form th:action="@{/estado-resultado/guardar}" method="post" style="display:flex; gap:8px;">
+                        <input type="hidden" name="desde" th:value="${desde}">
+                        <input type="hidden" name="hasta" th:value="${hasta}">
+                        <button class="btn fuente-btn" type="submit">Guardar en BD</button>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
@@ -150,7 +138,6 @@
     if (err) Swal.fire({icon:'error', title:'Error', text: err});
 </script>
 
-<!-- Hidratar usuario -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
 <script type="module">
     import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
