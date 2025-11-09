@@ -117,12 +117,13 @@
     <!-- ======= FIN CAMBIO ======= -->
 </header>
 
-<div class="container_principal">
-    <!-- Contenido central -->
-    <main>
-        <div class="formulario-usuario">
-            <h1 class="fuente-titulos2 txt-blanco">Crear Usuario</h1>
+<div class="container_principal fondo-1">
 
+    <main><br> <br> <br>
+        <div class="contenedor-titulo-gestion">
+            <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Crear Usuario</h1>
+        </div>
+        <div class="formulario-usuario">
             <!-- Mensaje de error (flash) -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
 
@@ -130,8 +131,8 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="form-grupo">
-                    <label for="nombre">Nombre:</label>
-                    <input
+                    <label class="fuente-btn" for="nombre">Nombre:</label>
+                    <input class="fuente-p1"
                             type="text"
                             id="nombre"
                             name="nombre"
@@ -141,8 +142,8 @@
                 </div>
 
                 <div class="form-grupo">
-                    <label for="correo">Correo:</label>
-                    <input
+                    <label class="fuente-btn" for="correo">Correo:</label>
+                    <input class="fuente-p1"
                             type="email"
                             id="correo"
                             name="correo"
@@ -152,13 +153,13 @@
                 </div>
 
                 <div class="form-grupo">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="text" id="contrasena" name="contrasena" placeholder="Ingrese la contraseña" required minlength="8">
+                    <label class="fuente-btn" for="contrasena">Contraseña:</label>
+                    <input class="fuente-p1" type="text" id="contrasena" name="contrasena" placeholder="Ingrese la contraseña" required minlength="8">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="rol">Asignar Rol:</label>
-                    <select id="rol" name="rol" required>
+                    <label class="fuente-btn" for="rol">Asignar Rol:</label>
+                    <select class="fuente-p1" id="rol" name="rol" required>
                         <option value="" selected>Seleccionar Rol del Usuario</option>
                         <option value="Administrador" th:selected="${formRol == 'ADMIN'}">Administrador</option>
                         <option value="Contador" th:selected="${formRol == 'CONTADOR'}">Contador</option>
@@ -166,28 +167,28 @@
                     </select>
                 </div>
 
-                <div class="botones">
+                <div class="botones1">
+                    <!-- GUARDAR: no es submit; enviamos nosotros -->
                     <button
                             type="button"
-                            class="btn-agregar"
-                            id="btnCrear"
+                            class="btn-agregar fuente-btn"
+                            id="btnGuardar"
                             onclick="
-                              const f = this.form;
-                              if (!f.reportValidity()) return;
-                              this.disabled = true;
-                              this.textContent = 'Creando...';
-                              if (f.requestSubmit) {
-                                f.requestSubmit();
-                              } else {
-                                setTimeout(() => f.submit(), 0);
-                              }
-                            ">
-                        Agregar Usuario
+                                const f = this.form;
+                                if (!f.reportValidity()) return;      // valida HTML5
+                                const a = document.getElementById('actionField');
+                                if (!a) { alert('Falta input oculto actionField'); return; }
+                                a.value = 'guardar';
+                                if (f.requestSubmit) { f.requestSubmit(); }
+                                else { f.submit(); }
+                              ">
+                        Modificar Usuario
                     </button>
 
+                    <!-- CANCELAR: NO envía el form -->
                     <button
                             type="button"
-                            class="btn-cancelar"
+                            class="btn-agregar fuente-btn"
                             th:onclick="|window.location='@{/gestion-usuario}'|">
                         Cancelar
                     </button>
