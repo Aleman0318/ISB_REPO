@@ -85,11 +85,7 @@
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario fuente-p4" data-usuario-target>
                 <script th:inline="javascript">
-                    document.write(
-                        localStorage.getItem('lastUserName') ||
-                        /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                        'Invitado'
-                    );
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
                 </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
@@ -110,7 +106,13 @@
 
     <!-- Contenido central con mismas clases -->
     <div class="container_principal fondo-1">
-        <main class="gestion-usuarios">
+        <main class="gestion-usuarios fondo-1">
+
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">
+                    Detalle de Partida <span th:text="${idPartida}">#</span>
+                </h1>
+            </div>
 
             <div class="contenedor-titulo-gestion">
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">

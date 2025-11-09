@@ -85,11 +85,8 @@
     <div class="user-info">
         <span class="nombre-usuario fuente-p4" data-usuario-target>
             <script th:inline="javascript">
-                /*<![CDATA[*/
-                var nombreUsuario = [[${nombreUsuario}]] 'Invitado';
-                document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-                /*]]>*/
-            </script>
+            document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+        </script>
         </span>
 
         <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>

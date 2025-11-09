@@ -79,19 +79,17 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
+        </div>
         <div class="user-info">
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario fuente-p4" data-usuario-target>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
-            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-            /*]]>*/
-        </script>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- 👆 -->
 
         <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -106,9 +104,10 @@
 
     <!-- Contenedor principal (mismas clases) -->
     <div class="container_principal fondo-1">
-        <main class="gestion-usuarios">
+        <main class="gestion-usuarios fondo-1">
+
             <div class="contenedor-titulo-gestion">
-                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Gestión de Partidas</h1>
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Gestion de Partidas</h1>
             </div>
 
             <div class="buscador-wrap">
@@ -185,7 +184,7 @@
                 </tr>
                 
                 <tr th:if="${#lists.isEmpty(partidas)}">
-                    <td colspan="7">Aún no hay partidas registradas.</td>
+                    <td colspan="8">Aún no hay partidas registradas.</td>
                 </tr>
                 </tbody>
             </table>

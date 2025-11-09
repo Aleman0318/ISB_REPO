@@ -438,7 +438,7 @@
 .contenedor-blanco {
   background-color: white;
   border-radius: 10px;
-  border: 2px solid #000;
+  border: 1px solid #fff;
   padding: 20px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
@@ -452,15 +452,17 @@
 
 .tabla-libro th,
 .tabla-libro td {
-  border: 1px solid #000;
-  padding: 10px;
+  font-weight: bold;
+  text-align: center;
   font-size: clamp(0.8rem, 1vw, 1rem);
-  color: #000;
+  color: #333;
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
 }
 
 .tabla-libro th {
-  background-color: #f9f9f9;
   font-weight: bold;
+  color: #fff;
 }
 
 .totales-texto {
@@ -1295,4 +1297,15 @@ text-align: center;
   .about-grid{ grid-template-columns: repeat( auto-fill, minmax(220px, 1fr) ); }
   .team-grid{ grid-template-columns: 1fr; }
   .about-subtitle, .feature__text{ font-size:13px; }
+
+
+.btn-agregar2 {
+  width: 10%;
+  padding: clamp(0.6rem, 1.2vw, 0.8rem);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
 }

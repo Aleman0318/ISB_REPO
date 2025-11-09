@@ -91,16 +91,13 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
             <!-- 👇 Usuario sin parpadeo + semilla del servidor -->
-            <span class="nombre-usuario" data-usuario-target>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var nombreUsuario = /*[[${nombreUsuario}]]*/ 'Invitado';
-            document.write(localStorage.getItem('lastUserName') || nombreUsuario || 'Invitado');
-            /*]]>*/
-        </script>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <!-- 👆 -->
@@ -118,9 +115,11 @@
         </div>
     </header>
 
-    <div class="container_principal">
+    <div class="container_principal fondo-1">
         <main class="gestion-usuarios">
-            <h1 class="titulo-gestion">Editar Partida</h1>
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Editar Partida</h1>
+            </div>
 
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
 
@@ -129,56 +128,54 @@
                 <input type="hidden" name="idPartida" th:value="${idPartida}"/>
 
                 <div class="form-row">
-                    <label>Fecha</label>
-                    <input type="date" name="fecha" th:value="${fecha}" required>
+                    <label class="fuente-btn">Fecha</label>
+                    <input type="date" name="fecha" th:value="${fecha}" required class="fuente-p1">
                 </div>
 
                 <div class="form-row">
-                    <label>Concepto</label>
-                    <input type="text" name="concepto" th:value="${concepto}" required>
+                    <label class="fuente-btn">Concepto</label>
+                    <input type="text" name="concepto" th:value="${concepto}" required class="fuente-p1">
                 </div>
 
                 <div class="form-row">
-                    <label>Documento</label>
-                    <div>
+                    <label class="fuente-btn">Documento</label>
+                    <div class="fuente-p1">
                         <div class="muted" th:if="${docNombre}">Actual: <span th:text="${docNombre}">documento.pdf</span></div>
-                        <input type="file" name="pdf" accept="application/pdf">
-                        <select name="idClasificacion" th:value="${docClasif}">
+                        <input type="file" name="pdf" accept="application/pdf" class="fuente-p1">
+                        <select name="idClasificacion" th:value="${docClasif}" class="fuente-p1">
                             <option th:value="1" th:selected="${docClasif==1}">Factura</option>
                             <option th:value="2" th:selected="${docClasif==2}">Vale</option>
                             <option th:value="3" th:selected="${docClasif==3}">Cheque</option>
                             <option th:value="4" th:selected="${docClasif==4}">Otro</option>
                         </select>
-                        <small class="muted">Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)</small>
+                        <small class="muted fuente-p2">Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)</small>
                     </div>
                 </div>
 
                 <section>
-                    <h3>Detalle</h3>
+                    <h3 class="fuente-btn">Detalle</h3>
                     <div id="lineas">
                         <div class="linea" th:each="l : ${lineas}">
-                            <select name="idCuenta[]" required>
-                                <!-- Reemplaza por tu catálogo real -->
-                                <option th:value="1" th:selected="${l.idCuenta == 1}">Caja</option>
-                                <option th:value="2" th:selected="${l.idCuenta == 2}">Banco</option>
-                                <option th:value="3" th:selected="${l.idCuenta == 3}">Inventarios</option>
-                                <option th:value="4" th:selected="${l.idCuenta == 4}">Clientes</option>
-                                <option th:value="5" th:selected="${l.idCuenta == 5}">Ventas</option>
-                                <option th:value="6" th:selected="${l.idCuenta == 6}">Gastos de servicios</option>
+                            <!-- data-selected conserva el valor renderizado por Thymeleaf -->
+                            <select name="idCuenta[]" required class="fuente-p1" th:attr="data-selected=${l.idCuenta}">
+                                <!-- Se reemplazará por catálogo real al cargar; dejamos un placeholder visible -->
+                                <option th:value="${l.idCuenta}" th:text="${l.idCuenta}">Cargando catálogo…</option>
                             </select>
-                            <input type="number" step="0.01" name="debe[]"  th:value="${l.montoDebe}"  placeholder="Debe"  oninput="calcularTotales()">
-                            <input type="number" step="0.01" name="haber[]" th:value="${l.montoHaber}" placeholder="Haber" oninput="calcularTotales()">
-                            <button class="btn-opcion eliminar" type="button" onclick="quitarLinea(this)">🗑️</button>
+                            <input type="number" step="0.01" name="debe[]"  th:value="${l.montoDebe}"  placeholder="Debe"  oninput="calcularTotales()" class="fuente-p1">
+                            <input type="number" step="0.01" name="haber[]" th:value="${l.montoHaber}" placeholder="Haber" oninput="calcularTotales()" class="fuente-p1">
+                                <a class="btn-icon btn-delete-card" title="Eliminar cuenta" type="button">
+                                    <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
+                                </a>
                         </div>
                     </div>
 
                     <div class="acciones-lineas">
-                        <button class="btn-opcion editar" type="button" onclick="agregarLinea()">+ Línea</button>
+                        <button class="btn-agregar2 editar" type="button" onclick="agregarLinea()">Añadir Línea +</button>
                     </div>
 
                     <div class="totales">
-                        <div>Debe: <span id="sumDebe">0.00</span></div>
-                        <div>Haber: <span id="sumHaber">0.00</span></div>
+                        <div>Debe: <span id="sumDebe">$ 0.00</span></div>
+                        <div>Haber: <span id="sumHaber">$ 0.00</span></div>
                     </div>
                 </section>
 
@@ -206,23 +203,74 @@
       window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
     })();
 
+    // ====== Catálogo dinámico de cuentas ======
+    let cuentasOptionsHTML = '';     // HTML de <option>…</option>
+    const cuentasMap = new Map();    // id -> etiqueta "codigo — nombre"
+
+    async function cargarCuentas(){
+      try{
+        const resp = await fetch('/api/cuentas', { headers: { 'Accept':'application/json' }, cache: 'no-store' });
+        if(!resp.ok) throw new Error('HTTP '+resp.status);
+        const data = await resp.json();
+
+        cuentasMap.clear();
+        cuentasOptionsHTML = data.map(c => {
+          const id = c.idCuenta ?? c.id_cuenta ?? c.id ?? '';
+          const nombre = c.nombreCuenta ?? c.nombrecuenta ?? c.nombre ?? '(sin nombre)';
+          const codigo = c.codigo ?? '';
+          const etiqueta = codigo ? `${codigo} — ${nombre}` : nombre;
+          const sid = String(id);
+          cuentasMap.set(sid, etiqueta);
+          return `<option value="${sid}">${etiqueta}</option>`;
+        }).join('');
+
+        // Poblar selects existentes respetando el valor actual
+        poblarSelectsIniciales();
+      }catch(e){
+        console.warn('No se pudo cargar /api/cuentas. Se mantienen opciones existentes.', e);
+      }
+    }
+
+    function poblarSelectsIniciales(){
+      if(!cuentasOptionsHTML) return;
+      document.querySelectorAll('select[name="idCuenta[]"]').forEach(sel=>{
+        const seleccionado = sel.getAttribute('data-selected'); // podría ser null
+        sel.innerHTML = '<option value="" disabled>Seleccione la cuenta</option>' + cuentasOptionsHTML;
+        if (seleccionado && cuentasMap.has(String(seleccionado))){
+          sel.value = String(seleccionado);
+        } else if (!seleccionado){
+          sel.value = '';
+        }
+      });
+    }
+
     // ====== LÓGICA DE LÍNEAS ======
+    // Helpers para números y dinero
+    function toNumber(v){
+      const n = parseFloat(String(v ?? '').replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    }
+    function toMoney(n){
+      return '$ ' + (Number(n)||0).toFixed(2);
+    }
+
     function agregarLinea(){
       const cont = document.getElementById('lineas');
       const div = document.createElement('div');
       div.className = 'linea';
+
+      // Si ya cargamos catálogo, úsalo; si no, deja placeholder
+      const selectHTML = cuentasOptionsHTML
+        ? `<select name="idCuenta[]" required class="fuente-p1"><option value="" disabled selected>Seleccione la cuenta</option>${cuentasOptionsHTML}</select>`
+        : `<select name="idCuenta[]" required class="fuente-p1"><option value="">Cargando catálogo…</option></select>`;
+
       div.innerHTML = `
-        <select name="idCuenta[]" required>
-          <option value="1">Caja</option>
-          <option value="2">Banco</option>
-          <option value="3">Inventarios</option>
-          <option value="4">Clientes</option>
-          <option value="5">Ventas</option>
-          <option value="6">Gastos de servicios</option>
-        </select>
-        <input type="number" step="0.01" name="debe[]"  placeholder="Debe"  oninput="calcularTotales()">
-        <input type="number" step="0.01" name="haber[]" placeholder="Haber" oninput="calcularTotales()">
-        <button class="btn-opcion eliminar" type="button" title="Quitar línea" onclick="quitarLinea(this)">🗑️</button>
+        ${selectHTML}
+        <input type="number" step="0.01" name="debe[]"  placeholder="Debe"  oninput="calcularTotales()" class="fuente-p1">
+        <input type="number" step="0.01" name="haber[]" placeholder="Haber" oninput="calcularTotales()" class="fuente-p1">
+         <a class="btn-icon btn-delete-card" title="Eliminar cuenta" type="button" onclick="quitarLinea(this)">
+          <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
+        </a>
       `;
       cont.appendChild(div);
     }
@@ -237,13 +285,15 @@
 
     function calcularTotales(){
       let sumDebe = 0, sumHaber = 0;
-      document.querySelectorAll('input[name="debe[]"]').forEach(i => sumDebe += parseFloat(i.value || 0));
-      document.querySelectorAll('input[name="haber[]"]').forEach(i => sumHaber += parseFloat(i.value || 0));
-      document.getElementById('sumDebe').textContent  = sumDebe.toFixed(2);
-      document.getElementById('sumHaber').textContent = sumHaber.toFixed(2);
+      document.querySelectorAll('input[name="debe[]"]').forEach(i => sumDebe += toNumber(i.value));
+      document.querySelectorAll('input[name="haber[]"]').forEach(i => sumHaber += toNumber(i.value));
+      const debeEl  = document.getElementById('sumDebe');
+      const haberEl = document.getElementById('sumHaber');
+      if (debeEl)  debeEl.textContent  = toMoney(sumDebe);
+      if (haberEl) haberEl.textContent = toMoney(sumHaber);
     }
 
-    // ====== Logout (sin SweetAlert; confirm nativo) ======
+    // ====== Logout (confirm nativo) ======
     (function(){
       const btn = document.getElementById('logoutBtn');
       if(!btn) return;
@@ -260,6 +310,12 @@
         document.getElementById('logoutForm')?.submit();
       });
     })();
+
+    // ✅ Al cargar: 1) Totales (para th:value), 2) Catálogo de cuentas y repoblar selects
+    document.addEventListener('DOMContentLoaded', () => {
+      calcularTotales();
+      cargarCuentas();
+    });
 </script>
 
 <!-- ✅ IndexedDB del usuario: hidratar header -->

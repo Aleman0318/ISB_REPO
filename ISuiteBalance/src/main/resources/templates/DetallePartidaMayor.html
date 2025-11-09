@@ -76,17 +76,13 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
 
         <div class="user-info">
             <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
             <span class="nombre-usuario" data-usuario-target>
                 <script th:inline="javascript">
-                    document.write(
-                        localStorage.getItem('lastUserName') ||
-                        /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                        'Invitado'
-                    );
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
                 </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
@@ -105,14 +101,16 @@
     </header>
 
     <!-- Contenido central con mismas clases -->
-    <div class="container_principal">
-        <main class="gestion-usuarios">
-            <h1 class="titulo-gestion fuente-titulos2 txt-blanco">
-                Detalle de Partida <span th:text="${idPartida}">#</span>
-            </h1>
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios fondo-1">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">
+                    Detalle de Partida <span th:text="${idPartida}">#</span>
+                </h1>
+            </div>
 
             <table class="tabla-usuarios">
-                <thead>
+                <thead class="fuente-btn">
                 <tr>
                     <th>#</th>
                     <th>Cuenta</th>
@@ -120,7 +118,7 @@
                     <th>Haber</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="fuente-p1">
                 <tr th:each="l, it : ${lineas}">
                     <td th:text="${it.index + 1}">1</td>
                     <td>
@@ -144,7 +142,7 @@
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar" onclick="window.location.href='/libro-mayor'">Volver al Libro Mayor</button>
+                <button class="btn-agregar fuente-btn" onclick="window.location.href='/libro-mayor'">Volver al Libro Mayor</button>
             </div>
         </main>
     </div>
