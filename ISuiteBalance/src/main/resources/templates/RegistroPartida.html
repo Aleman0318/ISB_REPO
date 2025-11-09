@@ -24,6 +24,12 @@
                 <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+            </a>
+        </li>
+
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
                 <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
@@ -130,6 +136,7 @@
                                 </select>
 
                                 <label class="sub fuente-btn">Fecha</label>
+                                <!-- max se fija por JS y default = hoy -->
                                 <input type="date" class="input inp-fecha fuente-p1" />
 
                                 <div class="fila-form mt-8">
@@ -199,13 +206,22 @@
 
 <script>
     (function(){
+      // ===== utils
+      function hoyStr(){
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const dd= String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${dd}`;
+      }
+      const toMoney = n => '$ ' + (Number(n)||0).toFixed(2);
+
       // ====== Menú hamburguesa y logout ======
       (function(){
         const btn = document.getElementById('menuBtn');
         const sidebar = document.querySelector('.sidebar');
         const backdrop = document.getElementById('backdrop');
         if(!btn || !sidebar || !backdrop) return;
-
         const openMenu = ()=>{ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); btn.setAttribute('aria-expanded','true'); };
         const closeMenu= ()=>{ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); btn.setAttribute('aria-expanded','false'); };
         btn.addEventListener('click', e=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu(); });
@@ -275,8 +291,6 @@
       function poblarSelectCuenta(sel){ if(sel) sel.innerHTML = cuentasOptionsHTML; }
       function poblarTodos(){ document.querySelectorAll('.sel-cuenta').forEach(poblarSelectCuenta); }
 
-      const toMoney = n => '$ ' + (Number(n)||0).toFixed(2);
-
       function recalcTotales(){
         let debe = 0, haber = 0;
         [...tbody.querySelectorAll('tr')].forEach(tr=>{
@@ -290,20 +304,23 @@
       function agregarFila({idCuenta, etiquetaCuenta, fecha, descripcion, debe, haber}){
         const _debe  = Number(debe  || 0);
         const _haber = Number(haber || 0);
-        tbody.insertAdjacentHTML('beforeend', `
-          <tr data-id-cuenta="${String(idCuenta)}" data-debe="${_debe}" data-haber="${_haber}">
+        const trHtml = `
+          <tr data-id-cuenta="${String(idCuenta)}"
+              data-debe="${_debe}"
+              data-haber="${_haber}"
+              data-fecha="${fecha || ''}">
             <td class="fuente-p1">001</td>
             <td class="fuente-p1">${fecha || ''}</td>
             <td class="fuente-p1">${etiquetaCuenta || ''}</td>
             <td class="fuente-p1">${(descripcion || '').replace(/</g,'&lt;')}</td>
             <td class="fuente-p1">${toMoney(_debe)}</td>
             <td class="fuente-p1">${toMoney(_haber)}</td>
-          </tr>
-        `);
+          </tr>`;
+        tbody.insertAdjacentHTML('beforeend', trHtml);
         recalcTotales();
       }
 
-      // 🔧 Crear tarjeta con TODAS las clases `fuente-*` como la primera
+      // 🔧 Crear tarjeta nueva
       function crearTarjeta(){
         nextIdx += 1;
         const section = document.createElement('section');
@@ -341,6 +358,12 @@
           <div class="cuenta-foot">
             <button class="btn btn-primary btn-enviar fuente-btn" type="button">Añadir a tabla</button>
           </div>`;
+        // setear max y default = hoy
+        const f = section.querySelector('.inp-fecha');
+        const hoy = hoyStr();
+        f.setAttribute('max', hoy);
+        if(!f.value) f.value = hoy;
+
         return section;
       }
 
@@ -364,6 +387,13 @@
         poblarTodos();
         refreshPlusButtons();
         actualizarVisibilidadBotonEnviar();
+
+        // ✅ setear "max" y valor por defecto = hoy para fechas iniciales
+        const hoy = hoyStr();
+        document.querySelectorAll('.inp-fecha').forEach(inp=>{
+          inp.setAttribute('max', hoy);
+          if(!inp.value) inp.value = hoy;
+        });
       })();
 
       // === Eventos tarjetas
@@ -384,6 +414,11 @@
           const cards = [...cuentasContainer.querySelectorAll('.cuenta-item')];
           if (cards.length === 1) {
             card.querySelectorAll('input,select,textarea').forEach(el=>el.value='');
+            const hoy = hoyStr();
+            card.querySelector('.inp-fecha')?.setAttribute('max', hoy);
+            if (card.querySelector('.inp-fecha') && !card.querySelector('.inp-fecha').value) {
+              card.querySelector('.inp-fecha').value = hoy;
+            }
           } else {
             card.remove();
           }
@@ -451,14 +486,19 @@
         const filas = [...tbody.querySelectorAll('tr')];
         if (filas.length === 0) { await Swal.fire('Sin líneas','Agrega al menos una línea a la partida.','info'); return; }
 
+        // === construir detalles y acumular totales ===
         let totalDebe = 0, totalHaber = 0;
+        const fechasSet = new Set();
         const detalles = filas.map(tr=>{
           const idCuenta = parseInt(tr.dataset.idCuenta || tr.getAttribute('data-id-cuenta') || '0', 10);
           const debe  = parseFloat(tr.dataset.debe  || tr.getAttribute('data-debe')  || '0');
           const haber = parseFloat(tr.dataset.haber || tr.getAttribute('data-haber') || '0');
+          const fecha = tr.dataset.fecha || tr.children[1]?.textContent?.trim() || '';
+
+          if (fecha) fechasSet.add(fecha);
           totalDebe  += isNaN(debe)?0:debe;
           totalHaber += isNaN(haber)?0:haber;
-          return { idCuenta, debe, haber };
+          return { idCuenta, debe, haber, fecha };
         });
 
         if (Math.abs(totalDebe - totalHaber) > 0.0001) {
@@ -466,9 +506,25 @@
           return;
         }
 
+        // === validar fechas ===
+        if (fechasSet.size === 0) {
+          await Swal.fire('Fecha requerida','Cada línea debe tener fecha.','error'); return;
+        }
+        if (fechasSet.size > 1) {
+          await Swal.fire('Fechas distintas','Todas las líneas deben usar la misma fecha de partida. Corrige antes de guardar.','warning'); return;
+        }
+
+        const fechaPartida = [...fechasSet][0]; // "YYYY-MM-DD" literal
+        const hoy = hoyStr();
+        if (fechaPartida > hoy) {
+          await Swal.fire('Fecha futura', 'La fecha no puede ser posterior a hoy.', 'error');
+          return;
+        }
+
+        const concepto = 'Partida registrada desde UI'; // o tómalo de un input si lo agregas
         const body = {
-          fecha: new Date().toISOString().substring(0,10),
-          concepto: 'Partida registrada desde UI',
+          fecha: fechaPartida,      // ✅ sin toISOString, sin zonas horarias
+          concepto,
           detalles
         };
 

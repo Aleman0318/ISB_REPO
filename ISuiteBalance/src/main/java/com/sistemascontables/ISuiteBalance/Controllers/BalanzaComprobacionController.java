@@ -1,6 +1,8 @@
 package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Services.BalanzaComprobacionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import java.util.Map;
 
 @Controller
 public class BalanzaComprobacionController {
+
+    private static final Logger log = LoggerFactory.getLogger(BalanzaComprobacionController.class);
 
     private final BalanzaComprobacionService service;
 
@@ -46,15 +50,23 @@ public class BalanzaComprobacionController {
     public String guardar(@RequestParam(required = false) String desde,
                           @RequestParam(required = false) String hasta,
                           RedirectAttributes ra) {
+
         LocalDate d = (desde == null || desde.isBlank()) ? null : LocalDate.parse(desde);
         LocalDate h = (hasta == null || hasta.isBlank()) ? null : LocalDate.parse(hasta);
-
-        Long idEstado = service.guardarSnapshot(d, h);
-        ra.addFlashAttribute("msgOk", "Balanza guardada correctamente. id_estado = " + idEstado);
 
         String qs = "";
         if (d != null) qs += (qs.isEmpty() ? "?" : "&") + "desde=" + d;
         if (h != null) qs += (qs.isEmpty() ? "?" : "&") + "hasta=" + h;
+
+        try {
+            Long idEstado = service.guardarSnapshot(d, h);
+            ra.addFlashAttribute("msgOk", "Balanza guardada correctamente. id_estado = " + idEstado);
+            log.info("[BALANZA][OK] Snapshot guardado id_estado={}", idEstado);
+        } catch (Exception e) {
+            log.error("[BALANZA][ERR] No se pudo guardar el snapshot", e);
+            ra.addFlashAttribute("msgErr", "No se pudo guardar la balanza: " + e.getMessage());
+        }
+
         return "redirect:/balanza-comprobacion" + qs;
     }
 }

@@ -22,6 +22,12 @@
                 <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+            </a>
+        </li>
+
         <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
@@ -107,12 +113,6 @@
     <!-- Contenido central con mismas clases -->
     <div class="container_principal fondo-1">
         <main class="gestion-usuarios fondo-1">
-
-            <div class="contenedor-titulo-gestion">
-                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">
-                    Detalle de Partida <span th:text="${idPartida}">#</span>
-                </h1>
-            </div>
 
             <div class="contenedor-titulo-gestion">
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">

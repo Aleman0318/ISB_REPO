@@ -21,9 +21,9 @@ public class BalanzaComprobacionService {
 
     private static final Logger log = LoggerFactory.getLogger(BalanzaComprobacionService.class);
 
-    private final BalanzaComprobacionDAO dao;              // consulta agregada
-    private final EstadoFinancieroDAO estadoFinancieroDAO; // cabecera/pivote
-    private final EstadoComprobacionDAO estadoComprobacionDAO; // totales
+    private final BalanzaComprobacionDAO dao;
+    private final EstadoFinancieroDAO estadoFinancieroDAO;
+    private final EstadoComprobacionDAO estadoComprobacionDAO;
 
     public BalanzaComprobacionService(BalanzaComprobacionDAO dao,
                                       EstadoFinancieroDAO estadoFinancieroDAO,
@@ -47,10 +47,13 @@ public class BalanzaComprobacionService {
         if (desde == null) desde = hoy.withDayOfMonth(1);
         if (hasta == null) hasta = hoy;
 
-        List<Balanza> agg = dao.calcularBalanzaCompleta(desde, hasta);
+        // ✅ ventana semiabierta: [desde, hasta+1)
+        LocalDate hastaExcl = hasta.plusDays(1);
 
-        log.info("[BALANZA] rango {}..{} -> {} filas: {}",
-                desde, hasta, agg.size(),
+        List<Balanza> agg = dao.calcularBalanzaCompleta(desde, hastaExcl);
+
+        log.info("[BALANZA] rango {}..{} (excl {}) -> {} filas: {}",
+                desde, hasta, hastaExcl, agg.size(),
                 agg.stream().map(Balanza::getCodigo).toList());
 
         List<Fila> filas = new ArrayList<>();
@@ -62,7 +65,11 @@ public class BalanzaComprobacionService {
             BigDecimal si  = nvl(a.getSaldoInicial());
             BigDecimal deb = nvl(a.getDebitos());
             BigDecimal hab = nvl(a.getCreditos());
-            BigDecimal sf  = si.add(deb).subtract(hab);
+
+            // saldo inicial con signo por naturaleza
+            BigDecimal siSignado = esAcreedora(a.getTipoCuenta()) ? si.negate() : si;
+
+            BigDecimal sf  = siSignado.add(deb).subtract(hab);
 
             Fila f = new Fila();
             f.codigo = a.getCodigo();
@@ -95,12 +102,19 @@ public class BalanzaComprobacionService {
 
     private static BigDecimal nvl(BigDecimal x) { return x == null ? BigDecimal.ZERO : x; }
 
-    /**
-     * Persiste un snapshot de la balanza en:
-     * - tbl_estadofinanciero (cabecera) [tipo=BALANZA_COMPROBACION, periodo=desde..hasta]
-     * - tbl_estadocomprobacion (totales debe/haber vinculados a id_estado)
-     * Devuelve el id_estado (cabecera).
-     */
+    private static boolean esAcreedora(String tipo) {
+        if (tipo == null) return false;
+        String t = tipo.trim().toUpperCase(Locale.ROOT);
+        return t.equals("PASIVO") || t.equals("PATRIMONIO") || t.equals("INGRESO") || t.equals("INGRESOS");
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean esDeudora(String tipo) {
+        if (tipo == null) return true;
+        String t = tipo.trim().toUpperCase(Locale.ROOT);
+        return t.equals("ACTIVO") || t.equals("GASTO") || t.equals("GASTOS") || t.equals("COSTO") || t.equals("COSTOS");
+    }
+
     @Transactional
     public Long guardarSnapshot(LocalDate desde, LocalDate hasta) {
         Map<String,Object> datos = consultar(desde, hasta);
@@ -110,19 +124,17 @@ public class BalanzaComprobacionService {
         String periodo = datos.get("desde") + ".." + datos.get("hasta");
         String tipo    = "BALANZA_COMPROBACION";
 
-        // Reutiliza si ya existe cabecera para mismo periodo+tipo, si no crea
-        EstadoFinanciero cab = estadoFinancieroDAO
+        var cab = estadoFinancieroDAO
                 .findFirstByTipoEstadoAndPeriodo(tipo, periodo)
                 .orElseGet(() -> {
-                    EstadoFinanciero ef = new EstadoFinanciero();
+                    var ef = new EstadoFinanciero();
                     ef.setTipoEstado(tipo);
                     ef.setPeriodo(periodo);
                     ef.setFechaGeneracion(LocalDateTime.now());
                     return estadoFinancieroDAO.save(ef);
                 });
 
-        // Guarda totales (si prefieres actualizar el último, aquí podrías buscar/borrar antes)
-        EstadoComprobacion ec = new EstadoComprobacion();
+        var ec = new EstadoComprobacion();
         ec.setEstado(cab);
         ec.setTotalDebe(totalDeb);
         ec.setTotalHaber(totalHab);
