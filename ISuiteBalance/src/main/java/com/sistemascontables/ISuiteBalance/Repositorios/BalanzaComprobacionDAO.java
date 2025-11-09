@@ -14,22 +14,22 @@ import java.util.List;
 public interface BalanzaComprobacionDAO extends JpaRepository<CuentaContable, Long> {
 
     /**
-     * NOTA: asumimos que el Service siempre envía fechas NO nulas.
-     * Se elimina la lógica de "NULL OR ..." para evitar el error de Postgres
-     * ("no se pudo determinar el tipo del parámetro $1").
-     *
-     * - Débitos/Créditos vienen del rango [desde..hasta]
-     * - Saldo inicial proviene de c.saldo_inicial (columna en tbl_cuentacontable)
+     * Balanza de comprobación agregada por cuenta.
+     * Rango de movimientos: [desde .. hastaExcl)  ⇒ incluye TODO el día 'hasta' original.
+     * Sin casteos a DATE para no romper índices si p.fecha es TIMESTAMP.
      */
     @Transactional(readOnly = true)
     @Query(value = """
         WITH mov AS (
-            SELECT d.id_cuenta,
-                   COALESCE(SUM(d.montodebe),  0) AS debitos,
-                   COALESCE(SUM(d.montohaber), 0) AS creditos
+            SELECT
+                d.id_cuenta,
+                COALESCE(SUM(COALESCE(d.montodebe,  0)), 0) AS debitos,
+                COALESCE(SUM(COALESCE(d.montohaber, 0)), 0) AS creditos
             FROM public.tbl_detallepartida d
-            JOIN public.tbl_partidas p ON p.id_partida = d.id_partida
-            WHERE p.fecha BETWEEN :desde AND :hasta
+            JOIN public.tbl_partidas p
+              ON p.id_partida = d.id_partida
+            WHERE p.fecha >= :desde
+              AND p.fecha <  :hastaExcl              -- ✅ día final excluyente (= hasta + 1)
             GROUP BY d.id_cuenta
         )
         SELECT
@@ -46,9 +46,9 @@ public interface BalanzaComprobacionDAO extends JpaRepository<CuentaContable, Lo
            OR COALESCE(mov.debitos,0)      <> 0
            OR COALESCE(mov.creditos,0)     <> 0
         ORDER BY c.codigo ASC
-    """, nativeQuery = true)
+        """, nativeQuery = true)
     List<Balanza> calcularBalanzaCompleta(
             @Param("desde") LocalDate desde,
-            @Param("hasta") LocalDate hasta
+            @Param("hastaExcl") LocalDate hastaExcl
     );
 }
