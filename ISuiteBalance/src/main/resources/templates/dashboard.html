@@ -56,6 +56,13 @@
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/estado-resultado}">
+                <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Estado de Resultado
+            </a>
+        </li>
+
+
         <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/generar-reporte}">
