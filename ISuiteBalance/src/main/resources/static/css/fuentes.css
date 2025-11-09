@@ -124,6 +124,11 @@ font-family: 'Fuente-btn';
 font-size: 1.25rem;
 }
 
+.fuente-btn2{
+font-family: 'Fuente-btn';
+font-size: 0.75rem;
+}
+
 .fuente-semita{
 font-family: 'Fuente-semi';
 font-size: 1.3rem; }

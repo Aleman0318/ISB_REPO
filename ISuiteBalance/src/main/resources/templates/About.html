@@ -79,10 +79,11 @@
         <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
     </button>
 
-    <div class="brand"><h1>Suite Balance | ISB</h1></div>
+    <div class="brand">
+        <h1 class="fuente-semita">Suite Balance | ISB</h1></div>
 
     <div class="user-info">
-        <span class="nombre-usuario" data-usuario-target>
+        <span class="nombre-usuario fuente-p4" data-usuario-target>
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 var nombreUsuario = [[${nombreUsuario}]] 'Invitado';
@@ -110,27 +111,130 @@
 <!-- Contenido principal -->
 <div class="container_principal">
     <main>
-        <div class="about_espacio">
-            <h1 class="fuente-titulos2">ABOUT</h1>
+        <br> <br> <br>
+            <!-- HERO -->
+            <section class="about-hero">
+                <div class="about-hero__content">
+                    <h1 class="about-title fuente-semita">ISuite Balance | ISB</h1>
+                    <p class="fuente-btn"> Tu negocio, tus cuentas, tu orden. <br>
+                        Pagina dedicada a la contabilidad a nivel de empresa, reportes y auditoría.
+                        Diseñada para aprender haciendo: simple, rápida y segura.
+                    </p>
 
-            <div class="about_p" style="margin-top:25px;">
-                <div class="about_img" >
-                    <img th:src="@{/img/conta-illustration.png}" alt="Editar" class="about">
+                    <ul class="fuente-p4">
+                        <li>Gestión de usuarios y roles (Administrador, Contador, Auditor, Invitado)</li>
+                        <li>Módulos contables: Libro Diario, Libro Mayor y Balanza de Comprobación</li>
+                        <li>Reportes listos para imprimir y exportar</li>
+                        <li>Auditoría y bitácora de acciones</li>
+                    </ul>
                 </div>
 
-                <p>
+                <div class="about-hero__art">
+                    <img th:src="@{/img/conta-illustration.png}" alt="Contabilidad" class="about-art">
+                </div>
+            </section>
 
-                </p>
+        <!-- MÉTRICAS -->
+        <section class="about-kpis centrar-txt">
+            <div class="kpi">
+                <span class="kpi__label fuente-btn">Versión</span>
+                <span class="kpi__value fuente-p4">v1.0.0</span>
             </div>
+            <div class="kpi">
+                <span class="kpi__label fuente-btn">Módulos</span>
+                <span class="kpi__value fuente-p4">7</span>
+            </div>
+            <div class="kpi">
+                <span class="kpi__label fuente-btn">Última actualización</span>
+                <span class="kpi__value fuente-p4">Nov 2025</span>
+            </div>
+        </section>
 
-            <div class="contenedor-boton">
-                <a class="btn-agregar" th:href="@{/dashboard}"
-                   style="text-align:center;">
-                    Volver
-                </a>
+        <!-- GRID DE MÓDULOS / FEATURES -->
+        <section class="about-grid centrar-txt">
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Gestión de Usuario</h3>
+                <p class="feature__text fuente-p1">Te permite el control y la gestión de tus usuarios,
+                    permitiendo crear, ver, modificar, eliminar, todo esto siempre y exclusivamente bajo el rol de Administrador</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Partidas</h3>
+                <p class="feature__text fuente-p1">Permite registrar las transacciones contables de la empresa.
+                    Incluye validaciones automáticas y la opción de filtrar por fechas, lo que facilita la organización y precisión en el registro de movimientos.</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Libro Diario</h3>
+                <p class="feature__text fuente-p1">Muestra de forma cronológica cada una de las partidas registradas.
+                    Sirve como base para la auditoría y el análisis contable, permitiendo revisar el detalle completo de los movimientos realizados día por día.</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Libro Mayor</h3>
+                <p class="feature__text fuente-p1">Consolida los movimientos del Libro Diario agrupándolos por cuenta contable.
+                    Calcula automáticamente los saldos de cada cuenta, facilitando el seguimiento del comportamiento financiero.</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Balanza</h3>
+                <p class="feature__text fuente-p1">Resume los débitos y créditos de cada cuenta para verificar que el registro contable esté equilibrado.
+                    Permite comprobar que la suma del Debe y el Haber coincidan, asegurando consistencia en los registros.</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Reportes</h3>
+                <p class="feature__text fuente-p1">Genera reportes con indicadores clave del sistema.
+                    Incluye la opción de exportación a PDF para respaldos, impresiones o presentación de resultados.</p>
+            </article>
+
+            <article class="feature">
+                <h3 class="feature__title fuente-p4">Auditoría</h3>
+                <p class="feature__text fuente-p1">Registra y muestra la bitácora de acciones realizadas dentro del sistema.
+                    Sirve para garantizar trazabilidad, control interno y transparencia, mostrando quién hizo qué y cuándo.</p>
+            </article>
+        </section>
+
+        <!-- EQUIPO -->
+        <section class="about-team">
+            <h2 class="section-title centrar-txt fuente-p4">Desarrolladores</h2>
+            <div class="team-grid">
+
+                <article class="member">
+                    <img th:src="@{/img/Gigachad.png}" alt="Foto" class="member__avatar">
+                    <h4 class="member__name fuente-p4">Ariana Jorleny</h4>
+                    <span class="badge badge1 fuente-btn2">Desarrolladora</span>
+                    <span class="badge badge2 fuente-btn2">Frontend</span>
+                    <span class="badge badge3 fuente-btn2">Backend</span>
+                    <span class="badge badge1 fuente-btn2">Full stack</span>
+                    <span class="badge badge2 fuente-btn2">Desktop Developer</span>
+                    <span class="badge badge3 fuente-btn2">UI Designer</span>
+                    <span class="badge badge1 fuente-btn2">DevOps</span>
+                    <span class="badge badge2 fuente-btn2">QA Engineer</span>
+                    <span class="badge badge3 fuente-btn2">Database Engineer</span> 
+                </article>
+
+                <article class="member">
+                    <img th:src="@{/img/Depresion.jpg}" alt="Foto" class="member__avatar">
+                    <h4 class="member__name fuente-p4">Aleman</h4>
+                    <span class="badge badge2 fuente-btn2">Apoyo moral 1</span>
+                </article>
+
+                <article class="member">
+                    <img th:src="@{/img/MCLOVIN.jpg}" alt="Foto" class="member__avatar">
+                    <h4 class="member__name fuente-p4">Diego</h4>
+                    <span class="badge badge3 fuente-btn2">Apoyo moral 2</span>
+                </article>
             </div>
-        </div>
-    </main>
+        </section>
+
+
+        <!-- CTA -->
+            <div class="about-cta">
+                <a class="btn-agregar" th:href="@{/dashboard}">Volver</a>
+            </div>
+        </main>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -190,6 +294,5 @@
       });
     });
 </script>
-
 </body>
 </html>
