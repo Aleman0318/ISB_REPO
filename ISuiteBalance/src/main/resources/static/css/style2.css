@@ -1203,7 +1203,7 @@ text-align: center;
 
 /* Al pasar el cursor: quitar clamp y permitir scroll SOLO en el texto */
 .feature:hover .feature__text{
-    scrollbar-width: none;
+  scrollbar-width: none;
   -webkit-line-clamp: unset;
   display:block;
   color:white;
@@ -1254,7 +1254,7 @@ text-align: center;
 .member:hover{
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0,0,0,.07);
-  border:3px solid #F910FF;
+  border:3px solid #9F25A6;
   background:#FAE3FF;
 }
 .member__avatar{

@@ -90,14 +90,15 @@
     <!-- ======= CAMBIO: user-info sin parpadeo + semilla ======= -->
     <div class="user-info">
 
-        <!-- Ahora: escribe nombre durante el parseo para evitar parpadeo -->
         <span class="nombre-usuario" data-usuario-target>
         <script th:inline="javascript">
             document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
         </script>
         </span>
-        <!-- Semilla desde backend (si existe) para guardarlo en IndexedDB -->
+
         <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+        <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
+        <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
 
         <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
 
