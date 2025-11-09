@@ -88,16 +88,14 @@
         <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
 
         <div class="user-info">
-            <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
+
             <span class="nombre-usuario fuente-p4" data-usuario-target>
                 <script th:inline="javascript">
                     document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
                 </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- 👆 -->
-
-            <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <!-- Botón de logout (mantenemos el form existente) -->
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
