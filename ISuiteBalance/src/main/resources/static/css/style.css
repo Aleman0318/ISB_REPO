@@ -24,7 +24,7 @@ body {
 /* === SIDEBAR === */
 .sidebar {
     width: 230px;
-    background: #1e1f25;
+        background: #1e1f25;
     color: #fff;
     min-height: 100svh;
     align-self: stretch;

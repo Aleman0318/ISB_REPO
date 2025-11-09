@@ -1121,7 +1121,7 @@ text-align: center;
 .kpi{
   background:#fff;
   border-radius: var(--radius-sm);
-  border:1px solid #eaecef;
+  border:3px solid #eaecef;
   padding:14px 16px;
   box-shadow: 0 6px 12px rgba(0,0,0,.06);
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background-color .16s ease;
@@ -1129,7 +1129,7 @@ text-align: center;
 .kpi:hover{
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0,0,0,.07);
-  border-color:#02FFFA;
+  border:3px solid #02FFFA;
   background-color: #DDFFFB;
 }
 .kpi__label{ display:block; color:var(--muted); font-size:12px; }
@@ -1151,7 +1151,7 @@ text-align: center;
   justify-content:flex-start;
   gap:10px;
   background:#ffffff;
-  border:1px solid #eaecef;
+  border:3px solid #eaecef;
   border-radius: var(--radius-sm);
   padding:10px 13px;
 
@@ -1168,10 +1168,12 @@ text-align: center;
     background-color .18s ease,
     border-color .18s ease;
 }
+
 .feature:hover{
   transform: translateY(-4px);
-  background-color: #FFFDC0;
+  background-color: #1e1f25;;
   border-color:#FFFC12;
+  color:white;
   box-shadow: 0 8px 18px rgba(0,0,0,.08);
 }
 
@@ -1179,8 +1181,6 @@ text-align: center;
 .feature__title{
   margin:0;
   font-weight:700;
-  font-size:16px;
-  color:var(--ink);
 }
 
 /* TEXTO: clamp por defecto + preparado para scroll */
@@ -1203,8 +1203,10 @@ text-align: center;
 
 /* Al pasar el cursor: quitar clamp y permitir scroll SOLO en el texto */
 .feature:hover .feature__text{
+    scrollbar-width: none;
   -webkit-line-clamp: unset;
   display:block;
+  color:white;
   overflow:auto;
   padding-right:4px;            /* deja espacio para la barra */
   scrollbar-gutter: stable both-edges;
@@ -1226,7 +1228,7 @@ text-align: center;
 .about-team{
   margin:18px 0 8px;
   background:#fff;
-  border:1px solid #eaecef;
+  border:3px solid #eaecef;
   border-radius: var(--radius-sm);
   padding:16px;
 }
@@ -1245,14 +1247,14 @@ text-align: center;
   text-align:center;
   padding:14px;
   border-radius: 14px;
-  border:2px solid #eef0f3;
+  border:3px solid #eef0f3;
   background:#EBEBEB;
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 .member:hover{
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0,0,0,.07);
-  border:1px solid #F910FF;
+  border:3px solid #F910FF;
   background:#FAE3FF;
 }
 .member__avatar{
