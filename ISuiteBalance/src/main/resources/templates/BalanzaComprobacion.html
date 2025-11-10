@@ -16,76 +16,26 @@
 
     <style>
         @media print {
-            body {
-                background: #fff !important;
-                color: #000 !important;
-                font-family: 'Inter', sans-serif !important;
-                margin: 1.5cm;
-            }
-
-            header, .sidebar, .filtros-card__body, .btn, #backdrop {
-                display: none !important;
-            }
-
-            .main {
-                margin: 0 !important;
-                padding: 0 !important;
-                background: none !important;
-            }
-
-            h1.titulo-gestion {
-                text-align: center;
-                color: #000 !important;
-                font-size: 28px;
-                margin-bottom: 20px;
-            }
-
-            table {
-                border-collapse: collapse !important;
-                width: 100% !important;
-                font-size: 14px;
-            }
-
-            th, td {
-                border: 1px solid #999 !important;
-                padding: 5px 8px !important;
-                color: #000 !important;
-            }
-
-            th {
-                background: #eee !important;
-                -webkit-print-color-adjust: exact;
-                color: #000 !important;
-            }
-
-            tfoot th {
-                background: #f2f2f2 !important;
-                font-weight: bold;
-                -webkit-print-color-adjust: exact;
-                color: #000 !important;
-            }
-
-            .nota-impresion {
-                font-size: 12px;
-                margin-top: 2rem !important;
-                text-align: left;
-                color: #444;
-            }
+            body { background:#fff!important;color:#000!important;font-family:'Inter',sans-serif!important;margin:1.5cm; }
+            header,.sidebar,.filtros-card__body,.btn,#backdrop { display:none!important; }
+            .main { margin:0!important;padding:0!important;background:none!important; }
+            h1.titulo-gestion { text-align:center;color:#000!important;font-size:28px;margin-bottom:20px; }
+            table { border-collapse:collapse!important;width:100%!important;font-size:14px; }
+            th,td { border:1px solid #999!important;padding:5px 8px!important;color:#000!important; }
+            th { background:#eee!important;-webkit-print-color-adjust:exact;color:#000!important; }
+            tfoot th { background:#f2f2f2!important;font-weight:bold;-webkit-print-color-adjust:exact;color:#000!important; }
+            .nota-impresion { font-size:12px;margin-top:2rem!important;text-align:left;color:#444; }
         }
 
         .btn {
-            background: #e63946;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 5px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            cursor: pointer;
+            background:#e63946;color:#fff;border:none;padding:6px 14px;border-radius:5px;
+            font-weight:600;transition:.2s ease;cursor:pointer;
         }
+        .btn:hover { background:#c52f3c; }
 
-        .btn:hover {
-            background: #c52f3c;
+        /* Barra de acciones (imprimir + guardar) */
+        .acciones {
+            display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;
         }
     </style>
 </head>
@@ -98,13 +48,11 @@
             <a th:href="@{/dashboard}">
                 <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
-
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/saldos-iniciales}">
                 <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
             </a>
         </li>
-
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
                 <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
@@ -173,36 +121,17 @@
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Balanza de Comprobación</h1>
             </div>
 
-            <!-- ====== FORM DE FILTROS Y BOTONES ====== -->
-            <form th:action="@{/balanza-comprobacion}" method="get" id="formFiltros" style="display:inline-block;">
-                <div class="filtros-card__body">
-                    <div class="buscador-wrap filtros-row">
-                        <div class="filtro-col">
-                            <span class="filtro-label fuente-p1">Rango de fechas</span>
-                            <div class="rango">
-                                <label for="fDesde">Desde</label>
-                                <input id="fDesde" name="desde" type="date" class="input" th:value="${desde}">
-                                <span>–</span>
-                                <label for="fHasta">Hasta</label>
-                                <input id="fHasta" name="hasta" type="date" class="input" th:value="${hasta}">
-                            </div>
-                        </div>
+            <!-- ====== ACCIONES (no hay formularios anidados) ====== -->
+            <div class="acciones">
+                <button type="button" class="btn fuente-btn" onclick="window.print()">Imprimir / Exportar</button>
 
-                        <div class="filtro-col botones">
-                            <button type="submit" class="btn fuente-btn">Buscar</button>
-                            <button id="limpiarBusqueda" class="btn fuente-btn" type="button">Limpiar</button>
-                            <button type="button" class="btn fuente-btn" onclick="window.print()">Imprimir / Exportar</button>
-                            <!-- ✅ Guardar junto a Imprimir -->
-                            <form th:action="@{/balanza-comprobacion/guardar}" method="post" id="formGuardar" style="display:inline;">
-                                <input type="hidden" name="desde" th:value="${desde}">
-                                <input type="hidden" name="hasta" th:value="${hasta}">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                <button type="submit" class="btn fuente-btn">Guardar en BD</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                <!-- ÚNICO form para guardar en BD -->
+                <form th:action="@{/balanza-comprobacion/guardar}" method="post" id="formGuardar" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <!-- Sin desde/hasta: el Service aplicará el rango por defecto -->
+                    <button type="submit" class="btn fuente-btn">Guardar en BD</button>
+                </form>
+            </div>
 
             <div style="margin:.5rem 0;" class="fuente-p1">
                 <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
@@ -211,7 +140,7 @@
 
             <!-- ====== TABLA ====== -->
             <div id="balanzaResultados">
-                <div class="tabla-wrapper ">
+                <div class="tabla-wrapper">
                     <table class="tabla-usuarios">
                         <thead class="fuente-btn">
                         <tr>
@@ -263,6 +192,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:inline="javascript">
     const msgOk = /*[[${msgOk}]]*/ null;
+    const msgErr = /*[[${msgErr}]]*/ null;
     if (msgOk) {
       Swal.fire({
         title: '¡Éxito!',
@@ -274,6 +204,8 @@
         toast: true,
         position: 'top-end'
       });
+    } else if (msgErr) {
+      Swal.fire({ icon:'error', title:'Error', text: msgErr });
     }
 </script>
 

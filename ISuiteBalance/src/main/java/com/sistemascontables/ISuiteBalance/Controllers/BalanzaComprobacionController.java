@@ -24,25 +24,44 @@ public class BalanzaComprobacionController {
         this.service = service;
     }
 
+    /**
+     * Parser “tolerante”:
+     * - Acepta null/vacío y devuelve null.
+     * - Ignora cualquier cosa después de una coma.
+     * - Solo parsea si queda con forma yyyy-MM-dd; si no, devuelve null.
+     */
+    private static LocalDate parseDateOrNull(String raw) {
+        if (raw == null) return null;
+        String first = raw.split(",")[0].trim();  // "2025-11-08,..." -> "2025-11-08"
+        if (first.isEmpty()) return null;
+        // Validar patrón ISO simple para evitar DateTimeParseException
+        if (!first.matches("\\d{4}-\\d{2}-\\d{2}")) return null;
+        try {
+            return LocalDate.parse(first);
+        } catch (Exception ignore) {
+            return null;
+        }
+    }
+
     @GetMapping("/balanza-comprobacion")
     public String ver(@RequestParam(required = false) String desde,
                       @RequestParam(required = false) String hasta,
                       Model model) {
 
-        LocalDate d = (desde == null || desde.isBlank()) ? null : LocalDate.parse(desde);
-        LocalDate h = (hasta == null || hasta.isBlank()) ? null : LocalDate.parse(hasta);
+        log.debug("[BALANZA][GET] raw desde='{}' hasta='{}'", desde, hasta);
 
-        if (d == null && h == null) {
-            Map<String,Object> datos = service.consultar(null, null);
-            model.addAllAttributes(datos);
-            model.addAttribute("desde", null);
-            model.addAttribute("hasta", null);
-        } else {
-            Map<String,Object> datos = service.consultar(d, h);
-            model.addAllAttributes(datos);
-            model.addAttribute("desde", d != null ? d.toString() : null);
-            model.addAttribute("hasta", h != null ? h.toString() : null);
-        }
+        // Si no envías filtros en el HTML, normalmente llegarán null/vacíos y
+        // el service usará sus defaults (primer día del mes .. hoy).
+        LocalDate d = parseDateOrNull(desde);
+        LocalDate h = parseDateOrNull(hasta);
+
+        Map<String,Object> datos = service.consultar(d, h);
+        model.addAllAttributes(datos);
+
+        // Mantengo estas variables por si en el futuro vuelves a mostrar filtros
+        model.addAttribute("desde", d != null ? d.toString() : null);
+        model.addAttribute("hasta", h != null ? h.toString() : null);
+
         return "BalanzaComprobacion";
     }
 
@@ -51,15 +70,13 @@ public class BalanzaComprobacionController {
                           @RequestParam(required = false) String hasta,
                           RedirectAttributes ra) {
 
-        LocalDate d = (desde == null || desde.isBlank()) ? null : LocalDate.parse(desde);
-        LocalDate h = (hasta == null || hasta.isBlank()) ? null : LocalDate.parse(hasta);
+        log.debug("[BALANZA][POST] raw desde='{}' hasta='{}'", desde, hasta);
 
-        String qs = "";
-        if (d != null) qs += (qs.isEmpty() ? "?" : "&") + "desde=" + d;
-        if (h != null) qs += (qs.isEmpty() ? "?" : "&") + "hasta=" + h;
+        LocalDate d = parseDateOrNull(desde);
+        LocalDate h = parseDateOrNull(hasta);
 
         try {
-            Long idEstado = service.guardarSnapshot(d, h);
+            Long idEstado = service.guardarSnapshot(d, h);  // si d/h son null, el service usa defaults
             ra.addFlashAttribute("msgOk", "Balanza guardada correctamente. id_estado = " + idEstado);
             log.info("[BALANZA][OK] Snapshot guardado id_estado={}", idEstado);
         } catch (Exception e) {
@@ -67,6 +84,7 @@ public class BalanzaComprobacionController {
             ra.addFlashAttribute("msgErr", "No se pudo guardar la balanza: " + e.getMessage());
         }
 
-        return "redirect:/balanza-comprobacion" + qs;
+        // No reinyecto querystring porque ya no usas filtros en la vista
+        return "redirect:/balanza-comprobacion";
     }
 }
