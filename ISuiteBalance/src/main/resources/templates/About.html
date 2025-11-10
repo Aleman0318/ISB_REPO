@@ -16,7 +16,7 @@
 <div class="sidebar">
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
-        <!-- Inicio: solo usuarios autenticados -->
+
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
                 <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
@@ -28,13 +28,11 @@
             </a>
         </li>
 
-        <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
                 <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
         </li>
 
-        <!-- Administrador o Contador -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
                 <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
@@ -47,18 +45,17 @@
             <a th:href="@{/registro-libro-diario}">
                 <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
         </li>
-        <!-- NUEVO: Libro Mayor -->
+
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/libro-mayor}">
                 <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
         </li>
-        <!-- NUEVO: Balanza -->
+
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/balanza-comprobacion}">
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
-        <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/generar-reporte}">
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
@@ -68,7 +65,6 @@
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
-        <!-- About (visible para todos los roles, incluso invitado) -->
         <li>
             <a th:href="@{/about}" class="active">
                 <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
