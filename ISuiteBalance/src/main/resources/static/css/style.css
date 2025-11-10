@@ -24,7 +24,7 @@ body {
 /* === SIDEBAR === */
 .sidebar {
     width: 230px;
-        background: #1e1f25;
+    background: #1e1f25;
     color: #fff;
     min-height: 100svh;
     align-self: stretch;
@@ -994,3 +994,28 @@ input[type="date"] {
     }
 }
 
+.accordion-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  background:transparent;
+  border:0;
+  padding:.6rem .8rem;
+  color:inherit;
+  text-align:left;
+      border-radius: 6px;
+  cursor:pointer;
+}
+
+.accordion-toggle:hover{
+    background: #e63946;
+
+ }
+
+.accordion-toggle .acc-label{ display:flex; align-items:center; gap:.5rem; }
+.accordion-panel{ margin-left:1.8rem; }
+.accordion-panel[hidden]{ display:none; }
+.chevron{ transition:transform .2s ease; }
+.accordion-toggle[aria-expanded="true"] .chevron{ transform:rotate(90deg); }

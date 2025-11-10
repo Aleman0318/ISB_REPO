@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Estado de Variaciones del Patrimonio | Suite Balance ISB</title>
+
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <style>
+        .card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;align-items:end}
+        .grid .span-2{grid-column:span 2 / span 2}
+        .btn{background:#e63946;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+        .btn:hover{background:#c52f3c}
+        .muted{color:#666;font-size:.92rem}
+        table td.num,table th.num{text-align:right}
+        .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+        .kpi .tile{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        @media (max-width:900px){.kpi{grid-template-columns:1fr 1fr}}
+        @media (max-width:640px){.kpi{grid-template-columns:1fr}}
+        .center-actions{display:flex;justify-content:center;gap:10px}
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
+
+        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
+            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
+            <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales</a>
+        </li>
+
+        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
+            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}">
+            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
+            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}">
+            <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        </li>
+
+        <li class="accordion">
+            <button type="button"
+                    class="accordion-toggle fuente-p1"
+                    aria-expanded="false"
+                    aria-controls="finanzas-submenu">
+                <span class="acc-label">
+                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  Estados financieros
+                </span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                </svg>
+            </button>
+
+            <ul id="finanzas-submenu" class="accordion-panel" hidden>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
+                    <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
+                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}" class="active" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                </li>
+
+            </ul>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
+            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
+            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        </li>
+
+        <li>
+            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+        </li>
+
+    </ul>
+</div>
+<div id="backdrop" class="backdrop"></div>
+
+<div class="main">
+    <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1></div>
+
+        <div class="user-info">
+        <span class="nombre-usuario fuente-p4" data-usuario-target>
+            <script th:inline="javascript">
+            document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+        </script>
+        </span>
+
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
+            <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            </button>
+
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </header>
+
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Estado de Variaciones del Patrimonio</h1>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <form th:action="@{/estado-variaciones}" method="get" class="grid">
+                    <div class="span-2">
+                        <label class="fuente-btn">Desde</label>
+                        <input type="date" name="desde" th:value="${desde}">
+                    </div>
+                    <div class="span-2">
+                        <label class="fuente-btn">Hasta</label>
+                        <input type="date" name="hasta" th:value="${hasta}">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn fuente-btn" type="submit">Buscar</button>
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn fuente-btn" type="button" onclick="window.location.href='/estado-variaciones'">Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- KPIs -->
+            <div class="kpi">
+                <div class="tile">
+                    <div class="fuente-btn">Cambios de Capital</div>
+                    <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(cambiosCapital,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Dividendos</div>
+                    <div class="fuente-titulos3 txt-rojo" th:text="${#numbers.formatDecimal(dividendos,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Utilidad Retenida (del período)</div>
+                    <div class="fuente-titulos3" th:classappend="${utilidadRetenida>=0}? ' txt-verde':' txt-rojo'"
+                         th:text="${#numbers.formatDecimal(utilidadRetenida,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Variación Neta del Patrimonio</div>
+                    <div class="fuente-titulos3" th:classappend="${variacionNeta>=0}? ' txt-verde':' txt-rojo'"
+                         th:text="${#numbers.formatDecimal(variacionNeta,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="card" style="margin-top:14px">
+                <table class="tabla-usuarios">
+                    <thead class="fuente-btn">
+                    <tr><th>Concepto</th><th class="num">Monto</th></tr>
+                    </thead>
+                    <tbody class="fuente-p1">
+                    <tr><td>Cambios de capital del período</td>
+                        <td class="num" th:text="${#numbers.formatDecimal(cambiosCapital,1,'POINT',2,'POINT')}">0.00</td></tr>
+                    <tr><td>Dividendos del período</td>
+                        <td class="num txt-rojo" th:text="${#numbers.formatDecimal(dividendos,1,'POINT',2,'POINT')}">0.00</td></tr>
+                    <tr><td>Utilidad retenida del período</td>
+                        <td class="num" th:classappend="${utilidadRetenida>=0}? ' txt-verde':' txt-rojo'"
+                            th:text="${#numbers.formatDecimal(utilidadRetenida,1,'POINT',2,'POINT')}">0.00</td></tr>
+                    <tr>
+                        <td class="fuente-btn">Variación neta del patrimonio</td>
+                        <td class="num fuente-btn" th:classappend="${variacionNeta>=0}? ' txt-verde':' txt-rojo'"
+                            th:text="${#numbers.formatDecimal(variacionNeta,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="center-actions" style="margin-top:12px">
+                    <form th:action="@{/estado-variaciones/guardar}" method="post" style="display:flex;gap:8px;">
+                        <input type="hidden" name="desde" th:value="${desde}">
+                        <input type="hidden" name="hasta" th:value="${hasta}">
+                        <button class="btn fuente-btn" type="submit">Guardar en BD</button>
+                    </form>
+                    <span class="muted fuente-p1">Periodo: <span th:text="${desde}">yyyy-mm-dd</span> .. <span th:text="${hasta}">yyyy-mm-dd</span></span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:inline="javascript">
+    const ok = /*[[${msgOk}]]*/ null, err = /*[[${msgErr}]]*/ null;
+    if (ok) Swal.fire({icon:'success', title:'¡Éxito!', text: ok, timer:2200, showConfirmButton:false});
+    if (err) Swal.fire({icon:'error', title:'Error', text: err});
+</script>
+
+<!-- Hidratar usuario -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+<script type="module" th:src="@{/JS/acordeon.js}"></script>
+</body>
+</html>

@@ -56,7 +56,7 @@ public class LibroMayorService {
     private static BigDecimal nvl(BigDecimal x){ return x == null ? BigDecimal.ZERO : x; }
 
     public Map<String,Object> consultar(Long idCuenta, LocalDate desde, LocalDate hasta) {
-        // 0) Catálogo para conocer tipo/naturaleza por cuenta
+        // 0) Catálogo para conocer tipo/naturaleza y saldos iniciales
         List<CuentaContable> cuentas = cuentaRepo.findAllByOrderByCodigoAsc();
         Map<Long, CuentaContable> porId = new HashMap<>();
         for (var c : cuentas) porId.put(c.getIdCuenta(), c);
@@ -64,14 +64,41 @@ public class LibroMayorService {
         // 1) Movimientos del rango
         var movs = detalleRepo.mayorMovimientos(idCuenta, desde, hasta);
 
-        // 2) Saldos iniciales (antes de 'desde') en convención Debe-Haber
+        // 2) Saldos iniciales por cuenta provenientes de movimientos ANTERIORES al "desde"
+        //    (en convención Debe-Haber: saldo = SUM(debe - haber))
         Map<Long, BigDecimal> siDebHab = new HashMap<>();
         if (desde != null) {
             detalleRepo.saldosInicialesPorCuenta(idCuenta, desde)
-                    .forEach(r -> siDebHab.put(r.getIdCuenta(), nvl(r.getSaldo()))); // saldo = SUM(debe - haber)
+                    .forEach(r -> siDebHab.put(r.getIdCuenta(), nvl(r.getSaldo())));
         }
 
-        // 3) Agrupar por cuenta aplicando naturaleza
+        // 2.1) Integrar el saldo_inicial del catálogo (tbl_cuentacontable)
+        //      a la misma convención Debe-Haber:
+        //      - Cuentas de naturaleza DEUDORA (Activo/Gasto/Costo):  +saldo_inicial
+        //      - Cuentas de naturaleza ACREEDORA (Pasivo/Patrimonio/Ingreso): -saldo_inicial
+        //      Solo se suma si la fecha_saldo_inicial es nula o es <= "desde" (o si "desde" es nulo).
+        for (CuentaContable c : cuentas) {
+            if (idCuenta != null && !Objects.equals(idCuenta, c.getIdCuenta())) continue;
+
+            BigDecimal cat = nvl(c.getSaldoInicial());
+            if (cat.signum() == 0) continue;
+
+            boolean incluirCatalogo;
+            if (desde == null) {
+                incluirCatalogo = true; // sin filtro de fecha, incluye el saldo inicial del catálogo
+            } else {
+                LocalDate fsi = c.getFechaSaldoInicial();
+                incluirCatalogo = (fsi == null) || !fsi.isAfter(desde); // fsi <= desde
+            }
+
+            if (incluirCatalogo) {
+                boolean acre = esAcreedora(c.getTipocuenta());
+                BigDecimal catDebeHaber = acre ? cat.negate() : cat; // convertir a convención Debe-Haber
+                siDebHab.merge(c.getIdCuenta(), catDebeHaber, BigDecimal::add);
+            }
+        }
+
+        // 3) Agrupar por cuenta aplicando naturaleza y partiendo del saldo inicial (natural)
         Map<Long, GrupoMayor> grupos = new LinkedHashMap<>();
 
         for (LibroMayorView m : movs) {
@@ -84,13 +111,14 @@ public class LibroMayorService {
                 CuentaContable cc = porId.get(m.getIdCuenta());
                 ng.tipoCuenta = (cc == null ? null : cc.getTipocuenta());
 
-                // saldo inicial: query trae (Debe - Haber);
-                // si la cuenta es acreedora, lo giramos para expresarlo en signo natural.
-                BigDecimal base = siDebHab.getOrDefault(m.getIdCuenta(), BigDecimal.ZERO);
-                if (esAcreedora(ng.tipoCuenta)) {
-                    base = base.negate(); // ahora es (Haber - Debe)
-                }
-                ng.saldoInicial = base;
+                // saldo inicial en Debe-Haber (de movimientos + catálogo)
+                BigDecimal baseDebeHaber = siDebHab.getOrDefault(m.getIdCuenta(), BigDecimal.ZERO);
+
+                // convertir ese saldo Debe-Haber a signo “natural” de la cuenta
+                // natural = (acre) (H-D) ; pero tenemos (D-H) → natural = -(D-H) para acreedoras
+                BigDecimal baseNatural = esAcreedora(ng.tipoCuenta) ? baseDebeHaber.negate() : baseDebeHaber;
+
+                ng.saldoInicial = baseNatural;
                 return ng;
             });
 
