@@ -148,7 +148,7 @@
                             <span class="fuente-p1">Cuenta <strong th:text="${g.codigo}"></strong> · <strong th:text="${g.nombrecuenta}"></strong></span>
                         </div>
 
-                        <div class="tabla-wrapper">
+                        <div th:fragment="tabla" class="tabla-wrapper">
                             <table class="tabla-usuarios">
                                 <thead class="fuente-btn">
                                 <tr>

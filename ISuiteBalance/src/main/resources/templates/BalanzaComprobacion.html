@@ -209,8 +209,8 @@
                 <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
             </div>
 
-            <!-- ====== TABLA ====== -->
-            <div id="balanzaResultados">
+
+            <div th:fragment="tabla" id="balanzaResultados">
                 <div class="tabla-wrapper ">
                     <table class="tabla-usuarios">
                         <thead class="fuente-btn">

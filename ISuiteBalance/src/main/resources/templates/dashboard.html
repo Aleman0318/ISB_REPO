@@ -56,9 +56,15 @@
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/plus.png}"  class="icono-opcion_aside">Nuevo Reporte
+            </a>
+        </li>
+
         <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/generar-reporte}">
+            <a th:href="@{/reportes}">
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">

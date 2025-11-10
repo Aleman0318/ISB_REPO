@@ -38,10 +38,12 @@ public class LibroMayorService {
 
     private final DetallePartidaDAO detalleRepo;
     private final CuentaContableDAO cuentaRepo;
+    private final BalanzaComprobacionService balanzaService;
 
-    public LibroMayorService(DetallePartidaDAO detalleRepo, CuentaContableDAO cuentaRepo) {
+    public LibroMayorService(DetallePartidaDAO detalleRepo, CuentaContableDAO cuentaRepo, BalanzaComprobacionService balanzaService) {
         this.detalleRepo = detalleRepo;
         this.cuentaRepo = cuentaRepo;
+        this.balanzaService = balanzaService;
     }
 
     // Naturaleza: true = acreedora (Pasivo/Patrimonio/Ingreso), false = deudora (Activo/Gasto/Costo)
@@ -124,5 +126,24 @@ public class LibroMayorService {
         out.put("desdeStr", desde == null ? null : desde.toString());
         out.put("hastaStr", hasta == null ? null : hasta.toString());
         return out;
+    }
+
+    public Map<String,Object> consultarTodas(LocalDate inicio, LocalDate fin) {
+        // Reutilizamos tu cálculo de balanza (ya devuelve por cuenta + totales)
+        // y simplemente renombramos claves para la vista.
+        Map<String,Object> balanza = balanzaService.consultar(inicio, fin);
+
+        // La balanza suele traer:
+        // - "filas": List<FilaCuenta>  (codigo, nombre, saldoInicial, debitos, creditos, saldoFinalDeudor, saldoFinalAcreedor)
+        // - "totalDebitos" / "totalCreditos" / etc.
+        // Ajusta si tus claves difieren.
+        return Map.of(
+                "filas", balanza.get("filas"),
+                "totalDebitos", balanza.get("totalDebitos"),
+                "totalCreditos", balanza.get("totalCreditos"),
+                "totalFinalDeudor", balanza.get("totalFinalDeudor"),
+                "totalFinalAcreedor", balanza.get("totalFinalAcreedor"),
+                "titulo", "Libro Mayor (resumen) — " + inicio + " a " + fin
+        );
     }
 }
