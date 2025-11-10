@@ -184,21 +184,22 @@
                 </div>
 
                 <div class="botones1">
-                    <!-- GUARDAR: no es submit; enviamos nosotros -->
                     <button
                             type="button"
                             class="btn-agregar fuente-btn"
                             id="btnGuardar"
                             onclick="
-                                const f = this.form;
-                                if (!f.reportValidity()) return;      // valida HTML5
-                                const a = document.getElementById('actionField');
-                                if (!a) { alert('Falta input oculto actionField'); return; }
-                                a.value = 'guardar';
-                                if (f.requestSubmit) { f.requestSubmit(); }
-                                else { f.submit(); }
-                              ">
-                        Modificar Usuario
+                              const f = this.form;
+                              if (!f.reportValidity()) return;
+                              this.disabled = true;
+                              this.textContent = 'Creando...';
+                              if (f.requestSubmit) {
+                                f.requestSubmit();
+                              } else {
+                                setTimeout(() => f.submit(), 0);
+                              }
+                            ">
+                        Agregar Usuario
                     </button>
 
                     <!-- CANCELAR: NO envía el form -->
