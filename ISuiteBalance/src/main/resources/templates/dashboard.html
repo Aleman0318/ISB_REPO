@@ -69,7 +69,9 @@
             </a>
         </li>
 
-
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/estado-flujo}"><img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo Efectivo</a>
+        </li>
 
 
         <!-- Administrador o Auditor -->
