@@ -57,20 +57,23 @@ public class SecurityConfig {
                                 "/libro-mayor/**",
                                 "/partidas/**",
                                 "/subir-doc/**",
-                                "/gestion-partida/**"
+                                "/gestion-partida/**",
+                                // ➕ Crear nuevo reporte (formulario)
+                                "/reportes/nuevo"
                         ).hasAnyRole("Administrador","Contador")
 
-                        // Administrador o Auditor
-                        .requestMatchers(
-                                "/bitacora/**",
-                                "/reportes/**",
-                                "/generar-reporte/**"
-                        ).hasAnyRole("Administrador","Auditor")
+                        // Lista de reportes: Admin, Contador y Auditor
+                        .requestMatchers("/reportes/**").hasAnyRole("Administrador","Contador","Auditor")
+
+                        // Bitácora: Admin o Auditor
+                        .requestMatchers("/bitacora/**").hasAnyRole("Administrador","Auditor")
 
                         // Dashboard: requiere login
                         .requestMatchers("/dashboard/**").authenticated()
 
-                        // Cualquier otra ruta, autenticada
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // Todo lo dems, autenticado
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

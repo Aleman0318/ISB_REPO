@@ -24,7 +24,7 @@ body {
 /* === SIDEBAR === */
 .sidebar {
     width: 230px;
-        background: #1e1f25;
+    background: #1e1f25;
     color: #fff;
     min-height: 100svh;
     align-self: stretch;
@@ -764,8 +764,9 @@ header input{
   transition: box-shadow .2s, border-color .2s, background .2s;
   box-sizing: border-box;
 }
-.buscador-wrap #buscarPartidas {
+#buscarPartidas {
   width: min(360px, 100%);
+  border-radius: 10px;
 }
 .buscador-wrap #buscarPeriodo {
   width: 190px;
@@ -816,6 +817,7 @@ header input{
   }
   .buscador-wrap #buscarPartidas {
     width: 100%;
+    border-radius: 10px;
   }
   .buscador-wrap #buscarPeriodo {
       flex: 1 0 160px;
@@ -841,6 +843,8 @@ header input{
   margin: 18px 0 24px;
   padding: 18px 22px;
   font-family: 'Inter', sans-serif;
+  width: 87%;
+  margin: 18px auto 24px;
 }
 
 .filtros-card__header { margin-bottom: 10px; }
@@ -922,7 +926,7 @@ header input{
   padding: 0 14px;
 }
 input[type="date"] {
-  height: 36px;
+  height: 42px;
   line-height: 36px;
   padding: 0 10px;
 }
@@ -994,3 +998,28 @@ input[type="date"] {
     }
 }
 
+.accordion-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  background:transparent;
+  border:0;
+  padding:.6rem .8rem;
+  color:inherit;
+  text-align:left;
+      border-radius: 6px;
+  cursor:pointer;
+}
+
+.accordion-toggle:hover{
+    background: #e63946;
+
+ }
+
+.accordion-toggle .acc-label{ display:flex; align-items:center; gap:.5rem; }
+.accordion-panel{ margin-left:1.8rem; }
+.accordion-panel[hidden]{ display:none; }
+.chevron{ transition:transform .2s ease; }
+.accordion-toggle[aria-expanded="true"] .chevron{ transform:rotate(90deg); }

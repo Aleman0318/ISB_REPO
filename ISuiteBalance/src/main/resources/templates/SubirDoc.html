@@ -20,63 +20,91 @@
 <div class="sidebar">
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
-        <!-- Inicio: solo usuarios autenticados -->
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/dashboard}">
-                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+
+        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
+            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
+            <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales</a>
+        </li>
+
+        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
+            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}" class="active">
+            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
+            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}">
+            <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        </li>
+
+        <li class="accordion">
+            <button type="button"
+                    class="accordion-toggle fuente-p1"
+                    aria-expanded="false"
+                    aria-controls="finanzas-submenu">
+                <span class="acc-label">
+                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  Estados financieros
+                </span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                </svg>
+            </button>
+
+            <ul id="finanzas-submenu" class="accordion-panel" hidden>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
+                    <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
+                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                </li>
+
+            </ul>
+        </li>
+
+        <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/saldos-iniciales}">
-                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
             </a>
         </li>
 
-        <!-- Solo Administrador -->
-        <li sec:authorize="hasRole('Administrador')">
-            <a th:href="@{/gestion-usuario}">
-                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
-        <!-- Administrador o Contador -->
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/subir-doc}" class="active">
-                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
-        </li>
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/gestion-partida}">
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
-        </li>
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/registro-libro-diario}">
-                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
-        </li>
-        <!-- NUEVO: Libro Mayor -->
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/libro-mayor}">
-                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
-        </li>
-        <!-- NUEVO: Balanza -->
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/balanza-comprobacion}">
-                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
+            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
-        <!-- Administrador o Auditor -->
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/generar-reporte}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
-        </li>
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/bitacora}">
-                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
-        </li>
-
-        <!-- About (visible para todos los roles, incluso invitado) -->
         <li>
-            <a th:href="@{/about}">
-                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
         </li>
+
     </ul>
 </div>
 
@@ -103,8 +131,7 @@
 
             <!-- Semilla del backend (si esta vista recibe nombreUsuario, lo usará el módulo para guardarlo en IndexedDB) -->
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-
-            <a onclick="window.location.href='/perfil'" title="Perfil">   <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar"></a>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
@@ -291,6 +318,6 @@
       });
     })();
 </script>
-
+<script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>
