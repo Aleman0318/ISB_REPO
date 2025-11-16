@@ -14,28 +14,66 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
     <style>
-        .card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-        .grid {display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap:14px; align-items:end;}
-        .grid .span-2{grid-column: span 2 / span 2;}
-        .btn{background:#e63946;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer}
-        .btn:hover{background:#c52f3c}
-        .muted{color:#666;font-size:.92rem}
-        table td.num, table th.num {text-align:right}
-        .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-        .kpi .tile{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(6, minmax(0,1fr));
+            gap:14px;
+            align-items:end;
+        }
 
-        /* ===== Centrar Botón Guardar ===== */
+        .grid .span-2{
+            grid-column:span 2 / span 2;
+        }
+
+        .muted{
+            color:#666;
+            font-size:.92rem;
+        }
+
+        table td.num,
+        table th.num{
+            text-align:right;
+        }
+
+        .kpi{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:12px;
+            margin-top:14px;
+        }
+
+        .kpi .tile{
+            background:#fff;
+            border-radius:10px;
+            padding:14px;
+            box-shadow:0 2px 10px rgba(0,0,0,.06);
+        }
+
+        .card-estado{
+            display:flex;              /* Permite apilar elementos */
+            flex-direction:column;     /* Tabla arriba, botón abajo */
+            align-items:stretch;
+        }
+
+        /* Botón centrado debajo de la tabla */
         .guardar-centro{
             display:flex;
-            justify-content:center;
+            justify-content:center;    /* Centrado horizontal */
             align-items:center;
             width:100%;
             margin-top:14px;
         }
 
-        @media (max-width:900px){ .kpi{grid-template-columns:1fr 1fr} }
-        @media (max-width:640px){ .kpi{grid-template-columns:1fr} }
+        @media (max-width:900px){
+            .kpi{grid-template-columns:1fr 1fr}
+        }
+
+        @media (max-width:640px){
+            .kpi{grid-template-columns:1fr}
+        }
+
     </style>
+
 </head>
 <body>
 
@@ -187,7 +225,7 @@
             </div>
 
             <!-- Tabla resumen -->
-            <div class="card" style="margin-top:14px">
+            <div class="card-estado" style="margin-top:14px">
                 <table class="tabla-usuarios">
                     <thead class="fuente-btn">
                     <tr><th>Concepto</th><th class="num">Monto</th></tr>
