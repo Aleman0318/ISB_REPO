@@ -1313,34 +1313,66 @@ text-align: center;
   font-size: clamp(0.9rem, 1.3vw, 1.1rem);
 }
 
-/* -------- CARD -------- */
+
 .card{
   background:#fff;
   border-radius:10px;
   padding:16px;
   box-shadow:0 2px 10px rgba(0,0,0,.06);
 
-  width: 88%;
-  margin: 0 auto 20px;
+  /* para las pantallas tipo "Generar reporte" */
+  width:88%;
+  margin:0 auto 20px;
   display:flex;
   justify-content:center;
 }
 
-/* Form centrado */
+/* Form centrado dentro de la card */
 .card form{
   width:90%;
   max-width:1050px;
   margin:0 auto;
 }
 
-/* -------- LABELS -------- */
+/* Card especial para Estado de Resultado (tabla + botón) */
+.card-estado{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+
+/* Card especial para Variaciones Patrimonio */
+.card-variaciones{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+
+/* Botón centrado debajo de la tabla (Estado de Resultado) */
+.guardar-centro{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  margin-top:14px;
+}
+
+/* Botón + texto de período centrados (Variaciones) */
+.center-actions{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  margin-top:12px;
+}
+
 label{
   font-weight:600;
   display:block;
   margin-bottom:5px;
 }
 
-/* -------- INPUTS -------- */
 select,
 input[type="number"],
 input[type="date"],
@@ -1354,7 +1386,7 @@ input[type="date"],
   box-sizing:border-box;
 }
 
-/* Evitar desbordes en columnas */
+/* Evitar desbordes en columnas del form */
 .form-grid > div{
   min-width:0;
 }
@@ -1366,7 +1398,7 @@ select{
   text-overflow:ellipsis;
 }
 
-/* -------- BOTÓN ROJO GENÉRICO -------- */
+
 .btn{
   background:#e63946;
   color:#fff;
@@ -1381,48 +1413,98 @@ select{
   background:#c52f3c;
 }
 
-/* Botón Guardar un poco más largo (si existe ese id) */
+/* Botón Guardar un poco más largo (si se usa ese id) */
 #btnGuardarUno{
   min-width:120px;
   padding:10px 40px;
 }
 
-/* -------- GRID GENERAL (4 columnas: texto, mes, botón, contador) -------- */
+
 .form-grid {
-  display: grid;
-  grid-template-columns: 400px 300px 140px 140px; /* 4 columnas */
-  gap: 20px;
-  align-items: end;
-  width: 100%;
-  margin: 0 auto 20px;
+  display:grid;
+  grid-template-columns:400px 300px 140px 140px; /* 4 columnas */
+  gap:20px;
+  align-items:end;
+  width:100%;
+  margin:0 auto 20px;
 }
 
 /* Mes + placeholder */
-.form-grid .mes {
-  position: relative;
+.form-grid .mes{
+  position:relative;
 }
 
-.form-grid .mes .place {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: 0.85rem;
-  color: #777;
+.form-grid .mes .place{
+  position:absolute;
+  top:50%;
+  left:12px;
+  transform:translateY(-50%);
+  pointer-events:none;
+  font-size:0.85rem;
+  color:#777;
 }
 
 /* Contador estético */
-#contadorCoincidencias {
-  padding-top: 12px;
-  font-size: .9rem;
-  color: #444;
+#contadorCoincidencias{
+  padding-top:12px;
+  font-size:.9rem;
+  color:#444;
 }
 
-/* -------- RESPONSIVE -------- */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(0,1fr));
+  gap:14px;
+  align-items:end;
+}
+
+.grid .span-2{
+  grid-column:span 2 / span 2;
+}
+
+.muted{
+  color:#666;
+  font-size:.92rem;
+}
+
+table td.num,
+table th.num{
+  text-align:right;
+}
+
+/* KPI cards */
+.kpi{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:14px;
+}
+
+.kpi .tile{
+  background:#fff;
+  border-radius:10px;
+  padding:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+/* para KPI */
+@media (max-width:900px){
+  .kpi{ grid-template-columns:1fr 1fr; }
+}
+
+@media (max-width:640px){
+  .kpi{ grid-template-columns:1fr; }
+}
+
+/* para el form de búsqueda */
 @media (max-width:1100px){
   .form-grid{
-    grid-template-columns: 1fr 1fr 140px 140px;
+    grid-template-columns:1fr 1fr 140px 140px;
   }
 }
 
