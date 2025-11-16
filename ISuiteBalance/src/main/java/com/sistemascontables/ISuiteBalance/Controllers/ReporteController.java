@@ -34,7 +34,7 @@ public class ReporteController {
 
     // Lista: SOLO Auditor
     @GetMapping
-    @PreAuthorize("hasAuthority('AUDITOR')")
+    @PreAuthorize("hasAuthority('Auditor')")
     public String lista(Model model){
         model.addAttribute("pendientes", service.listarPendientes());
         model.addAttribute("aprobados",  service.listarAprobados());
@@ -108,14 +108,14 @@ public class ReporteController {
 
     // Aprobar / Rechazar: SOLO Auditor
     @PostMapping("/{id}/aprobar")
-    @PreAuthorize("hasAuthority('AUDITOR')")
+    @PreAuthorize("hasAuthority('Auditor')")
     public String aprobar(@PathVariable Long id){
         service.aprobar(id);
         return "redirect:/reportes";
     }
 
     @PostMapping("/{id}/rechazar")
-    @PreAuthorize("hasAuthority('AUDITOR')")
+    @PreAuthorize("hasAuthority('Auditor')")
     public String rechazar(@PathVariable Long id, @RequestParam String motivo){
         service.rechazar(id, motivo);
         return "redirect:/reportes";

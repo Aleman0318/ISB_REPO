@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Configuración saldos iniciales | Suite Balance ISB</title>
+    <title>Saldos iniciales | Suite Balance ISB</title>
 
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -12,49 +12,6 @@
     <link rel="icon" href="data:,">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-
-    <style>
-        .card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-        label{font-weight:600}
-        select,input[type="number"],input[type="date"]{
-          width:100%;padding:10px 12px;border:1px solid #d7d7d7;border-radius:8px;font-family:inherit;box-sizing:border-box
-        }
-        .btn{background:#e63946;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer}
-        .btn:hover{background:#c52f3c}
-
-        /* Grid: Tipo (200), Cuenta (240), Saldo (140), Fecha (220), Botón (140) */
-        .form-grid{
-          display:grid;
-          grid-template-columns: 200px 240px 140px 220px 140px;
-          gap:20px;
-          align-items:end;
-        }
-
-        #cmbCuenta{ max-width:240px; }
-        #fecha{ min-width:220px; }
-        .form-grid > div{ min-width:0; }
-        select{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-        .muted{color:#666;font-size:.92rem}
-        .tabla-wrapper{margin-top:14px}
-        td.num,th.num{text-align:right}
-
-        /* Centrar el formulario dentro de la card */
-        .card{ display:flex; justify-content:center; }
-        .card form{ width:100%; max-width:1050px; margin:0 auto; }
-
-        /* Botón Guardar un poco más largo */
-        #btnGuardarUno{ min-width:120px; padding:10px 40px; }
-
-        @media (max-width:1100px){
-          .form-grid{ grid-template-columns: 1fr 1fr 140px 1fr 140px; }
-          #cmbCuenta{max-width:100%}
-          #fecha{min-width:0}
-        }
-        @media (max-width:820px){
-          .form-grid{ grid-template-columns:1fr; gap:12px; align-items:stretch; }
-        }
-    </style>
 </head>
 <body>
 
@@ -122,8 +79,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -182,8 +151,7 @@
                 <form th:action="@{/saldos-iniciales/guardar}" method="post" id="formSingle">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                    <div class="form-grid">
-                        <!-- Tipo -->
+                    <div class="form-grid fuente-p1" style="grid-template-columns: 200px 240px 140px 220px 140px;">
                         <div>
                             <label for="tipoCuenta">Tipo de cuenta</label>
                             <select id="tipoCuenta" aria-label="Tipo de cuenta">
@@ -219,13 +187,11 @@
                                    onkeydown="return !['-','+','e','E'].includes(event.key);">
                         </div>
 
-                        <!-- Fecha -->
                         <div>
                             <label for="fecha">Fecha del saldo</label>
                             <input id="fecha" type="date">
                         </div>
 
-                        <!-- Botón -->
                         <div>
                             <label>&nbsp;</label>
                             <button type="button" class="btn fuente-btn" id="btnGuardarUno">Guardar</button>

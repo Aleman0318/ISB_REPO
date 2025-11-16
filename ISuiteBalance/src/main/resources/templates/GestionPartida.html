@@ -76,8 +76,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -132,26 +144,43 @@
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Gestion de Partidas</h1>
             </div>
 
-            <div class="buscador-wrap">
-                <input id="buscarPartidas"
-                       class="input"
-                       type="text"
-                       placeholder="Buscar por #partida, usuario o concepto…"
-                       autocomplete="off">
+            <div class="card">
+                <form id="formFiltros" onsubmit="return false;">
+                    <div class=" form-grid fuente-p1">
+                        <div>
+                            <label for="buscarPartidas">Filtro de búsqueda</label>
+                            <input id="buscarPartidas"
+                                   class="input"
+                                   type="text"
+                                   placeholder="Buscar por #partida, usuario o concepto…"
+                                   autocomplete="off">
+                        </div>
 
-                <div class="mes">
-                    <input id="buscarPeriodo"
-                           class="input input-mes"
-                           type="month"
-                           aria-label="Filtrar por mes y año"
-                           required>
-                    <span class="place">Elegir mes y año</span>
-                </div>
+                        <div>
+                            <label for="buscarPeriodo">Mes / año</label>
+                            <div class="mes">
+                                <input id="buscarPeriodo"
+                                       class="input input-mes"
+                                       type="month"
+                                       aria-label="Filtrar por mes y año"
+                                       required>
+                                <span class="place">Elegir mes y año</span>
+                            </div>
+                        </div>
 
-                <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
+                        <div class="filtro-col botones">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn fuente-btn" id="limpiarBusqueda">Limpiar</button>
+                        </div>
 
-                <span id="contadorCoincidencias"></span>
+                        <div>
+                            <label>&nbsp;</label>
+                            <span id="contadorCoincidencias"></span>
+                        </div>
+                    </div>
+                </form>
             </div>
+
 
             <table class="tabla-usuarios" id="tabla-gestion-partidas">
                 <thead class="fuente-btn">

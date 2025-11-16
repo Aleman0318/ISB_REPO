@@ -76,8 +76,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -128,13 +140,13 @@
 
             <div>
                 <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
-                    <section class="filtros-card">
+                    <section class="filtros-card" >
                         <div class="filtros-card__header">
                             <h2 class="filtros-card__title fuente-p1">Búsqueda por Fecha</h2>
                         </div>
 
                         <div class="filtros-card__body ">
-                            <div class="filtros-row buscador-wrap">
+                            <div class="filtros-row buscador-wrap form-grid">
                                 <div class="filtro-col fuente-p1">
                                     <label for="fFecha">Fecha específica</label>
                                     <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">

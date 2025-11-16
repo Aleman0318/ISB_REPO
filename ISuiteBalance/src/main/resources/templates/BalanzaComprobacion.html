@@ -35,7 +35,12 @@
 
         /* Barra de acciones (imprimir + guardar) */
         .acciones {
-            display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;
+            display:flex; gap:40px; align-items:center; flex-wrap:wrap; margin-bottom:12px;
+        }
+
+        .acciones > * {
+            display: inline-flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -105,8 +110,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -149,23 +166,20 @@
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Balanza de Comprobación</h1>
             </div>
 
-            <!-- ====== ACCIONES (no hay formularios anidados) ====== -->
-            <div class="acciones">
-                <button type="button" class="btn fuente-btn" onclick="window.print()">Imprimir / Exportar</button>
+            <div class="acciones card">
+                <div style="margin:.5rem 0;" class="fuente-p1">
+                    <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
+                    <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
+                </div>
 
                 <!-- ÚNICO form para guardar en BD -->
                 <form th:action="@{/balanza-comprobacion/guardar}" method="post" id="formGuardar" style="display:inline;">
+                    <button type="button" class="btn fuente-btn" onclick="window.print()">Imprimir / Exportar</button>
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <!-- Sin desde/hasta: el Service aplicará el rango por defecto -->
                     <button type="submit" class="btn fuente-btn">Guardar en BD</button>
                 </form>
             </div>
-
-            <div style="margin:.5rem 0;" class="fuente-p1">
-                <small th:if="${validacionOk}" class="badge-ok">✔ Débitos = Créditos</small>
-                <small th:if="${!validacionOk}" class="badge-err">✖ Descuadre: revise los datos</small>
-            </div>
-
 
             <div th:fragment="tabla" id="balanzaResultados">
                 <div class="tabla-wrapper ">

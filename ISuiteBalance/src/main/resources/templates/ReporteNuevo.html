@@ -52,10 +52,22 @@
                 <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/reportes}" class="active">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}" class="active">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
         </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
+        </li>
+
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
@@ -111,42 +123,44 @@
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Generar Reporte</h1>
             </div>
 
-            <form method="post" th:action="@{/reportes}" class="grupo-seleccion contenedor-blanco fondo-lineas">
-                <div class="campo">
-                    <label class="fuente-btn">Tipo de Reporte</label>
-                    <select class="input fuente-p1" name="tipo" required>
-                        <option value="" disabled selected>Selecciona el tipo de reporte</option>
-                        <option value="BALANZA">Balanza de Comprobacion</option>
-                        <option value="DIARIO">Libro Diario</option>
-                    </select>
-                </div>
+            <div class="card">
+                <form method="post" th:action="@{/reportes}" class="grupo-seleccion contenedor-blanco fondo-lineas">
+                    <div class="campo">
+                        <label class="fuente-btn">Tipo de Reporte</label>
+                        <select class="input fuente-p1" name="tipo" required>
+                            <option value="" disabled selected>Selecciona el tipo de reporte</option>
+                            <option value="BALANZA">Balanza de Comprobacion</option>
+                            <option value="DIARIO">Libro Diario</option>
+                        </select>
+                    </div>
 
-                <div class="campo">
-                    <label class="fuente-btn">Periodicidad</label>
-                    <select class="input fuente-p1" name="periodicidad" required>
-                        <option value="" disabled selected>Selecciona la periodicidad</option>
-                        <option value="MENSUAL">Mensual</option>
-                        <option value="BIMESTRAL">Bimestral</option>
-                        <option value="TRIMESTRAL">Trimestral</option>
-                        <option value="ANUAL">Anual</option>
-                    </select>
-                </div>
+                    <div class="campo">
+                        <label class="fuente-btn">Periodicidad</label>
+                        <select class="input fuente-p1" name="periodicidad" required>
+                            <option value="" disabled selected>Selecciona la periodicidad</option>
+                            <option value="MENSUAL">Mensual</option>
+                            <option value="BIMESTRAL">Bimestral</option>
+                            <option value="TRIMESTRAL">Trimestral</option>
+                            <option value="ANUAL">Anual</option>
+                        </select>
+                    </div>
 
-                <div class="campo">
-                    <label class="fuente-btn">Comentario </label>
-                    <textarea class="input fuente-p1" name="comentario" placeholder="Notas internas del reporte…"></textarea>
-                </div>
+                    <div class="campo">
+                        <label class="fuente-btn">Comentario </label>
+                        <textarea class="input fuente-p1" name="comentario" placeholder="Notas internas del reporte…" style="height: 45px; resize: vertical;"></textarea>
+                    </div>
 
-                <div class="filtro-col botones">
-                    <button type="button" id="btnPreviewActual"   class="btn-agregar fuente-btn">Actuales</button>
-                    <button type="button" id="btnPreviewAnterior" class="btn-agregar fuente-btn">Anteriores</button>
-                    <button class="btn-agregar fuente-btn" type="submit">Crear</button>
-                    <button class="btn-agregar fuente-btn" th:href="@{/reportes}">Reportes</button>
-                </div>
-            </form>
+                    <div class="filtro-col botones">
+                        <button type="button" id="btnPreviewActual"   class="btn-agregar fuente-btn">Actuales</button>
+                        <button type="button" id="btnPreviewAnterior" class="btn-agregar fuente-btn">Anteriores</button>
+                        <button class="btn-agregar fuente-btn" type="submit">Crear</button>
+                        <button class="btn-agregar fuente-btn" th:href="@{/reportes}">Reportes</button>
+                    </div>
+                </form>
 
+            </div>
 
-            <div id="preview" class="contenedor-blanco fondo-lineas">
+            <div id="preview" class="card contenedor-blanco fondo-lineas">
                 <h2 class="fuente-btn txt-rojo" style="text-align: center">Vista previa del reporte</h2>
             </div>
 
