@@ -76,8 +76,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -128,13 +140,13 @@
 
             <div>
                 <form th:action="@{/registro-libro-diario}" method="get" id="formFiltros">
-                    <section class="filtros-card">
+                    <section class="filtros-card" >
                         <div class="filtros-card__header">
                             <h2 class="filtros-card__title fuente-p1">Búsqueda por Fecha</h2>
                         </div>
 
                         <div class="filtros-card__body ">
-                            <div class="filtros-row buscador-wrap">
+                            <div class="filtros-row buscador-wrap form-grid">
                                 <div class="filtro-col fuente-p1">
                                     <label for="fFecha">Fecha específica</label>
                                     <input id="fFecha" name="fecha" type="date" class="input" th:value="${fechaStr}">
@@ -170,49 +182,52 @@
                 </form>
             </div>
 
-            <table class="tabla-usuarios" id="tabla-libro-diario">
-                <thead class="fuente-btn">
-                <tr>
-                    <th>N°</th>
-                    <th>Fecha</th>
-                    <th>Tipo de cuenta</th>
-                    <th>Cuenta</th>
-                    <th>Descripción</th>
-                    <th>Debe</th>
-                    <th>Haber</th>
-                    <th>Documento</th>
-                </tr>
-                </thead>
-                <tbody class="fuente-p1">
-                <tr th:each="r : ${filas}">
-                    <td th:text="${r.idPartida}">1</td>
-                    <td th:text="${#temporals.format(r.fecha, 'yyyy-MM-dd')}">2025-10-22</td>
-                    <td th:text="${r.tipoCuenta}">ACTIVO</td>
-                    <td th:text="${r.cuenta}">101-01 - Caja</td>
-                    <td th:text="${r.descripcion}">Venta al contado</td>
-                    <td th:text="${#numbers.formatDecimal(r.debe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
-                    <td th:text="${#numbers.formatDecimal(r.haber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
-                    <td>
-                        <a th:if="${r.docId != null}" th:href="@{'/documento/' + ${r.docId} + '/ver'}"
-                           th:text="${r.docNombre != null ? r.docNombre : 'Ver documento'}"></a>
-                        <span th:if="${r.docId == null}">—</span>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(filas)}">
-                    <td colspan="8" style="text-align:center; padding:12px;">
-                        Sin registros para el criterio seleccionado.
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="5" style="text-align:right; font-weight:600;">Totales:</td>
-                    <td th:text="${#numbers.formatDecimal(totalDebe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
-                    <td th:text="${#numbers.formatDecimal(totalHaber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
-                    <td></td>
-                </tr>
-                </tfoot>
-            </table>
+            <div th:fragment="tabla">
+                <table class="tabla-usuarios" id="tabla-libro-diario">
+                    <thead class="fuente-btn">
+                    <tr>
+                        <th>N°</th>
+                        <th>Fecha</th>
+                        <th>Tipo de cuenta</th>
+                        <th>Cuenta</th>
+                        <th>Descripción</th>
+                        <th>Debe</th>
+                        <th>Haber</th>
+                        <th>Documento</th>
+                    </tr>
+                    </thead>
+                    <tbody class="fuente-p1">
+                    <tr th:each="r : ${filas}">
+                        <td th:text="${r.idPartida}">1</td>
+                        <td th:text="${#temporals.format(r.fecha, 'yyyy-MM-dd')}">2025-10-22</td>
+                        <td th:text="${r.tipoCuenta}">ACTIVO</td>
+                        <td th:text="${r.cuenta}">101-01 - Caja</td>
+                        <td th:text="${r.descripcion}">Venta al contado</td>
+                        <td th:text="${#numbers.formatDecimal(r.debe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                        <td th:text="${#numbers.formatDecimal(r.haber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                        <td>
+                            <a th:if="${r.docId != null}" th:href="@{'/documento/' + ${r.docId} + '/ver'}"
+                               th:text="${r.docNombre != null ? r.docNombre : 'Ver documento'}"></a>
+                            <span th:if="${r.docId == null}">—</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(filas)}">
+                        <td colspan="8" style="text-align:center; padding:12px;">
+                            Sin registros para el criterio seleccionado.
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align:right; font-weight:600;">Totales:</td>
+                        <td th:text="${#numbers.formatDecimal(totalDebe, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                        <td th:text="${#numbers.formatDecimal(totalHaber, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                </table>
+
+            </div>
 
             <div class="contenedor-boton">
                 <button class="btn-agregar fuente-btn" onclick="window.location.href='/subir-doc'">Registrar Partida</button>

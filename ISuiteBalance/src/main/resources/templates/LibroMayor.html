@@ -78,8 +78,20 @@
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
@@ -125,27 +137,32 @@
             <div class="contenedor-titulo-gestion">
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Libro Mayor</h1>
             </div>
-            <form th:action="@{/libro-mayor}" method="get" id="formFiltros">
-                <div class="filtros-card__body fuente-p1">
-                    <div class="buscador-wrap filtros-row">
-                        <div class="filtro-col">
-                            <span class="filtro-label">Rango de fechas</span>
-                            <div class="rango">
-                                <label for="fDesde">Desde</label>
-                                <input id="fDesde" name="desde" type="date" class="input" th:value="${desdeStr}">
-                                <span>–</span>
-                                <label for="fHasta">Hasta</label>
-                                <input id="fHasta" name="hasta" type="date" class="input" th:value="${hastaStr}">
+
+            <div class="card">
+                <form th:action="@{/libro-mayor}" method="get" id="formFiltros">
+                    <div class="filtros-card__header">
+                        <h3 class="filtro-label fuente-p1" style="text-align: start">Búsqueda por rango de fechas</h3>
+                    </div>
+                    <div class="filtros-card__body fuente-p1">
+                        <div class="buscador-wrap filtros-row form-grid">
+                            <div class="filtro-col">
+                                <div class="rango">
+                                    <label for="fDesde">Desde</label>
+                                    <input id="fDesde" name="desde" type="date" class="input" th:value="${desdeStr}">
+                                    <span>–</span>
+                                    <label for="fHasta">Hasta</label>
+                                    <input id="fHasta" name="hasta" type="date" class="input" th:value="${hastaStr}">
+                                </div>
+                            </div>
+
+                            <div class="filtro-col botones">
+                                <button type="submit" class="btn limpiar fuente-btn">Buscar</button>
+                                <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
                             </div>
                         </div>
-
-                        <div class="filtro-col botones">
-                            <button type="submit" class="btn limpiar fuente-btn">Buscar</button>
-                            <button id="limpiarBusqueda" class="btn limpiar fuente-btn" type="button">Limpiar</button>
-                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
 
             <!-- Si no hay grupos -->
             <div id="mayorResultados">
@@ -164,7 +181,7 @@
                             <span class="fuente-p1">Cuenta <strong th:text="${g.codigo}"></strong> · <strong th:text="${g.nombrecuenta}"></strong></span>
                         </div>
 
-                        <div class="tabla-wrapper">
+                        <div th:fragment="tabla" class="tabla-wrapper">
                             <table class="tabla-usuarios">
                                 <thead class="fuente-btn">
                                 <tr>

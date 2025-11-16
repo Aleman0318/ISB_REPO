@@ -764,8 +764,9 @@ header input{
   transition: box-shadow .2s, border-color .2s, background .2s;
   box-sizing: border-box;
 }
-.buscador-wrap #buscarPartidas {
+#buscarPartidas {
   width: min(360px, 100%);
+  border-radius: 10px;
 }
 .buscador-wrap #buscarPeriodo {
   width: 190px;
@@ -816,6 +817,7 @@ header input{
   }
   .buscador-wrap #buscarPartidas {
     width: 100%;
+    border-radius: 10px;
   }
   .buscador-wrap #buscarPeriodo {
       flex: 1 0 160px;
@@ -841,6 +843,8 @@ header input{
   margin: 18px 0 24px;
   padding: 18px 22px;
   font-family: 'Inter', sans-serif;
+  width: 87%;
+  margin: 18px auto 24px;
 }
 
 .filtros-card__header { margin-bottom: 10px; }
@@ -922,7 +926,7 @@ header input{
   padding: 0 14px;
 }
 input[type="date"] {
-  height: 36px;
+  height: 42px;
   line-height: 36px;
   padding: 0 10px;
 }
