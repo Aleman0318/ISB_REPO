@@ -5,6 +5,7 @@ import com.sistemascontables.ISuiteBalance.Services.BalanzaComprobacionService;
 import com.sistemascontables.ISuiteBalance.Services.LibroDiarioService;
 import com.sistemascontables.ISuiteBalance.Services.LibroMayorService;
 import com.sistemascontables.ISuiteBalance.Models.Periodo;
+import com.sistemascontables.ISuiteBalance.Models.Reporte;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,20 +33,51 @@ public class ReporteController {
         this.libroMayorService = libroMayorService;
     }
 
-    // Lista: SOLO Auditor
+    // Lista general (el Auditor la usa)
+    @PreAuthorize("hasAnyRole('Administrador','Contador','Auditor')")
     @GetMapping
-    @PreAuthorize("hasAuthority('Auditor')")
-    public String lista(Model model){
-        model.addAttribute("pendientes", service.listarPendientes());
-        model.addAttribute("aprobados",  service.listarAprobados());
-        model.addAttribute("rechazados", service.listarRechazados());
+    public String listar(Model model) {
+        var pendientes = service.listarPendientes();
+        var aprobados = service.listarAprobados();
+        var rechazados = service.listarRechazados();
+
+        model.addAttribute("pendientes", pendientes);
+        model.addAttribute("aprobados", aprobados);
+        model.addAttribute("rechazados", rechazados);
         return "ReportesLista";
     }
 
-    // Form nuevo: Admin y Contador
+    // Mis reportes (Admin + Contador)
+    @GetMapping("/mis")
+    @PreAuthorize("hasAnyRole('Administrador','Contador')")
+    public String misReportes(Model model) {
+        model.addAttribute("pendientes", service.listarPendientes());
+        model.addAttribute("rechazados", service.listarRechazados());
+        model.addAttribute("aprobados",  service.listarAprobados());
+        return "MisReportes";
+    }
+
+    // Form nuevo / editar
     @GetMapping("/nuevo")
     @PreAuthorize("hasAnyAuthority('Administrador','Contador')")
-    public String nuevoForm() {
+    public String nuevoForm(@RequestParam(value = "from", required = false) Long from,
+                            Model model,
+                            RedirectAttributes ra) {
+
+        if (from != null) {
+            // Venimos desde "Editar" de un reporte RECHAZADO
+            try {
+                Reporte r = service.buscarPorId(from);
+                if (!"RECHAZADO".equals(r.getEstado())) {
+                    ra.addFlashAttribute("err", "Solo los reportes RECHAZADOS pueden editarse.");
+                    return "redirect:/reportes/mis";
+                }
+                model.addAttribute("reporteEdit", r);
+            } catch (IllegalArgumentException ex) {
+                ra.addFlashAttribute("err", ex.getMessage());
+                return "redirect:/reportes/mis";
+            }
+        }
         return "ReporteNuevo";
     }
 
@@ -98,12 +130,30 @@ public class ReporteController {
                     (parametrosJson==null? "{}" : parametrosJson),
                     comentario
             );
-            ra.addFlashAttribute("ok", "Reporte creado para el período: " + p.clave());
-            return "redirect:/reportes";
+            ra.addFlashAttribute("ok",
+                    "Reporte creado para el período " + p.clave() +
+                            " y enviado al auditor para su revisión.");
+            return "redirect:/reportes/mis";
         } catch (IllegalStateException ex) {
             ra.addFlashAttribute("err", "Ya existe un reporte para ese período.");
             return "redirect:/reportes/nuevo";
         }
+    }
+
+    // === GUARDAR CAMBIOS DE UN RECHAZADO ===
+    @PostMapping("/{id}/editar")
+    @PreAuthorize("hasAnyAuthority('Administrador','Contador')")
+    public String editar(@PathVariable Long id,
+                         @RequestParam(required=false) String comentario,
+                         RedirectAttributes ra) {
+        try {
+            service.editarSiNoAprobado(id, comentario);
+            ra.addFlashAttribute("ok",
+                    "Cambios guardados y reporte reenviado al auditor.");
+        } catch (RuntimeException ex) {
+            ra.addFlashAttribute("err", ex.getMessage());
+        }
+        return "redirect:/reportes/mis";
     }
 
     // Aprobar / Rechazar: SOLO Auditor
@@ -118,16 +168,6 @@ public class ReporteController {
     @PreAuthorize("hasAuthority('Auditor')")
     public String rechazar(@PathVariable Long id, @RequestParam String motivo){
         service.rechazar(id, motivo);
-        return "redirect:/reportes";
-    }
-
-    // Editar/reenviar: Admin y Contador (si lo mantienes)
-    @PostMapping("/{id}/editar")
-    @PreAuthorize("hasAnyAuthority('Administrador','Contador')")
-    public String editar(@PathVariable Long id,
-                         @RequestParam(required=false) String parametrosJson,
-                         @RequestParam(required=false) String comentario) {
-        service.editarSiNoAprobado(id, parametrosJson, comentario);
         return "redirect:/reportes";
     }
 }

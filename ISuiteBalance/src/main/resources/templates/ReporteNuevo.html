@@ -5,10 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suite Balance | ISB</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        .grupo-seleccion .filtro-col.botones button,
+        .grupo-seleccion .filtro-col.botones a {
+            width: 160px;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -57,6 +64,13 @@
             <a th:href="@{/reportes/nuevo}" class="active">
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/mis}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Mis reportes
             </a>
         </li>
 
@@ -124,40 +138,91 @@
             </div>
 
             <div class="card">
-                <form method="post" th:action="@{/reportes}" class="grupo-seleccion contenedor-blanco fondo-lineas">
+                <form method="post"
+                      th:action="${reporteEdit} != null ?
+                          @{/reportes/{id}/editar(id=${reporteEdit.idReporte})} :
+                          @{/reportes}"
+                      class="grupo-seleccion contenedor-blanco fondo-lineas">
+
                     <div class="campo">
                         <label class="fuente-btn">Tipo de Reporte</label>
-                        <select class="input fuente-p1" name="tipo" required>
-                            <option value="" disabled selected>Selecciona el tipo de reporte</option>
-                            <option value="BALANZA">Balanza de Comprobacion</option>
-                            <option value="DIARIO">Libro Diario</option>
+                        <select class="input fuente-p1"
+                                name="tipo"
+                                required
+                                th:disabled="${reporteEdit} != null">
+                            <option value="" disabled
+                                    th:selected="${reporteEdit} == null">
+                                Selecciona el tipo de reporte
+                            </option>
+                            <option value="BALANZA"
+                                    th:selected="${reporteEdit} != null and reporteEdit.tipoReporte == 'BALANZA'">
+                                Balanza de Comprobacion
+                            </option>
+                            <option value="DIARIO"
+                                    th:selected="${reporteEdit} != null and reporteEdit.tipoReporte == 'DIARIO'">
+                                Libro Diario
+                            </option>
                         </select>
                     </div>
 
+                    <!-- Periodicidad -->
                     <div class="campo">
                         <label class="fuente-btn">Periodicidad</label>
-                        <select class="input fuente-p1" name="periodicidad" required>
-                            <option value="" disabled selected>Selecciona la periodicidad</option>
-                            <option value="MENSUAL">Mensual</option>
-                            <option value="BIMESTRAL">Bimestral</option>
-                            <option value="TRIMESTRAL">Trimestral</option>
-                            <option value="ANUAL">Anual</option>
+                        <select class="input fuente-p1"
+                                name="periodicidad"
+                                required
+                                th:disabled="${reporteEdit} != null">
+                            <option value="" disabled
+                                    th:selected="${reporteEdit} == null">
+                                Selecciona la periodicidad
+                            </option>
+                            <option value="MENSUAL"
+                                    th:selected="${reporteEdit} != null and reporteEdit.periodicidad == 'MENSUAL'">
+                                Mensual
+                            </option>
+                            <option value="BIMESTRAL"
+                                    th:selected="${reporteEdit} != null and reporteEdit.periodicidad == 'BIMESTRAL'">
+                                Bimestral
+                            </option>
+                            <option value="TRIMESTRAL"
+                                    th:selected="${reporteEdit} != null and reporteEdit.periodicidad == 'TRIMESTRAL'">
+                                Trimestral
+                            </option>
+                            <option value="ANUAL"
+                                    th:selected="${reporteEdit} != null and reporteEdit.periodicidad == 'ANUAL'">
+                                Anual
+                            </option>
                         </select>
                     </div>
 
+                    <!-- Comentario -->
                     <div class="campo">
                         <label class="fuente-btn">Comentario </label>
-                        <textarea class="input fuente-p1" name="comentario" placeholder="Notas internas del reporte…" style="height: 45px; resize: vertical;"></textarea>
+                        <textarea class="input fuente-p1"
+                                  name="comentario"
+                                  placeholder="Notas internas del reporte…"
+                                  style="height: 45px; resize: vertical;"
+                                  th:text="${reporteEdit} != null ? ${reporteEdit.comentario} : ''">
+                        </textarea>
                     </div>
 
                     <div class="filtro-col botones">
-                        <button type="button" id="btnPreviewActual"   class="btn-agregar fuente-btn">Actuales</button>
                         <button type="button" id="btnPreviewAnterior" class="btn-agregar fuente-btn">Anteriores</button>
-                        <button class="btn-agregar fuente-btn" type="submit">Crear</button>
-                        <button class="btn-agregar fuente-btn" th:href="@{/reportes}">Reportes</button>
+                        <button type="button" id="btnPreviewActual"   class="btn-agregar fuente-btn">Actuales</button>
+
+                        <!-- cambia: Crear / Guardar cambios -->
+                        <button class="btn-agregar fuente-btn" type="submit"
+                                th:text="${reporteEdit} != null ? 'Guardar' : 'Crear'">
+                            Crear
+                        </button>
+
+                        <a th:href="@{/reportes/mis}"
+                           class="btn-agregar fuente-btn"
+                           style="display:inline-flex;align-items:center;justify-content:center;">
+                            Mis reportes
+                        </a>
                     </div>
                 </form>
-
             </div>
 
             <div id="preview" class="card contenedor-blanco fondo-lineas">

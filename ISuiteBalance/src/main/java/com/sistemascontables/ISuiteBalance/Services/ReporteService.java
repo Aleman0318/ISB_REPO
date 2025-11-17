@@ -31,6 +31,12 @@ public class ReporteService {
         this.balanzaService = balanzaService;
     }
 
+    @Transactional(readOnly = true)
+    public Reporte buscarPorId(Long id){
+        return reporteDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el reporte con id=" + id));
+    }
+
     /* ========= CREAR (último período cerrado) ========= */
     @Transactional
     public Reporte crearPendiente(String tipo, String periodicidad,
@@ -39,6 +45,7 @@ public class ReporteService {
                                   String parametrosJson,
                                   String comentario) {
 
+        // Regla de NO duplicados (tipo + periodicidad + periodoClave)
         reporteDAO.findByTipoReporteAndPeriodicidadAndPeriodoClave(tipo, periodicidad, periodoClave)
                 .ifPresent(r -> { throw new IllegalStateException("Ya existe un reporte con esos datos"); });
 
@@ -60,15 +67,19 @@ public class ReporteService {
 
     /* ========= EDITAR ========= */
     @Transactional
-    public Reporte editarSiNoAprobado(Long id, String parametrosJson, String comentario) {
+    public Reporte editarSiNoAprobado(Long id, String comentario) {
         Reporte r = reporteDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el reporte"));
+
         if ("APROBADO".equals(r.getEstado()))
             throw new IllegalStateException("No se puede editar un APROBADO");
 
-        if (comentario!=null) r.setComentario(comentario);
+        // Solo permitimos cambiar comentario y recalcular montos del mismo período
+        if (comentario != null) {
+            r.setComentario(comentario);
+        }
 
-        // Recalcular totales del mismo período
+        // Recalcular totales del mismo período usando periodicidad + periodoClave
         Periodo.PeriodoCalc p = claveARango(r.getPeriodicidad(), r.getPeriodoClave());
         Map<String,Object> resumen = balanzaService.consultar(p.inicio(), p.fin());
         BigDecimal debe  = (BigDecimal) resumen.getOrDefault("totalDebitos",  BigDecimal.ZERO);
@@ -77,6 +88,7 @@ public class ReporteService {
         r.setTotalHaber(haber);
         r.setSaldoFinal(debe.subtract(haber));
 
+        // Si estaba RECHAZADO, vuelve a PENDIENTE y se limpia el comentario de revisión
         if ("RECHAZADO".equals(r.getEstado())) {
             r.setEstado("PENDIENTE");
             r.setComentarioRevision(null);
@@ -84,7 +96,6 @@ public class ReporteService {
         return reporteDAO.save(r);
     }
 
-    /* ========= WORKFLOW ========= */
     @Transactional
     public Reporte aprobar(Long id) {
         Reporte r = reporteDAO.findById(id)
@@ -92,8 +103,10 @@ public class ReporteService {
         if (!"PENDIENTE".equals(r.getEstado()))
             throw new IllegalStateException("Solo PENDIENTE puede aprobarse");
 
-        r.setArchivoUrl(generarPdf(r));
         r.setEstado("APROBADO");
+
+        r.setArchivoUrl(generarPdf(r));
+
         return reporteDAO.save(r);
     }
 
@@ -115,7 +128,6 @@ public class ReporteService {
     public List<Reporte> listarAprobados(){ return reporteDAO.findByEstadoOrderByCreatedAtDesc("APROBADO"); }
     public List<Reporte> listarRechazados(){ return reporteDAO.findByEstadoOrderByCreatedAtDesc("RECHAZADO"); }
 
-    /* ========= PDF ========= */
     private String generarPdf(Reporte r) {
         Path dir = Paths.get("uploads", "reportes");
         try { Files.createDirectories(dir); } catch (IOException ignored) {}
@@ -132,45 +144,153 @@ public class ReporteService {
             PDPage page = new PDPage(PDRectangle.LETTER);
             doc.addPage(page);
 
+            PDRectangle mediaBox = page.getMediaBox();
+            float margin = 56f;
+            float width  = mediaBox.getWidth() - 2 * margin;
+            float y      = mediaBox.getHeight() - margin;
+
             try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
-                float margin = 56f;
-                float y = page.getMediaBox().getHeight() - margin;
+
+                /* ==== TÍTULO CENTRADO ==== */
+                String titulo    = "SUITE BALANCE | ISB";
+                String subtitulo = "REPORTE DE " + r.getTipoReporte();
+
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+                float titleWidth = PDType1Font.HELVETICA_BOLD.getStringWidth(titulo) / 1000 * 18;
+                float titleX     = margin + (width - titleWidth) / 2;
 
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA_BOLD, 16);
-                cs.newLineAtOffset(margin, y);
-                cs.showText("SUITE BALANCE | ISB - REPORTE");
+                cs.newLineAtOffset(titleX, y);
+                cs.showText(titulo);
                 cs.endText();
 
-                y -= 28;
+                y -= 24;
+
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+                float subWidth = PDType1Font.HELVETICA_BOLD.getStringWidth(subtitulo) / 1000 * 14;
+                float subX     = margin + (width - subWidth) / 2;
 
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 12);
-                cs.newLineAtOffset(margin, y);
+                cs.newLineAtOffset(subX, y);
+                cs.showText(subtitulo);
+                cs.endText();
 
-                String comentario = (r.getComentario()==null || r.getComentario().isBlank())
+                y -= 32;
+
+                /* ==== RECUADRO DATOS GENERALES ==== */
+                float datosBoxHeight = 110f;
+                float datosTop       = y;
+                float datosBottom    = datosTop - datosBoxHeight;
+
+                cs.setLineWidth(0.5f);
+                cs.addRect(margin, datosBottom, width, datosBoxHeight);
+                cs.stroke();
+
+                // Título del recuadro
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                cs.newLineAtOffset(margin + 8, datosTop - 16);
+                cs.showText("Datos generales");
+                cs.endText();
+
+                // Texto interno
+                String comentario = (r.getComentario() == null || r.getComentario().isBlank())
                         ? "(sin comentario)" : r.getComentario();
 
-                String[] lines = new String[]{
-                        "Tipo         : " + String.valueOf(r.getTipoReporte()),
-                        "Periodicidad : " + String.valueOf(r.getPeriodicidad()),
-                        "Periodo      : " + String.valueOf(r.getPeriodoClave()),
-                        "Estado       : " + String.valueOf(r.getEstado()),
-                        "Comentario   : " + comentario,
-                        "",
-                        "--- RESUMEN CONTABLE ---",
-                        "Total Débitos: " + nv(r.getTotalDebitos()),
-                        "Total Creditos  : " + nv(r.getTotalHaber()),
-                        "Saldo Final  : " + nv(r.getSaldoFinal()),
-                        "",
-                        "Generado     : " + java.time.LocalDateTime.now()
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA, 11);
+                cs.newLineAtOffset(margin + 14, datosTop - 32);
+                cs.showText("Tipo         : " + r.getTipoReporte());
+                cs.newLineAtOffset(0, -14);
+                cs.showText("Periodicidad : " + r.getPeriodicidad());
+                cs.newLineAtOffset(0, -14);
+                cs.showText("Periodo      : " + r.getPeriodoClave());
+                cs.newLineAtOffset(0, -14);
+                cs.showText("Estado       : " + r.getEstado());
+                cs.newLineAtOffset(0, -14);
+                cs.showText("Comentario   : " + comentario);
+                cs.endText();
+
+                // Ahora dejamos y justo por debajo del recuadro + margen
+                y = datosBottom - 24;
+
+                /* ==== TABLA RESUMEN CONTABLE ==== */
+                float rowHeight   = 18f;
+                String[][] filas  = new String[][]{
+                        {"Total Débitos",  nv(r.getTotalDebitos())},
+                        {"Total Créditos", nv(r.getTotalHaber())},
+                        {"Saldo Final",    nv(r.getSaldoFinal())}
                 };
-                for (String ln : lines) {
-                    cs.showText(ln);
-                    cs.newLineAtOffset(0, -16);
+
+                // Altura: 1 fila para el título + 1 fila para encabezados + n filas de datos
+                float tableHeight = rowHeight * (filas.length + 2);
+                float col1Width   = width * 0.55f;
+                float col2Width   = width - col1Width;
+
+                float tableTop    = y;
+                float tableBottom = tableTop - tableHeight;
+
+                // Marco exterior
+                cs.addRect(margin, tableBottom, width, tableHeight);
+                cs.stroke();
+
+                // Línea vertical entre columnas
+                cs.moveTo(margin + col1Width, tableBottom);
+                cs.lineTo(margin + col1Width, tableBottom + tableHeight);
+                cs.stroke();
+
+                // Línea horizontal que separa título/encabezados
+                float headerLineY = tableBottom + tableHeight - rowHeight;
+                cs.moveTo(margin, headerLineY);
+                cs.lineTo(margin + width, headerLineY);
+                cs.stroke();
+
+                /* --- Título de la tabla --- */
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                cs.newLineAtOffset(margin + 8, tableBottom + tableHeight - rowHeight + 4);
+                cs.showText("RESUMEN CONTABLE");
+                cs.endText();
+
+                /* --- Encabezados de columnas --- */
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
+                cs.newLineAtOffset(margin + 8, headerLineY - 18);
+                cs.showText("Concepto");
+                cs.endText();
+
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
+                cs.newLineAtOffset(margin + col1Width + 8, headerLineY - 18);
+                cs.showText("Valor");
+                cs.endText();
+
+                /* --- Filas de datos --- */
+                float currentY = headerLineY - rowHeight - 10; // primera fila de datos
+
+                cs.setFont(PDType1Font.HELVETICA, 11);
+                for (String[] fila : filas) {
+                    cs.beginText();
+                    cs.newLineAtOffset(margin + 8, currentY - 4);
+                    cs.showText(fila[0]);
+                    cs.endText();
+
+                    cs.beginText();
+                    cs.newLineAtOffset(margin + col1Width + 8, currentY - 4);
+                    cs.showText(fila[1]);
+                    cs.endText();
+
+                    currentY -= rowHeight;
                 }
+
+                /* ==== FECHA ==== */
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA, 10);
+                cs.newLineAtOffset(margin, tableBottom - 30);
+                cs.showText("Generado: " + java.time.LocalDateTime.now());
                 cs.endText();
             }
+
             doc.save(file.toFile());
         } catch (IOException e) {
             throw new RuntimeException("No se pudo generar el PDF", e);
@@ -183,7 +303,7 @@ public class ReporteService {
         return x == null ? "0.00" : x.setScale(2, RoundingMode.HALF_UP).toPlainString();
     }
 
-    /* Reconstruir rango a partir de la clave (para recalcular) */
+    /* Reconstruir rango a partir de la clave*/
     private Periodo.PeriodoCalc claveARango(String periodicidad, String clave) {
         return switch (periodicidad.toUpperCase()) {
             case "MENSUAL" -> {

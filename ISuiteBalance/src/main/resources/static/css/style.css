@@ -981,7 +981,9 @@ input[type="date"] {
 }
 
 .tabla-wrapper {
+    width: 100%;
     margin-top: 12px;
+    box-sizing: border-box;
 }
 
 @media print {
@@ -1023,3 +1025,23 @@ input[type="date"] {
 .accordion-panel[hidden]{ display:none; }
 .chevron{ transition:transform .2s ease; }
 .accordion-toggle[aria-expanded="true"] .chevron{ transform:rotate(90deg); }
+
+/* La celda completa: input arriba, botones abajo */
+.acciones-cell{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Contenedor de los dos botones */
+.acciones-botones{
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Quita márgenes de los forms para que no separen raro */
+.acciones-botones form{
+    margin: 0;
+}
