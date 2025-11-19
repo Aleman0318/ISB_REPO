@@ -1060,6 +1060,10 @@
 margin:auto
 }
 
+.fuente-negrita{
+font-weight: 700;
+}
+
 .centrar-txt{
 text-align: center;
 }

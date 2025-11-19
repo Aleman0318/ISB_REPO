@@ -1,4 +1,3 @@
-// src/main/java/com/sistemascontables/ISuiteBalance/Services/BalanceGeneralService.java
 package com.sistemascontables.ISuiteBalance.Services;
 
 import com.sistemascontables.ISuiteBalance.Models.BalanceGeneral;
@@ -16,7 +15,7 @@ import java.util.*;
 @Service
 public class BalanceGeneralService {
 
-    // Línea para mostrar en las tablas
+    // ===== Fila que se muestra en la tabla HTML =====
     public static class LineaBG {
         public String codigo;
         public String nombre;
@@ -26,22 +25,28 @@ public class BalanceGeneralService {
     private final BalanzaComprobacionService balanzaService;
     private final EstadoFinancieroDAO estadoFinancieroDAO;
     private final BalanceGeneralDAO balanceDAO;
+    private final EstadoResultadoService estadoResultadoService;
 
     public BalanceGeneralService(BalanzaComprobacionService balanzaService,
                                  EstadoFinancieroDAO estadoFinancieroDAO,
-                                 BalanceGeneralDAO balanceDAO) {
+                                 BalanceGeneralDAO balanceDAO,
+                                 EstadoResultadoService estadoResultadoService) {
         this.balanzaService = balanzaService;
         this.estadoFinancieroDAO = estadoFinancieroDAO;
         this.balanceDAO = balanceDAO;
+        this.estadoResultadoService = estadoResultadoService;
     }
 
-    // ================== CONSULTAR (para la vista) ==================
+    // ======================================================
+    // ===============   CONSULTAR PARA VISTA   =============
+    // ======================================================
     public Map<String,Object> consultar(LocalDate desde, LocalDate hasta) {
+
         LocalDate hoy = LocalDate.now();
         if (desde == null) desde = hoy.withDayOfMonth(1);
         if (hasta == null) hasta = hoy;
 
-        // usamos tu propia balanza
+        // Obtenemos la balanza resumida (con saldoDeudor y saldoAcreedor)
         List<BalanzaComprobacionService.LineaBalanza> balanza =
                 balanzaService.calcularBalanza(desde, hasta);
 
@@ -49,20 +54,26 @@ public class BalanceGeneralService {
         List<LineaBG> pasivos = new ArrayList<>();
         List<LineaBG> patrimonio = new ArrayList<>();
 
-        BigDecimal totalActivos = BigDecimal.ZERO;
-        BigDecimal totalPasivoPatrimonio = BigDecimal.ZERO;
+        BigDecimal totalActivos      = BigDecimal.ZERO;
+        BigDecimal totalPasivos      = BigDecimal.ZERO;
+        BigDecimal totalPatrimonio   = BigDecimal.ZERO;
 
-        for (var linea : balanza) {
-            BigDecimal saldo = linea.getSaldoDeudor().subtract(linea.getSaldoAcreedor());
+        for (BalanzaComprobacionService.LineaBalanza linea : balanza) {
+
+            // Tomamos siempre el saldo en POSITIVO (deudor o acreedor)
+            BigDecimal saldo =
+                    linea.getSaldoDeudor().signum() > 0
+                            ? linea.getSaldoDeudor()
+                            : linea.getSaldoAcreedor();
+
             String tipo = linea.getTipoCuenta();
             if (tipo == null) continue;
-
-            String t = tipo.trim().toUpperCase();
+            String t = tipo.trim().toUpperCase(Locale.ROOT);
 
             LineaBG f = new LineaBG();
             f.codigo = linea.getCodigo();
             f.nombre = linea.getNombreCuenta();
-            f.monto = saldo;
+            f.monto  = saldo;
 
             switch (t) {
                 case "ACTIVO" -> {
@@ -71,65 +82,86 @@ public class BalanceGeneralService {
                 }
                 case "PASIVO" -> {
                     pasivos.add(f);
-                    totalPasivoPatrimonio = totalPasivoPatrimonio.add(saldo);
+                    totalPasivos = totalPasivos.add(saldo);
                 }
                 case "PATRIMONIO" -> {
                     patrimonio.add(f);
-                    totalPasivoPatrimonio = totalPasivoPatrimonio.add(saldo);
+                    totalPatrimonio = totalPatrimonio.add(saldo);
                 }
                 default -> {
-                    // ingresos / gastos no se usan en el balance general
+                    // INGRESOS / GASTOS / COSTOS no se muestran en el Balance General
                 }
             }
         }
 
-        // Por ahora utilidad = 0 (luego la podemos enlazar al EERR si quieres)
-        BigDecimal utilidad = BigDecimal.ZERO;
-        BigDecimal totalPasivoPatrimonioMasUtilidad = totalPasivoPatrimonio.add(utilidad);
-        BigDecimal diferencia = totalActivos.subtract(totalPasivoPatrimonioMasUtilidad);
+        // 🔹 Utilidad REAL tomada del Estado de Resultado
+        BigDecimal utilidad = estadoResultadoService.calcularUtilidad(desde, hasta);
+
+        BigDecimal totalPasivosPatrimonio = totalPasivos
+                .add(totalPatrimonio)
+                .add(utilidad);
+
+        BigDecimal diferencia = totalActivos.subtract(totalPasivosPatrimonio);
 
         Map<String,Object> out = new HashMap<>();
         out.put("activos", activos);
         out.put("pasivos", pasivos);
         out.put("patrimonio", patrimonio);
+
         out.put("totalActivos", totalActivos);
-        out.put("totalPasivosPatrimonio", totalPasivoPatrimonioMasUtilidad);
+        out.put("totalPasivos", totalPasivos);
+        out.put("totalPatrimonio", totalPatrimonio);
+        out.put("totalPasivosPatrimonio", totalPasivosPatrimonio);
         out.put("utilidad", utilidad);
         out.put("diferencia", diferencia);
+
         out.put("desde", desde.toString());
         out.put("hasta", hasta.toString());
+
         return out;
     }
 
-    // ================== GUARDAR (como los demás estados) ==================
+    // ======================================================
+    // ===============   GUARDAR EN BD (SNAPSHOT) ===========
+    // ======================================================
     @Transactional
     public Long guardar(LocalDate desde, LocalDate hasta) {
+
         Map<String,Object> datos = consultar(desde, hasta);
 
-        BigDecimal totalActivos = (BigDecimal) datos.get("totalActivos");
-        BigDecimal totalPasivosPatrimonio = (BigDecimal) datos.get("totalPasivosPatrimonio");
-        BigDecimal utilidad = (BigDecimal) datos.get("utilidad");
+        BigDecimal totalActivos            = (BigDecimal) datos.get("totalActivos");
+        BigDecimal totalPasivosPatrimonio  = (BigDecimal) datos.get("totalPasivosPatrimonio");
+        BigDecimal utilidad                = (BigDecimal) datos.get("utilidad");
 
         String desdeStr = (String) datos.get("desde");
         String hastaStr = (String) datos.get("hasta");
-        String periodo = desdeStr + ".." + hastaStr;
-        String tipo = "BALANCE_GENERAL";
 
-        // Cabecera en tbl_estado_financiero (igual que en balanza / EERR / flujo)
-        var cab = estadoFinancieroDAO
-                .findFirstByTipoEstadoAndPeriodo(tipo, periodo)
+        // Para la cabecera de EstadoFinanciero seguimos usando rango completo
+        String periodoEf = desdeStr + ".." + hastaStr;
+        String tipo      = "BALANCE_GENERAL";
+
+        // Cabecera en tbl_estado_financiero (igual patrón que balanza, EERR, flujo)
+        EstadoFinanciero cab = estadoFinancieroDAO
+                .findFirstByTipoEstadoAndPeriodo(tipo, periodoEf)
                 .orElseGet(() -> {
-                    var ef = new EstadoFinanciero();
+                    EstadoFinanciero ef = new EstadoFinanciero();
                     ef.setTipoEstado(tipo);
-                    ef.setPeriodo(periodo);
+                    ef.setPeriodo(periodoEf);
                     ef.setFechaGeneracion(LocalDateTime.now());
                     return estadoFinancieroDAO.save(ef);
                 });
 
         // Detalle en tbl_balance
-        var bg = new BalanceGeneral();
+        BalanceGeneral bg = new BalanceGeneral();
         bg.setEstado(cab);
-        bg.setPeriodo(periodo);
+
+        // 🔹 En tbl_balance.periodo solo guardamos la fecha final (corta)
+        String periodoBalance = hastaStr;            // "2025-11-30" (10 chars)
+        if (periodoBalance != null && periodoBalance.length() > 20) {
+            periodoBalance = periodoBalance.substring(0, 20);
+        }
+        bg.setPeriodo(periodoBalance);
+
         bg.setTotalActivos(totalActivos);
         bg.setTotalPasivos(totalPasivosPatrimonio);
         bg.setUtilidad(utilidad);

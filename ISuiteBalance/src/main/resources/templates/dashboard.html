@@ -8,6 +8,61 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Ajustes para overflow / scroll -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Permitir que el sidebar tenga scroll vertical si se llena,
+           pero SIN mostrar la barra */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none;          /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+.accordion-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    background:transparent;
+    border:none;
+    padding:8px 12px;
+    cursor:pointer;
+}
+
+/* Panel con animación de despliegue */
+.accordion-panel{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transform-origin: top;
+    transition:max-height 0.25s ease, opacity 0.25s ease;
+    padding-left:0; /* por si las <li> ya llevan su propio padding */
+}
+
+/* Cuando está abierto */
+.accordion.is-open .accordion-panel{
+    opacity:1;
+}
+
+/* Animar el chevron */
+.accordion .chevron{
+    transition:transform 0.25s ease;
+}
+.accordion.is-open .chevron{
+    transform:rotate(90deg);
+}
+
+    </style>
 </head>
 <body>
 
@@ -25,7 +80,7 @@
         </li>
 
         <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
-                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}">
@@ -50,7 +105,7 @@
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -73,7 +128,14 @@
                         <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones de Patrimonio</a>
                 </li>
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-flujo}"><img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo de Efectivo</a>
+                    <a th:href="@{/estado-flujo}"><img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">Flujo de Efectivo</a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" alt="balance" class="icono-opcion_aside">
+                        Balance General
+                    </a>
                 </li>
 
             </ul>
@@ -82,7 +144,7 @@
         <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
@@ -90,28 +152,16 @@
         <!-- SOLO Auditor: ver lista de reportes -->
         <li sec:authorize="hasRole('Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
-
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/estado-flujo}"><img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo Efectivo</a>
-        </li>
-
-        <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
-            <a th:href="@{/balance-general}">
-                <img th:src="@{/img/balance.png}" alt="balance" class="icono-opcion_aside">
-                Balance General
-            </a>
-        </li>
-
 
 
         <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/generar-reporte}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
         </li>
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">

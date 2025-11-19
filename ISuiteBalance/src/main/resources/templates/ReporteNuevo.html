@@ -237,7 +237,7 @@
                   const url = `${PREVIEW_URL}?tipo=${encodeURIComponent(tipo)}&periodicidad=${encodeURIComponent(periodicidad)}&anterior=${anterior}`;
                   const resp = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
                   const target = document.getElementById('preview');
-                  target.innerHTML = resp.ok ? await resp.text() : `<div class="alerta-error">Error ${resp.status}</div>`;
+                  target.innerHTML = resp.ok ? await resp.text() : `<div class="alerta-error fuente-negrita txt-rojo centrar-txt fuente-btn">¡Advertencia!, Primero Llena los campos</div>`;
                 }
 
                 const tipoSel = document.querySelector('select[name="tipo"]');
