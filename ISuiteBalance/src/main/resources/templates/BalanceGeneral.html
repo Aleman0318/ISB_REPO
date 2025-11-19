@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Balance General | Suite Balance ISB</title>
+
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <!-- Iconos del botón menú -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+
+    <style>
+        .card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;align-items:end}
+        .grid .span-2{grid-column:span 2 / span 2}
+        .btn{background:#e63946;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+        .btn:hover{background:#c52f3c}
+        .muted{color:#666;font-size:.92rem}
+        table td.num,table th.num{text-align:right}
+        .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+        .kpi .tile{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        @media (max-width:900px){.kpi{grid-template-columns:1fr 1fr}}
+        @media (max-width:640px){.kpi{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/dashboard}">
+            <img th:src="@{/img/home.png}" class="icono-opcion_aside" alt="">Inicio</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
+            <img th:src="@{/img/calendario.png}" class="icono-opcion_aside" alt="">Saldos Iniciales</a></li>
+        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
+            <img th:src="@{/img/gestion-de-usuarios.png}" class="icono-opcion_aside" alt="">Gestion Usuario</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}">
+            <img th:src="@{/img/documento.png}" class="icono-opcion_aside" alt="">Partidas</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
+            <img th:src="@{/img/carga-de-archivos.png}" class="icono-opcion_aside" alt="">Gestion de Partidas</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
+            <img th:src="@{/img/libro-mayor.png}" class="icono-opcion_aside" alt="">Libro Diario</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}">
+            <img th:src="@{/img/mayor.png}" class="icono-opcion_aside" alt="">Libro Mayor</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
+            <img th:src="@{/img/balanza.png}" class="icono-opcion_aside" alt="">Balanza</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
+            <img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Edo. Resultado</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-variaciones}">
+            <img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-flujo}">
+            <img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo Efectivo</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a class="active" th:href="@{/balance-general}">
+            <img th:src="@{/img/balanza.png}" class="icono-opcion_aside" alt="">Balance General</a></li>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
+            <img th:src="@{/img/revisar.png}" class="icono-opcion_aside" alt="">Auditoría</a></li>
+        <li><a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" class="icono-opcion_aside" alt="">About</a></li>
+    </ul>
+</div>
+<div id="backdrop" class="backdrop"></div>
+
+<div class="main">
+    <header>
+        <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
+            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+        </button>
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
+        </div>
+        <div class="user-info">
+            <span class="nombre-usuario" data-usuario-target>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
+            </span>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+        </div>
+    </header>
+
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Balance General</h1>
+                <p class="fuente-p2" th:if="${empresa != null}">
+                    <strong th:text="${empresa.nombre}">Nombre empresa</strong> · NIT
+                    <span th:text="${empresa.nit}">000000-0</span>
+                </p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <form th:action="@{/balance-general}" method="get" class="grid">
+                    <div class="span-2">
+                        <label class="fuente-btn">Desde</label>
+                        <input type="date" name="desde" th:value="${desde}">
+                    </div>
+                    <div class="span-2">
+                        <label class="fuente-btn">Hasta</label>
+                        <input type="date" name="hasta" th:value="${hasta}">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn fuente-btn" type="submit">Buscar</button>
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn fuente-btn" type="button"
+                                onclick="window.location.href='/balance-general'">Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- KPIs -->
+            <div class="kpi">
+                <div class="tile">
+                    <div class="fuente-btn">Total Activos</div>
+                    <div class="fuente-titulos3"
+                         th:text="${#numbers.formatDecimal(totalActivos,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Total Pasivos + Patrimonio</div>
+                    <div class="fuente-titulos3"
+                         th:text="${#numbers.formatDecimal(totalPasivosPatrimonio,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Utilidad</div>
+                    <div class="fuente-titulos3"
+                         th:text="${#numbers.formatDecimal(utilidad,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+                <div class="tile">
+                    <div class="fuente-btn">Diferencia</div>
+                    <div class="fuente-titulos3"
+                         th:text="${#numbers.formatDecimal(diferencia,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="card" style="margin-top:14px">
+                <table class="tabla-usuarios">
+                    <thead class="fuente-btn">
+                    <tr><th>Concepto</th><th class="num">Monto</th></tr>
+                    </thead>
+                    <tbody class="fuente-p1">
+
+                    <!-- ACTIVOS -->
+                    <tr><td class="fuente-btn" colspan="2">ACTIVOS</td></tr>
+                    <tr th:each="l : ${activos}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">101-01 Caja</td>
+                        <td class="num"
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="fuente-btn">Total Activos</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalActivos,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <!-- PASIVOS -->
+                    <tr><td class="fuente-btn" colspan="2">PASIVOS</td></tr>
+                    <tr th:each="l : ${pasivos}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">201-01 Proveedores</td>
+                        <td class="num"
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="fuente-btn">Total Pasivos</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPasivos,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <!-- PATRIMONIO -->
+                    <tr><td class="fuente-btn" colspan="2">PATRIMONIO</td></tr>
+                    <tr th:each="l : ${patrimonio}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">301-01 Capital</td>
+                        <td class="num"
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="fuente-btn">Total Patrimonio</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPatrimonio,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <tr>
+                        <td class="fuente-btn">Pasivo + Patrimonio</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPasivosPatrimonio,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                    <form th:action="@{/balance-general/guardar}" method="post">
+                        <input type="hidden" name="desde" th:value="${desde}">
+                        <input type="hidden" name="hasta" th:value="${hasta}">
+                        <button class="btn fuente-btn" type="submit">Guardar en BD</button>
+                    </form>
+                    <span class="muted fuente-p1">Periodo:
+                        <span th:text="${desde}">yyyy-mm-dd</span> ..
+                        <span th:text="${hasta}">yyyy-mm-dd</span></span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:inline="javascript">
+    const ok = /*[[${msgOk}]]*/ null, err = /*[[${msgErr}]]*/ null;
+    if (ok) Swal.fire({icon:'success', title:'¡Éxito!', text: ok, timer:2200, showConfirmButton:false});
+    if (err) Swal.fire({icon:'error', title:'Error', text: err});
+</script>
+
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+</body>
+</html>

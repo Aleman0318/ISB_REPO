@@ -96,6 +96,14 @@
             <a th:href="@{/estado-flujo}"><img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo Efectivo</a>
         </li>
 
+        <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+            <a th:href="@{/balance-general}">
+                <img th:src="@{/img/balance.png}" alt="balance" class="icono-opcion_aside">
+                Balance General
+            </a>
+        </li>
+
+
 
         <!-- Administrador o Auditor -->
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
