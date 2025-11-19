@@ -150,7 +150,7 @@
         </li>
 
         <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/reportes}">
                 <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
@@ -158,11 +158,6 @@
         </li>
 
 
-        <!-- Administrador o Auditor -->
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/generar-reporte}">
-                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
-        </li>
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
