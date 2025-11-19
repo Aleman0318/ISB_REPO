@@ -197,6 +197,9 @@
 .mayor-section {
   margin-bottom: 13px;
   margin-top: 45px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mayor-header {
@@ -208,6 +211,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .mayor-header .dot {
@@ -345,8 +350,9 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-wrap: wrap;
+  justify-content:center !important;
+  align-items:center !important;
   gap: 2rem;
-  justify-content: space-between;
 }
 
 .campo {
@@ -442,6 +448,9 @@
   border: 1px solid #fff;
   padding: 20px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.card.contenedor-blanco.fondo-lineas {
+    display: block !important;
 }
 
 .tabla-libro {

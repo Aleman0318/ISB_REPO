@@ -16,7 +16,7 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
+        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}" class="active">
             <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
@@ -65,23 +65,39 @@
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
-                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Estado de Resultado</a>
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/estado-variaciones}" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
-                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones de Patrimonio</a>
+                </li>
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}"><img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">Flujo de Efectivo</a>
                 </li>
 
             </ul>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/generar-reporte}">
-            <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}" class="active">
-            <img th:src="@{/img/revisar.png}"  alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
         <li>

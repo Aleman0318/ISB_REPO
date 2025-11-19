@@ -148,16 +148,16 @@
             <!-- KPIs -->
             <div class="card kpi">
                 <div class="tile"><div class="fuente-btn">Ingresos</div>
-                    <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(ingresos,1,'POINT',2,'POINT')}">0.00</div>
+                    <div class="fuente-titulos2" th:text="${#numbers.formatDecimal(ingresos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile"><div class="fuente-btn">Costos</div>
-                    <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(costos,1,'POINT',2,'POINT')}">0.00</div>
+                    <div class="fuente-titulos2" th:text="${#numbers.formatDecimal(costos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile"><div class="fuente-btn">Gastos</div>
-                    <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(gastos,1,'POINT',2,'POINT')}">0.00</div>
+                    <div class="fuente-titulos2" th:text="${#numbers.formatDecimal(gastos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile"><div class="fuente-btn">Utilidad o Pérdida Neta</div>
-                    <div class="fuente-titulos3" th:classappend="${utilidad>=0} ? ' txt-verde' : ' txt-rojo'"
+                    <div class="fuente-titulos2" th:classappend="${utilidad>=0} ? ' txt-verde' : ' txt-rojo'"
                          th:text="${#numbers.formatDecimal(utilidad,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
             </div>

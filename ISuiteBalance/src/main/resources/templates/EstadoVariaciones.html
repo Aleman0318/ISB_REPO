@@ -172,20 +172,20 @@
             <div class="card kpi">
                 <div class="tile">
                     <div class="fuente-btn">Cambios de Capital</div>
-                    <div class="fuente-titulos3" th:text="${#numbers.formatDecimal(cambiosCapital,1,'POINT',2,'POINT')}">0.00</div>
+                    <div class="fuente-titulos2" th:text="${#numbers.formatDecimal(cambiosCapital,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile">
                     <div class="fuente-btn">Dividendos</div>
-                    <div class="fuente-titulos3 txt-rojo" th:text="${#numbers.formatDecimal(dividendos,1,'POINT',2,'POINT')}">0.00</div>
+                    <div class="fuente-titulos2 txt-rojo" th:text="${#numbers.formatDecimal(dividendos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile">
                     <div class="fuente-btn">Utilidad Retenida (del período)</div>
-                    <div class="fuente-titulos3" th:classappend="${utilidadRetenida>=0}? ' txt-verde':' txt-rojo'"
+                    <div class="fuente-titulos2" th:classappend="${utilidadRetenida>=0}? ' txt-verde':' txt-rojo'"
                          th:text="${#numbers.formatDecimal(utilidadRetenida,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile">
                     <div class="fuente-btn">Variación Neta del Patrimonio</div>
-                    <div class="fuente-titulos3" th:classappend="${variacionNeta>=0}? ' txt-verde':' txt-rojo'"
+                    <div class="fuente-titulos2" th:classappend="${variacionNeta>=0}? ' txt-verde':' txt-rojo'"
                          th:text="${#numbers.formatDecimal(variacionNeta,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
             </div>
