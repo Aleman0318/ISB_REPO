@@ -32,6 +32,32 @@ public class ReporteService {
         this.balanzaService = balanzaService;
     }
 
+    /* ========= CONTADORES PARA EL DASHBOARD ========= */
+
+    public long contarPorEstado(String estado) {
+        return reporteDAO.countByEstado(estado);
+    }
+
+    public long contarPendientes() {
+        return contarPorEstado("PENDIENTE");
+    }
+
+    public long contarAprobados() {
+        return contarPorEstado("APROBADO");
+    }
+
+    public long contarRechazados() {
+        return contarPorEstado("RECHAZADO");
+    }
+
+    // Si más adelante tienes un estado extra tipo "REVISION", aquí lo ajustas.
+    public long contarEnRevision() {
+        // Por ahora consideramos "en revisión" = PENDIENTE
+        return contarPendientes();
+    }
+
+    /* ========= BÚSQUEDAS ========= */
+
     @Transactional(readOnly = true)
     public Reporte buscarPorId(Long id){
         return reporteDAO.findById(id)
@@ -131,6 +157,8 @@ public class ReporteService {
     public List<Reporte> listarPendientes(){ return reporteDAO.findByEstadoOrderByCreatedAtDesc("PENDIENTE"); }
     public List<Reporte> listarAprobados(){ return reporteDAO.findByEstadoOrderByCreatedAtDesc("APROBADO"); }
     public List<Reporte> listarRechazados(){ return reporteDAO.findByEstadoOrderByCreatedAtDesc("RECHAZADO"); }
+
+    /* ========= GENERACIÓN DE PDF ========= */
 
     private String generarPdf(Reporte r) {
         Path dir = Paths.get("uploads", "reportes");

@@ -9,6 +9,59 @@
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- 👇 Mismo fix de overflow + estilos de acordeón que usamos en las demás plantillas -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical oculto */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none;          /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0; /* por si las <li> ya llevan su propio padding */
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        /* Animar el chevron */
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+    </style>
 </head>
 <body>
 
@@ -16,41 +69,56 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
-            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Inicio" class="icono-opcion_aside">Inicio
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
-            <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+            </a>
         </li>
 
-        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}" class="active">
-            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}" class="active">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}">
-            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
-            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
-            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}">
-            <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor
+            </a>
         </li>
 
+        <!-- Acordeón Estados financieros igual al resto -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -60,40 +128,71 @@
 
             <ul id="finanzas-submenu" class="accordion-panel" hidden>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
-                    <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
-                </li>
-
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
-                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balanza-comprobacion}">
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
+                    </a>
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-variaciones}" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
-                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                    <a th:href="@{/estado-resultado}">
+                        <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
+                        Edo. de Resultado
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}"
+                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
+                        Variaciones Patrimonio
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
+                        Flujo de Efectivo
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
+                        Balance General
+                    </a>
                 </li>
 
             </ul>
         </li>
 
-        <!-- SOLO Admin y Contador: crear reporte -->
+        <!-- Reportería unificada con íconos nuevos -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
 
-        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/mis}">
+                <img th:src="@{/img/reportes.png}" alt="Mis reportes" class="icono-opcion_aside">
+                Mis reportes
+            </a>
+        </li>
+
         <li sec:authorize="hasRole('Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
-            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría
+            </a>
         </li>
 
         <li>
@@ -145,7 +244,6 @@
         </div>
         <div class="formulario-usuario">
 
-
             <!-- Mensajes flash opcionales -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
             <div th:if="${ok}" class="alerta-exito" th:text="${ok}"></div>
@@ -173,11 +271,11 @@
                 <div class="form-grupo">
                     <label class="fuente-btn" for="contrasenal">Contraseña:</label>
                     <input class="fuente-p1"
-                            type="text"
-                            id="contrasenal"
-                            placeholder="No se puede cambiar desde aquí"
-                            readonly
-                            aria-readonly="true">
+                           type="text"
+                           id="contrasenal"
+                           placeholder="No se puede cambiar desde aquí"
+                           readonly
+                           aria-readonly="true">
                 </div>
 
                 <div class="form-grupo">
@@ -224,50 +322,22 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Chart.js
+    // Chart.js (por si no hay canvas, no rompe)
     const ctx = document.getElementById('barChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['JUL','JUN','AGO','SEP','OCT'],
-        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-      },
-      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-    });
-
-    // Hamburguesa
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-
-      if(!btn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('sidebar--open');
-        backdrop.classList.add('backdrop--show');
-        document.body.classList.add('no-scroll');
-        btn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        sidebar.classList.remove('sidebar--open');
-        backdrop.classList.remove('backdrop--show');
-        document.body.classList.remove('no-scroll');
-        btn.setAttribute('aria-expanded','false');
-      }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['JUL','JUN','AGO','SEP','OCT'],
+          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+        },
+        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+      });
+    }
 </script>
+
+<!-- ✅ Menú hamburguesa unificado -->
+<script type="module" th:src="@{/JS/menu.js}"></script>
 
 <!-- ✅ IndexedDB del usuario: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
@@ -309,6 +379,8 @@
       });
     });
 </script>
+
+<!-- Acordeón Estados financieros -->
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>

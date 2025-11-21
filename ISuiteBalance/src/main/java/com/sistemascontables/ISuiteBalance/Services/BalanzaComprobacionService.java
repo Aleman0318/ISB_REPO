@@ -33,6 +33,7 @@ public class BalanzaComprobacionService {
         this.estadoComprobacionDAO = estadoComprobacionDAO;
     }
 
+    // === Fila usada en la vista de balanza de comprobación ===
     public static class Fila {
         public String codigo;
         public String nombre;
@@ -41,6 +42,35 @@ public class BalanzaComprobacionService {
         public BigDecimal creditos     = BigDecimal.ZERO;
         public BigDecimal saldoFinal   = BigDecimal.ZERO;
     }
+
+    // === DTO usado por el Balance General ===
+    public static class LineaBalanza {
+        private final String codigo;
+        private final String nombreCuenta;
+        private final String tipoCuenta;
+        private final BigDecimal saldoDeudor;
+        private final BigDecimal saldoAcreedor;
+
+        public LineaBalanza(String codigo,
+                            String nombreCuenta,
+                            String tipoCuenta,
+                            BigDecimal saldoDeudor,
+                            BigDecimal saldoAcreedor) {
+            this.codigo = codigo;
+            this.nombreCuenta = nombreCuenta;
+            this.tipoCuenta = tipoCuenta;
+            this.saldoDeudor = saldoDeudor;
+            this.saldoAcreedor = saldoAcreedor;
+        }
+
+        public String getCodigo() { return codigo; }
+        public String getNombreCuenta() { return nombreCuenta; }
+        public String getTipoCuenta() { return tipoCuenta; }
+        public BigDecimal getSaldoDeudor() { return saldoDeudor; }
+        public BigDecimal getSaldoAcreedor() { return saldoAcreedor; }
+    }
+
+    // ================= LÓGICA ORIGINAL: BALANZA PARA LA VISTA =================
 
     public Map<String,Object> consultar(LocalDate desde, LocalDate hasta) {
         LocalDate hoy = LocalDate.now();
@@ -115,6 +145,8 @@ public class BalanzaComprobacionService {
         return t.equals("ACTIVO") || t.equals("GASTO") || t.equals("GASTOS") || t.equals("COSTO") || t.equals("COSTOS");
     }
 
+    // ================= SNAPSHOT (GUARDAR EN BD) =================
+
     @Transactional
     public Long guardarSnapshot(LocalDate desde, LocalDate hasta) {
         Map<String,Object> datos = consultar(desde, hasta);
@@ -142,5 +174,61 @@ public class BalanzaComprobacionService {
 
         log.info("[BALANZA][GUARDAR] {} -> Debe={} Haber={}", periodo, totalDeb, totalHab);
         return cab.getId();
+    }
+
+    // ================= NUEVO: SALDOS PARA BALANCE GENERAL =================
+
+    /**
+     * Devuelve la lista de LineaBalanza (ya separando Deudor/Acreedor)
+     * para el rango de fechas indicado.
+     * Se basa en la misma query y lógica que consultar().
+     */
+    public List<LineaBalanza> calcularBalanza(LocalDate desde, LocalDate hasta) {
+        LocalDate hoy = LocalDate.now();
+        if (desde == null) desde = hoy.withDayOfMonth(1);
+        if (hasta == null) hasta = hoy;
+
+        LocalDate hastaExcl = hasta.plusDays(1);
+
+        List<Balanza> agg = dao.calcularBalanzaCompleta(desde, hastaExcl);
+
+        List<LineaBalanza> resultado = new ArrayList<>();
+
+        for (Balanza a : agg) {
+            BigDecimal si  = nvl(a.getSaldoInicial());
+            BigDecimal deb = nvl(a.getDebitos());
+            BigDecimal hab = nvl(a.getCreditos());
+
+            BigDecimal siSignado = esAcreedora(a.getTipoCuenta()) ? si.negate() : si;
+            BigDecimal sf  = siSignado.add(deb).subtract(hab);
+
+            BigDecimal deudor   = BigDecimal.ZERO;
+            BigDecimal acreedor = BigDecimal.ZERO;
+            if (sf.signum() >= 0) {
+                deudor = sf;
+            } else {
+                acreedor = sf.negate();
+            }
+
+            resultado.add(new LineaBalanza(
+                    a.getCodigo(),
+                    a.getNombre(),
+                    a.getTipoCuenta(),
+                    deudor,
+                    acreedor
+            ));
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Overload con idEmpresa para que compile con BalanceGeneralService.
+     * Por ahora idEmpresa no se usa porque la query aún no filtra por empresa.
+     * Más adelante, si tu tabla Balanza/BalanzaCompleta incluye empresa,
+     * aquí se puede aprovechar para filtrar.
+     */
+    public List<LineaBalanza> calcularBalanza(Long idEmpresa, LocalDate desde, LocalDate hasta) {
+        return calcularBalanza(desde, hasta);
     }
 }

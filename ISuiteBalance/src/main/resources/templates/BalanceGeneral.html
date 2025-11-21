@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Resultado | Suite Balance ISB</title>
+    <title>Balance General | Suite Balance ISB</title>
 
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -24,7 +24,7 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar con scroll vertical y sin barra visible */
+        /* Permitir scroll vertical en el sidebar sin mostrar barra */
         .sidebar{
             overflow-y: auto;
             scrollbar-width: none; /* Firefox */
@@ -53,7 +53,7 @@
             opacity:0;
             transform-origin: top;
             transition:max-height 0.25s ease, opacity 0.25s ease;
-            padding-left:0;
+            padding-left:0; /* por si las <li> ya llevan su propio padding */
         }
 
         /* Cuando está abierto */
@@ -69,39 +69,7 @@
             transform:rotate(90deg);
         }
 
-        /* Chevron blanco como en dashboard */
-        .accordion .chevron path{
-            fill:#ffffff !important;
-        }
-
-        table td.num, table th.num{
-            text-align:right;
-        }
-
-        .centrar-txt{
-        text-align: center !important;
-        }
-
-        .card-estado table{
-            width:100%;
-            border-collapse:collapse;
-        }
-
-        .card-estado th,
-        .card-estado td{
-            padding:6px 8px;
-        }
-
-        .guardar-centro{
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            gap:8px;
-            flex-wrap:wrap;
-            margin-top:10px;
-        }
-
-        /* grid para filtros */
+        /* grid reutilizado para filtros y datos de empresa */
         .filtros-grid{
             display:grid;
             grid-template-columns:repeat(4,minmax(0,1fr));
@@ -109,17 +77,17 @@
             align-items:end;
         }
         .filtros-grid .span-2{grid-column:span 2 / span 2;}
-        .acciones-centro{
+
+        /* celda centrada (columnas 2 y 3) para los botones */
+        .filtros-grid .span-center{
             grid-column:2 / span 2;
-            display:flex;
-            justify-content:center;
-            gap:12px;
         }
+
         @media (max-width:900px){
             .filtros-grid{
                 grid-template-columns:repeat(2,minmax(0,1fr));
             }
-            .acciones-centro{
+            .filtros-grid .span-center{
                 grid-column:1 / span 2;
             }
         }
@@ -128,50 +96,73 @@
                 grid-template-columns:1fr;
             }
             .filtros-grid .span-2,
-            .acciones-centro{
+            .filtros-grid .span-center{
                 grid-column:1 / span 1;
             }
         }
 
-        /* IMPRESIÓN básica */
+        /* Estilo de inputs de empresa para que se parezcan a los de fecha */
+        .card-estado input.empresa-input{
+            width:100%;
+            padding:10px 12px;
+            border-radius:8px;
+            border:1px solid #ddd;
+            background:#ffffff;
+            font-size:0.9rem;
+            font-family:'Inter', sans-serif;
+            box-sizing:border-box;
+            box-shadow:0 1px 3px rgba(0,0,0,.03);
+            color:#333;
+        }
+        .card-estado input.empresa-input[readonly]{
+            background:#fff;
+            cursor:default;
+        }
+
+        table td.num, table th.num{ text-align:right; }
+
+        /* Contenedor para centrar Buscar / Limpiar */
+        .acciones-centro{
+            display:flex;
+            justify-content:center;
+            gap:12px;
+        }
+
+        /* Reglas de impresión */
         @media print{
-            body{
-                background:#fff!important;
-                color:#000!important;
-                font-family:'Inter',sans-serif!important;
-                margin:1.5cm;
-            }
-            header,
+            body{background:#fff;}
             .sidebar,
-            #backdrop,
-            .btn{
-                display:none!important;
+            header,
+            .menu-btn,
+            .logout-btn,
+            .btn-imprimir,
+            #backdrop{
+                display:none !important;
             }
             .main{
-                margin:0!important;
-                padding:0!important;
-                background:none!important;
+                margin:0;
+                padding:0;
             }
-            h1.titulo-gestion{
-                text-align:center;
-                color:#000!important;
-                font-size:24px;
-                margin-bottom:20px;
+            /* Que la card de la tabla empiece en nueva página,
+               más abajo, y que la tabla no se parta */
+            .card-estado.tabla-balance{
+                page-break-before:always;
+                margin-top:25mm !important;
             }
-            table{
-                border-collapse:collapse!important;
-                width:100%!important;
-                font-size:13px;
+            .card-estado.tabla-balance table{
+                page-break-inside:avoid;
+                break-inside:avoid;
             }
-            th,td{
-                border:1px solid #999!important;
-                padding:4px 6px!important;
-                color:#000!important;
-            }
-            th{
-                background:#eee!important;
-                -webkit-print-color-adjust:exact;
-            }
+        }
+
+        /* Centrar texto de ACTIVOS / PASIVOS / PATRIMONIO */
+        .centrar-txt{
+            text-align: center !important;
+        }
+
+        /* Fondo especial para las filas de bloque (Activos/Pasivos/Patrimonio) */
+        .fila-bloque td{
+            background:#ffe5ea;      /* rosa muy suave que combina con el rojo */
         }
     </style>
 </head>
@@ -183,15 +174,13 @@
 
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
-                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">
-                Inicio
+                <img th:src="@{/img/home.png}" alt="Inicio" class="icono-opcion_aside">Inicio
             </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/saldos-iniciales}">
-                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">
-                Saldos Iniciales
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
             </a>
         </li>
 
@@ -204,8 +193,7 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
-                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">
-                Partidas
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas
             </a>
         </li>
 
@@ -218,19 +206,17 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/registro-libro-diario}">
-                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">
-                Libro Diario
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario
             </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/libro-mayor}">
-                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">
-                Libro Mayor
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor
             </a>
         </li>
 
-        <!-- Acordeón estados financieros (igual dashboard) -->
+        <!-- Acordeón estados financieros -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
@@ -241,7 +227,7 @@
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6"></path>
+                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
                 </svg>
             </button>
 
@@ -249,13 +235,12 @@
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/balanza-comprobacion}">
-                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
-                        Balanza
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza
                     </a>
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-resultado}" class="active">
+                    <a th:href="@{/estado-resultado}">
                         <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
                         Edo. de Resultado
                     </a>
@@ -272,12 +257,12 @@
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/estado-flujo}">
                         <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
-                        Flujo de Efectivo
+                        Flujo Efectivo
                     </a>
                 </li>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
-                    <a th:href="@{/balance-general}">
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balance-general}" class="active">
                         <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
                         Balance General
                     </a>
@@ -294,8 +279,8 @@
             </a>
         </li>
 
-        <!-- Admin y Auditor: ver lista de reportes (igual que en otras vistas) -->
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+        <!-- SOLO Auditor: ver lista de reportes -->
+        <li sec:authorize="hasRole('Auditor')">
             <a th:href="@{/reportes}">
                 <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
@@ -304,18 +289,18 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
-                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">
-                Auditoría
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría
             </a>
         </li>
 
         <li>
-            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">Nosotros</a>
+            <a th:href="@{/about}">
+                <img th:src="@{/img/nosotros.png}" alt="About" class="icono-opcion_aside">About
+            </a>
         </li>
 
     </ul>
 </div>
-
 <div id="backdrop" class="backdrop"></div>
 
 <div class="main">
@@ -329,21 +314,21 @@
         </div>
 
         <div class="user-info">
-            <span class="nombre-usuario fuente-p4" data-usuario-target>
-                <script th:inline="javascript">
-                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
-                </script>
-            </span>
+        <span class="nombre-usuario fuente-p4" data-usuario-target>
+            <script th:inline="javascript">
+                document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+            </script>
+        </span>
 
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
             <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
-
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
+
             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
@@ -353,19 +338,19 @@
     <div class="container_principal fondo-1">
         <main class="gestion-usuarios">
             <div class="contenedor-titulo-gestion" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-                <div class="centrar-txt centrar-items">
-                    <h1 class="titulo-gestion fuente-titulos3 txt-rojo centrar-txt">Estado de Resultado</h1>
+                <div>
+                    <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Balance General</h1>
                 </div>
                 <div class="guardar-centro" style="margin-top:0;">
-                    <button type="button" class="btn fuente-btn" onclick="window.print()">
+                    <button type="button" class="btn fuente-btn btn-imprimir" onclick="window.print()">
                         Imprimir
                     </button>
                 </div>
             </div>
 
-            <!-- Filtros de periodo -->
+            <!-- 1) Filtros de periodo -->
             <div class="card-estado">
-                <form th:action="@{/estado-resultado}" method="get" class="filtros-grid">
+                <form th:action="@{/balance-general}" method="get" class="filtros-grid">
                     <div class="span-2">
                         <label class="fuente-btn">Desde</label>
                         <input type="date" name="desde" th:value="${desde}">
@@ -374,41 +359,76 @@
                         <label class="fuente-btn">Hasta</label>
                         <input type="date" name="hasta" th:value="${hasta}">
                     </div>
-                    <div class="acciones-centro">
+                    <!-- Botones centrados exactamente bajo la unión Desde/Hasta -->
+                    <div class="span-center acciones-centro">
                         <button class="btn fuente-btn" type="submit">Buscar</button>
                         <button class="btn fuente-btn" type="button"
-                                onclick="window.location.href='/estado-resultado'">Limpiar</button>
+                                onclick="window.location.href='/balance-general'">Limpiar</button>
                     </div>
                 </form>
             </div>
 
-            <!-- KPIs -->
+            <!-- 2) Datos de la empresa -->
+            <div class="card-estado" th:if="${empresa != null}" style="margin-top:14px">
+                <div class="filtros-grid">
+                    <div class="span-2">
+                        <label class="fuente-btn">Nombre de la empresa</label>
+                        <input type="text" class="empresa-input" readonly style="pointer-events:none;"
+                               th:value="${empresa.nombre}">
+                    </div>
+                    <div class="span-2">
+                        <label class="fuente-btn">Giro</label>
+                        <input type="text" class="empresa-input" readonly style="pointer-events:none;"
+                               th:value="${empresa.giro}">
+                    </div>
+                    <div>
+                        <label class="fuente-btn">NIT</label>
+                        <input type="text" class="empresa-input" readonly style="pointer-events:none;"
+                               th:value="${empresa.nit}">
+                    </div>
+                    <div>
+                        <label class="fuente-btn">Teléfono</label>
+                        <input type="text" class="empresa-input" readonly style="pointer-events:none;"
+                               th:value="${empresa.telefono}">
+                    </div>
+                    <div class="span-2">
+                        <label class="fuente-btn">Dirección</label>
+                        <input type="text" class="empresa-input" readonly style="pointer-events:none;"
+                               th:value="${empresa.direccion}">
+                    </div>
+                </div>
+            </div>
+
+            <br><br><br><br><br>
+
+            <!-- 3) KPIs -->
             <div class="card kpi">
                 <div class="tile">
-                    <div class="fuente-btn">Ingresos</div>
+                    <div class="fuente-btn">Total Activos</div>
                     <div class="fuente-titulos2"
-                         th:text="${#numbers.formatDecimal(ingresos,1,'POINT',2,'POINT')}">0.00</div>
+                         th:text="${#numbers.formatDecimal(totalActivos,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile">
-                    <div class="fuente-btn">Costos</div>
+                    <div class="fuente-btn">Total Pasivos + Patrimonio</div>
                     <div class="fuente-titulos2"
-                         th:text="${#numbers.formatDecimal(costos,1,'POINT',2,'POINT')}">0.00</div>
+                         th:text="${#numbers.formatDecimal(totalPasivosPatrimonio,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
                 <div class="tile">
-                    <div class="fuente-btn">Gastos</div>
-                    <div class="fuente-titulos2"
-                         th:text="${#numbers.formatDecimal(gastos,1,'POINT',2,'POINT')}">0.00</div>
-                </div>
-                <div class="tile">
-                    <div class="fuente-btn">Utilidad o Pérdida Neta</div>
+                    <div class="fuente-btn">Utilidad</div>
                     <div class="fuente-titulos2"
                          th:classappend="${utilidad>=0} ? ' txt-verde' : ' txt-rojo'"
                          th:text="${#numbers.formatDecimal(utilidad,1,'POINT',2,'POINT')}">0.00</div>
                 </div>
+                <div class="tile">
+                    <div class="fuente-btn">Diferencia</div>
+                    <div class="fuente-titulos2"
+                         th:classappend="${diferencia==0} ? ' txt-verde' : ' txt-rojo'"
+                         th:text="${#numbers.formatDecimal(diferencia,1,'POINT',2,'POINT')}">0.00</div>
+                </div>
             </div>
 
-            <!-- Tabla resumen -->
-            <div class="card-estado" style="margin-top:14px">
+            <!-- 4) Tabla resumen -->
+            <div class="card-estado tabla-balance" style="margin-top:14px">
                 <table class="tabla-usuarios">
                     <thead class="fuente-btn">
                     <tr>
@@ -417,43 +437,74 @@
                     </tr>
                     </thead>
                     <tbody class="fuente-p1">
-                    <tr>
-                        <td>Ingresos del período</td>
+
+                    <!-- ACTIVOS -->
+                    <tr class="fila-bloque">
+                        <td class="fuente-semi centrar-txt fuente-negrita txt-rojo">ACTIVOS</td>
+                        <td></td>
+                    </tr>
+                    <tr th:each="l : ${activos}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">101-01 Caja</td>
                         <td class="num"
-                            th:text="${#numbers.formatDecimal(ingresos,1,'POINT',2,'POINT')}">0.00</td>
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
                     </tr>
                     <tr>
-                        <td>Costos del período</td>
-                        <td class="num"
-                            th:text="${#numbers.formatDecimal(costos,1,'POINT',2,'POINT')}">0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Gastos del período</td>
-                        <td class="num"
-                            th:text="${#numbers.formatDecimal(gastos,1,'POINT',2,'POINT')}">0.00</td>
-                    </tr>
-                    <tr>
-                        <td class="fuente-btn">Utilidad Neta</td>
+                        <td class="fuente-btn">Total Activos</td>
                         <td class="num fuente-btn"
-                            th:classappend="${utilidad>=0} ? ' txt-verde' : ' txt-rojo'"
-                            th:text="${#numbers.formatDecimal(utilidad,1,'POINT',2,'POINT')}">0.00</td>
+                            th:text="${#numbers.formatDecimal(totalActivos,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <!-- PASIVOS -->
+                    <tr class="fila-bloque">
+                        <td class="fuente-semi centrar-txt fuente-negrita txt-rojo">PASIVOS</td>
+                        <td></td>
+                    </tr>
+                    <tr th:each="l : ${pasivos}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">201-01 Proveedores</td>
+                        <td class="num"
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="fuente-btn">Total Pasivos</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPasivos,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <!-- PATRIMONIO -->
+                    <tr class="fila-bloque">
+                        <td class="fuente-semi centrar-txt fuente-negrita txt-rojo">PATRIMONIO</td>
+                        <td></td>
+                    </tr>
+                    <tr th:each="l : ${patrimonio}">
+                        <td th:text="${l.codigo + ' ' + l.nombre}">301-01 Capital</td>
+                        <td class="num"
+                            th:text="${#numbers.formatDecimal(l.monto,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="fuente-btn">Total Patrimonio</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPatrimonio,1,'POINT',2,'POINT')}">0.00</td>
+                    </tr>
+
+                    <tr>
+                        <td class="fuente-btn">Pasivo + Patrimonio</td>
+                        <td class="num fuente-btn"
+                            th:text="${#numbers.formatDecimal(totalPasivosPatrimonio,1,'POINT',2,'POINT')}">0.00</td>
                     </tr>
                     </tbody>
                 </table>
 
-                <div class="guardar-centro">
-                    <form th:action="@{/estado-resultado/guardar}" method="post"
+                <div class="guardar-centro" style="margin-top:12px;">
+                    <form th:action="@{/balance-general/guardar}" method="post"
                           style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                         <input type="hidden" name="desde" th:value="${desde}">
                         <input type="hidden" name="hasta" th:value="${hasta}">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <button class="btn fuente-btn" type="submit">Guardar en BD</button>
+                        <span class="fuente-p2">Periodo:
+                            <span th:text="${desde}">yyyy-mm-dd</span> ..
+                            <span th:text="${hasta}">yyyy-mm-dd</span>
+                        </span>
                     </form>
-                    <span class="fuente-p2">
-                        Periodo:
-                        <span th:text="${desde}">yyyy-mm-dd</span> ..
-                        <span th:text="${hasta}">yyyy-mm-dd</span>
-                    </span>
                 </div>
             </div>
         </main>
@@ -461,23 +512,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script th:inline="javascript">
-    const ok = /*[[${msgOk}]]*/ null,
-          err = /*[[${msgErr}]]*/ null;
-    if (ok) {
-      Swal.fire({
-        icon:'success',
-        title:'¡Éxito!',
-        text: ok,
-        timer:2200,
-        showConfirmButton:false,
-        timerProgressBar:true
-      });
-    }
-    if (err) {
-      Swal.fire({icon:'error', title:'Error', text: err});
-    }
-</script>
 
 <!-- Menú lateral responsive -->
 <script>
@@ -485,7 +519,7 @@
       const btn = document.getElementById('menuBtn');
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('backdrop');
-      if(!btn || !sidebar || !backdrop) return;
+      if(!btn||!sidebar||!backdrop) return;
 
       function openMenu(){
         sidebar.classList.add('sidebar--open');
@@ -499,26 +533,29 @@
         document.body.classList.remove('no-scroll');
         btn.setAttribute('aria-expanded','false');
       }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
 
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu();
+      });
       backdrop.addEventListener('click', closeMenu);
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
+      window.addEventListener('resize', ()=>{
+        if (window.innerWidth > 767) closeMenu();
+      });
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') closeMenu();
+      });
     })();
 </script>
 
-<!-- Hidratar usuario -->
-<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
-<script type="module">
-    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
-    hydrateUserDisplay();
+<!-- SweetAlert OK / Error -->
+<script th:inline="javascript">
+    const ok = /*[[${msgOk}]]*/ null, err = /*[[${msgErr}]]*/ null;
+    if (ok) Swal.fire({icon:'success', title:'¡Éxito!', text: ok, timer:2200, showConfirmButton:false});
+    if (err) Swal.fire({icon:'error', title:'Error', text: err});
 </script>
 
-<!-- Logout: limpia IndexedDB + localStorage y luego envía -->
+<!-- Logout con confirmación + limpieza IndexedDB/localStorage -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
@@ -526,6 +563,7 @@
 
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -536,22 +574,31 @@
           confirmButtonColor: '#e63946'
         });
 
-        if (!isConfirmed) return;
+        if (isConfirmed) {
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
 
-        try {
-          const mod = await import('/JS/UsuarioIndexDB.js');
-          await mod.clearUser();
-          localStorage.removeItem('lastUserName');
-        } catch (err) {
-          console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          const f = document.getElementById('logoutForm');
+          if (f) f.submit();
         }
-
-        const f = document.getElementById('logoutForm');
-        if (f) f.submit();
       });
     });
 </script>
 
+<!-- Hidratar usuario -->
+<script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
+<script type="module">
+    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
+    hydrateUserDisplay();
+</script>
+
+<!-- Acordeón Estados financieros -->
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
+
 </body>
 </html>

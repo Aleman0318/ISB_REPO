@@ -12,4 +12,7 @@ public interface ReporteDAO extends JpaRepository<Reporte, Long> {
             String tipoReporte, String periodicidad, String periodoClave);
 
     List<Reporte> findByEstadoOrderByCreatedAtDesc(String estado);
+
+    // 👉 Para contar cuántos reportes hay por estado (APROBADO, PENDIENTE, RECHAZADO)
+    long countByEstado(String estado);
 }

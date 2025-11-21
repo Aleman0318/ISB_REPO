@@ -1,4 +1,3 @@
-// services/EstadoResultadoService.java
 package com.sistemascontables.ISuiteBalance.Services;
 
 import com.sistemascontables.ISuiteBalance.Models.EstadoFinanciero;
@@ -48,6 +47,23 @@ public class EstadoResultadoService {
         out.put("desde", desde.toString());
         out.put("hasta", hasta.toString());
         return out;
+    }
+
+    /**
+     * Devuelve solo la utilidad neta para un rango de fechas,
+     * reutilizando la misma lógica de consultar().
+     */
+    public BigDecimal calcularUtilidad(LocalDate desde, LocalDate hasta) {
+        Map<String,Object> m = consultar(desde, hasta);
+        Object val = m.get("utilidad");
+
+        if (val instanceof BigDecimal) {
+            return (BigDecimal) val;
+        }
+        if (val instanceof Number) {
+            return BigDecimal.valueOf(((Number) val).doubleValue());
+        }
+        return BigDecimal.ZERO;
     }
 
     @Transactional
