@@ -2,9 +2,6 @@ package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
-import com.sistemascontables.ISuiteBalance.Services.AuditoriaService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -13,24 +10,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GestionUsuarioController {
 
     private final UsuarioService usuarioService;
-    private final AuditoriaService auditoriaService;
 
-    public GestionUsuarioController(UsuarioService usuarioService,
-                                    AuditoriaService auditoriaService) {
+    public GestionUsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.auditoriaService = auditoriaService;
     }
 
-    // ================== Helper: usuario actual ==================
-    private Long obtenerIdUsuarioActual() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Usuario actual) {
-            return actual.getId_usuario();
-        }
-        return null;
-    }
-
-    /* ================== CREAR ================== */
+    /* CREAR  */
 
     @GetMapping("/crear-usuario")
     public String mostrarCrearUsuario() {
@@ -71,7 +56,7 @@ public class GestionUsuarioController {
             ra.addFlashAttribute("formRol", r);
             return "redirect:/crear-usuario";
         }
-        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado"))) {
+        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado") )) {
             ra.addFlashAttribute("error", "Rol inválido.");
             ra.addFlashAttribute("formNombre", n);
             ra.addFlashAttribute("formCorreo", c);
@@ -94,22 +79,10 @@ public class GestionUsuarioController {
 
         usuarioService.saveUsuario(u);
         ra.addFlashAttribute("ok", "Usuario creado correctamente.");
-
-        // ------ Auditoría: CREAR_USUARIO ------
-        Long idActor = obtenerIdUsuarioActual();
-        if (idActor != null) {
-            auditoriaService.registrarAccion(
-                    idActor,
-                    "CREAR_USUARIO",
-                    "USUARIO",
-                    "Se creó el usuario: " + u.getCorreo()
-            );
-        }
-
         return "redirect:/gestion-usuario";
     }
 
-    /* ================== ELIMINAR ================== */
+    /* ELIMINAR */
 
     @GetMapping("/usuario/eliminar/{id}")
     public String confirmarEliminacionUsuario(
@@ -119,10 +92,8 @@ public class GestionUsuarioController {
     ) {
         return usuarioService.findById(id)
                 .map(u -> { model.addAttribute("usuario", u); return "EliminarUsuario"; })
-                .orElseGet(() -> {
-                    ra.addFlashAttribute("error", "Usuario no encontrado (ID " + id + ").");
-                    return "redirect:/gestion-usuario";
-                });
+                .orElseGet(() -> { ra.addFlashAttribute("error", "Usuario no encontrado (ID " + id + ").");
+                    return "redirect:/gestion-usuario"; });
     }
 
     @PostMapping("/usuario/eliminar")
@@ -131,10 +102,7 @@ public class GestionUsuarioController {
             RedirectAttributes ra
     ) {
         try {
-            // Usuario que se va a eliminar (para el mensaje de auditoría)
-            Usuario usuarioAEliminar = usuarioService.findById(id).orElse(null);
-
-            var auth = SecurityContextHolder
+            var auth = org.springframework.security.core.context.SecurityContextHolder
                     .getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Usuario actual) {
                 if (actual.getId_usuario().equals(id)) {
@@ -142,29 +110,15 @@ public class GestionUsuarioController {
                     return "redirect:/gestion-usuario";
                 }
             }
-
             usuarioService.eliminarPorId(id);
             ra.addFlashAttribute("ok", "Usuario eliminado correctamente (ID " + id + ").");
-
-            // ------ Auditoría: ELIMINAR_USUARIO ------
-            Long idActor = obtenerIdUsuarioActual();
-            if (idActor != null) {
-                String correoEliminado = (usuarioAEliminar != null) ? usuarioAEliminar.getCorreo() : ("ID " + id);
-                auditoriaService.registrarAccion(
-                        idActor,
-                        "ELIMINAR_USUARIO",
-                        "USUARIO",
-                        "Se eliminó el usuario: " + correoEliminado
-                );
-            }
-
         } catch (Exception e) {
             ra.addFlashAttribute("error", "No se pudo eliminar el usuario (ID " + id + ").");
         }
         return "redirect:/gestion-usuario";
     }
 
-    /* ================== EDITAR ================== */
+    /* EDITAR */
 
     @GetMapping("/usuario/editar/{id}")
     public String editarUsuarioForm(
@@ -174,10 +128,8 @@ public class GestionUsuarioController {
     ) {
         return usuarioService.findById(id)
                 .map(u -> { model.addAttribute("usuario", u); return "ModificarUsuario"; })
-                .orElseGet(() -> {
-                    ra.addFlashAttribute("error", "Usuario no encontrado (ID " + id + ").");
-                    return "redirect:/gestion-usuario";
-                });
+                .orElseGet(() -> { ra.addFlashAttribute("error", "Usuario no encontrado (ID " + id + ").");
+                    return "redirect:/gestion-usuario"; });
     }
 
     @PostMapping("/usuario/editar")
@@ -207,7 +159,7 @@ public class GestionUsuarioController {
             ra.addFlashAttribute("error", "Correo electrónico no válido.");
             return "redirect:/usuario/editar/" + id;
         }
-        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado"))) {
+        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado") )) {
             ra.addFlashAttribute("error", "Rol inválido.");
             return "redirect:/usuario/editar/" + id;
         }
@@ -218,26 +170,11 @@ public class GestionUsuarioController {
 
         return usuarioService.findById(id)
                 .map(u -> {
-                    String correoAnterior = u.getCorreo();
-
                     u.setNombre(n);
                     u.setCorreo(c);
                     u.setRol(r);
                     usuarioService.saveSoloDatosBasicos(u); // no altera la contraseña
                     ra.addFlashAttribute("ok", "Usuario actualizado correctamente.");
-
-                    // ------ Auditoría: EDITAR_USUARIO ------
-                    Long idActor = obtenerIdUsuarioActual();
-                    if (idActor != null) {
-                        String desc = "Se editó el usuario. Antes: " + correoAnterior + " | Ahora: " + u.getCorreo();
-                        auditoriaService.registrarAccion(
-                                idActor,
-                                "EDITAR_USUARIO",
-                                "USUARIO",
-                                desc
-                        );
-                    }
-
                     return "redirect:/gestion-usuario";
                 })
                 .orElseGet(() -> {

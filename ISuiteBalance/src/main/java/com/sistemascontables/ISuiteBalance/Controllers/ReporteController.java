@@ -11,6 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.sistemascontables.ISuiteBalance.Services.AuditoriaService;
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 
 import java.time.LocalDate;
 
@@ -22,15 +26,18 @@ public class ReporteController {
     private final BalanzaComprobacionService balanzaService;
     private final LibroDiarioService libroDiarioService;
     private final LibroMayorService libroMayorService;
+    private final AuditoriaService auditoriaService;
 
     public ReporteController(ReporteService service,
                              BalanzaComprobacionService balanzaService,
                              LibroDiarioService libroDiarioService,
-                             LibroMayorService libroMayorService) {
+                             LibroMayorService libroMayorService,
+                             AuditoriaService auditoriaService) {
         this.service = service;
         this.balanzaService = balanzaService;
         this.libroDiarioService = libroDiarioService;
         this.libroMayorService = libroMayorService;
+        this.auditoriaService = auditoriaService;
     }
 
     // Lista general (el Auditor la usa)
@@ -122,23 +129,35 @@ public class ReporteController {
                         @RequestParam String periodicidad,
                         @RequestParam(required=false) String parametrosJson,
                         @RequestParam(required=false) String comentario,
+                        @AuthenticationPrincipal Usuario usuario,   // 👈
                         RedirectAttributes ra) {
         try {
             Periodo.PeriodoCalc p = Periodo.ultimoCerrado(periodicidad);
+
             service.crearPendiente(
                     tipo, periodicidad, p.clave(), p.inicio(), p.fin(),
                     (parametrosJson==null? "{}" : parametrosJson),
                     comentario
             );
+
+            // 📝 Registrar en bitácora
+            String desc = "Se creó un reporte de tipo " + tipo +
+                    " (" + periodicidad + ") para el período " + p.clave();
+            auditoriaService.registrarAccionReporte(
+                    usuario.getId_usuario(),   // o getIdUsuario(), según tengas el getter
+                    "CREAR_REPORTE",
+                    desc
+            );
+
             ra.addFlashAttribute("ok",
-                    "Reporte creado para el período " + p.clave() +
-                            " y enviado al auditor para su revisión.");
-            return "redirect:/reportes/mis";
+                    "Reporte creado para el período " + p.clave());
+            return "redirect:/reportes";
         } catch (IllegalStateException ex) {
             ra.addFlashAttribute("err", "Ya existe un reporte para ese período.");
             return "redirect:/reportes/nuevo";
         }
     }
+
 
     // === GUARDAR CAMBIOS DE UN RECHAZADO ===
     @PostMapping("/{id}/editar")
@@ -159,15 +178,41 @@ public class ReporteController {
     // Aprobar / Rechazar: SOLO Auditor
     @PostMapping("/{id}/aprobar")
     @PreAuthorize("hasAuthority('Auditor')")
-    public String aprobar(@PathVariable Long id){
+    public String aprobar(@PathVariable Long id,
+                          @AuthenticationPrincipal Usuario usuario) {
+
         service.aprobar(id);
+
+        String desc = "El auditor " + usuario.getNombre() +
+                " aprobó el reporte con id=" + id;
+        auditoriaService.registrarAccionReporte(
+                usuario.getId_usuario(),
+                "APROBAR_REPORTE",
+                desc
+        );
+
         return "redirect:/reportes";
     }
 
+
     @PostMapping("/{id}/rechazar")
     @PreAuthorize("hasAuthority('Auditor')")
-    public String rechazar(@PathVariable Long id, @RequestParam String motivo){
+    public String rechazar(@PathVariable Long id,
+                           @RequestParam String motivo,
+                           @AuthenticationPrincipal Usuario usuario) {
+
         service.rechazar(id, motivo);
+
+        String desc = "El auditor " + usuario.getNombre() +
+                " rechazó el reporte con id=" + id +
+                ". Motivo: " + motivo;
+        auditoriaService.registrarAccionReporte(
+                usuario.getId_usuario(),
+                "RECHAZAR_REPORTE",
+                desc
+        );
+
         return "redirect:/reportes";
     }
+
 }

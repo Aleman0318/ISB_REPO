@@ -1,7 +1,5 @@
 package com.sistemascontables.ISuiteBalance.Controllers;
 
-import com.sistemascontables.ISuiteBalance.Models.Auditoria;
-import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Repositorios.AuditoriaDAO;
 import com.sistemascontables.ISuiteBalance.Repositorios.UsuarioDAO;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,11 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Controller
 @RequestMapping("/bitacora")
@@ -30,54 +25,50 @@ public class BitacoraController {
 
     @GetMapping
     public String verBitacora(
-            @RequestParam(value = "idUsuario", required = false) Long idUsuario,
-            @RequestParam(value = "accion", required = false) String accion,
-            @RequestParam(value = "entidad", required = false) String entidad,
-            @RequestParam(value = "desde", required = false)
+            @RequestParam(required = false) Long idUsuario,
+            @RequestParam(required = false) String accion,
+            @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
-            @RequestParam(value = "hasta", required = false)
+            @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
-            Model model
-    ) {
+            Model model) {
 
-        // Lista de usuarios para el combo/filtro
-        List<Usuario> usuarios = usuarioDAO.findAll();
-
-        // Normalizar campos vacíos a null
-        if (accion != null && accion.isBlank()) {
-            accion = null;
-        }
-        if (entidad != null && entidad.isBlank()) {
-            entidad = null;
-        }
-
-        // Construir patrón para LIKE (lo que usa el DAO)
-        String patronEntidad = null;
-        if (entidad != null) {
-            patronEntidad = "%" + entidad.trim() + "%";
+        // 🔥 NORMALIZAR ACCION ("", "TODAS", null → null real)
+        if (accion != null) {
+            accion = accion.trim();
+            if (accion.isEmpty() ||
+                    accion.equalsIgnoreCase("TODAS") ||
+                    accion.equalsIgnoreCase("TODO") ||
+                    accion.equalsIgnoreCase("ALL")) {
+                accion = null;
+            }
         }
 
-        // Convertir LocalDate -> LocalDateTime (inicio y fin del día)
         LocalDateTime desdeDT = (desde != null) ? desde.atStartOfDay() : null;
-        LocalDateTime hastaDT = (hasta != null) ? hasta.atTime(LocalTime.MAX) : null;
+        LocalDateTime hastaDT = (hasta != null) ? hasta.atTime(23,59,59) : null;
 
-        // Llamar al DAO con los filtros ya normalizados
-        List<Auditoria> registros =
-                auditoriaDAO.buscarPorFiltros(idUsuario, accion, patronEntidad, desdeDT, hastaDT);
+        String patronEntidad = "REPORTE"; // 👈 solo bitácora de reportes
 
-        // Datos para la vista
-        model.addAttribute("usuarios", usuarios);
+        var registros = auditoriaDAO.buscarPorFiltros(
+                idUsuario,
+                accion,
+                patronEntidad,
+                desdeDT,
+                hastaDT
+        );
+
+        model.addAttribute("usuarios", usuarioDAO.findAll());
         model.addAttribute("registros", registros);
 
-        // Para mantener los filtros seleccionados en el formulario (opcional pero útil)
+        // filtros de vuelta a la vista
         model.addAttribute("filtroIdUsuario", idUsuario);
         model.addAttribute("filtroAccion", accion);
-        model.addAttribute("filtroEntidad", entidad);
         model.addAttribute("filtroDesde", desde);
         model.addAttribute("filtroHasta", hasta);
 
-        // Nombre de la plantilla Thymeleaf
-        return "Bitacora";   // o "bitacora" según se llame tu HTML
+        return "Bitacora";
     }
+
+
 
 }

@@ -168,14 +168,12 @@
                         <label for="accion">Acción:</label>
                         <select id="accion" name="accion">
                             <option value="">Todas</option>
-                            <option value="LOGIN"
-                                    th:selected="${param.accion} == 'LOGIN'">Inicio de sesión</option>
-                            <option value="CREAR"
-                                    th:selected="${param.accion} == 'CREAR'">Creación</option>
-                            <option value="MODIFICAR"
-                                    th:selected="${param.accion} == 'MODIFICAR'">Modificación</option>
-                            <option value="ELIMINAR"
-                                    th:selected="${param.accion} == 'ELIMINAR'">Eliminación</option>
+                            <option value="CREAR_REPORTE"
+                                    th:selected="${param.accion} == 'CREAR_REPORTE'">Creación de reporte</option>
+                            <option value="APROBAR_REPORTE"
+                                    th:selected="${param.accion} == 'APROBAR_REPORTE'">Aprobación de reporte</option>
+                            <option value="RECHAZAR_REPORTE"
+                                    th:selected="${param.accion} == 'RECHAZAR_REPORTE'">Rechazo de reporte</option>
                         </select>
                     </div>
 
@@ -209,27 +207,52 @@
                             <th>Rol</th>
                             <th>Acción</th>
                             <th>Entidad afectada</th>
+                            <th>Descripción</th> <!-- 👈 AQUÍ -->
                             <th>Fecha/Hora</th>
+                            <th>Opciones</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <tr th:each="r : ${registros}">
                             <td th:text="${r.usuario.nombre}">Juan Pérez</td>
                             <td th:text="${r.usuario.rol}">Administrador</td>
-                            <td th:text="${r.accion}">CREAR</td>
-                            <td th:text="${r.entidadAfectada}">tbl_partidas (id=5)</td>
+                            <td th:text="${r.accion}">CREAR_REPORTE</td>
+                            <td th:text="${r.entidadAfectada}">REPORTE</td>
+
+                            <!-- 👇 ESTA ES LA DESCRIPCIÓN QUE VAMOS A CONSTRUIR EN EL SERVICE -->
+                            <td th:text="${r.descripcion}">
+                                El auditor X aprobó el reporte de Y para el período Z
+                            </td>
+
                             <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm')}">
                                 01/11/2025 14:30
+                            </td>
+
+                            <td>
+                                <form th:action="@{/bitacora/{id}/eliminar(id=${r.id_auditoria})}"
+                                      method="post"
+                                      class="form-eliminar-registro"
+                                      style="display:inline-block; margin:0; padding:0;">
+
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}" />
+
+                                    <a href="#" class="btn-opcion_eliminar btn-eliminar-bitacora"
+                                       title="Borrar">
+                                        <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
+                                    </a>
+                                </form>
                             </td>
                         </tr>
 
                         <tr th:if="${#lists.isEmpty(registros)}">
-                            <td colspan="5">No hay registros de auditoría para los filtros seleccionados.</td>
+                            <td colspan="7">No hay registros de auditoría para los filtros seleccionados.</td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-
                 <!-- Botón volver -->
                 <div class="botones-finales">
                     <a class="btn-final cancelar" th:href="@{/dashboard}">Volver al dashboard</a>

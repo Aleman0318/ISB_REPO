@@ -7,7 +7,6 @@ import com.sistemascontables.ISuiteBalance.Repositorios.UsuarioDAO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
 @Service
 public class AuditoriaService {
 
@@ -19,19 +18,19 @@ public class AuditoriaService {
         this.usuarioDAO = usuarioDAO;
     }
 
-    public void registrarAccion(Long idUsuarioActor,
-                                String accion,
-                                String entidad,
-                                String descripcion) {
+    // 🔍 Registrar acción sobre REPORTES
+    public void registrarAccionReporte(Long idUsuarioActor,
+                                       String accion,
+                                       String descripcion) {
 
         Usuario usuario = usuarioDAO.findById(idUsuarioActor)
-                .orElse(null); // si no lo encuentra, se guarda null, opcionalmente puedes exigir que exista
+                .orElse(null); // si no lo encontrás, se guarda null
 
         Auditoria a = new Auditoria();
         a.setFecha(LocalDateTime.now());
-        a.setAccion(accion);
-        a.setEntidadAfectada(entidad);
-        a.setDescripcion(descripcion);
+        a.setAccion(accion);                 // p.ej: CREAR_REPORTE, APROBAR_REPORTE, RECHAZAR_REPORTE
+        a.setEntidadAfectada("REPORTE");     // 👈 clave para filtrar en bitácora
+        a.setDescripcion(descripcion);       // texto libre
         a.setUsuario(usuario);
 
         auditoriaDAO.save(a);
