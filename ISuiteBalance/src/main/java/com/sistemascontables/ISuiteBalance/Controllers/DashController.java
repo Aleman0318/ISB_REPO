@@ -4,6 +4,7 @@ import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
 import com.sistemascontables.ISuiteBalance.Services.PartidaService;
 import com.sistemascontables.ISuiteBalance.Services.ReporteService;
+import com.sistemascontables.ISuiteBalance.Services.PartidaStatsService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,17 +23,19 @@ public class DashController {
     //modificado por daigo
     private final UsuarioService usuarioService;
     private final PartidaService partidaService;
-    private final ReporteService reporteService; // 👉 nuevo
+    private final ReporteService reporteService;
+    private final PartidaStatsService partidaStatsService; // 👉 nuevo
 
     // Inyección por constructor
     public DashController(UsuarioService usuarioService,
                           PartidaService partidaService,
-                          ReporteService reporteService) {
+                          ReporteService reporteService,
+                          PartidaStatsService partidaStatsService) {
         this.usuarioService = usuarioService;
         this.partidaService = partidaService;
         this.reporteService = reporteService;
+        this.partidaStatsService = partidaStatsService;
     }
-    //
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, @AuthenticationPrincipal Object principal, HttpSession session) {
@@ -46,10 +49,10 @@ public class DashController {
         if (principal instanceof com.sistemascontables.ISuiteBalance.Models.Usuario u) {
             nombre = (u.getNombre() != null && !u.getNombre().isBlank()) ? u.getNombre() : u.getCorreo();
             correo = u.getCorreo();
-            rol    = u.getRol();                    // <-- String, sin .name()
+            rol    = u.getRol();
             usernameOrCorreo = u.getCorreo();
         } else if (principal instanceof UserDetails ud) {
-            usernameOrCorreo = ud.getUsername();    // suele ser el correo
+            usernameOrCorreo = ud.getUsername();
             nombre = usernameOrCorreo;
         } else {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -58,7 +61,7 @@ public class DashController {
                 if (p instanceof com.sistemascontables.ISuiteBalance.Models.Usuario u2) {
                     nombre = (u2.getNombre() != null && !u2.getNombre().isBlank()) ? u2.getNombre() : u2.getCorreo();
                     correo = u2.getCorreo();
-                    rol    = u2.getRol();          // <-- String
+                    rol    = u2.getRol();
                     usernameOrCorreo = u2.getCorreo();
                 } else if (p instanceof UserDetails ud2) {
                     usernameOrCorreo = ud2.getUsername();
@@ -74,15 +77,14 @@ public class DashController {
                 Usuario u = optU.get();
 
                 if (u.getNombre() != null && !u.getNombre().isBlank()) {
-                    // “nombre bonito”: muestra nombre si existe; si no, deja el correo
                     nombre = u.getNombre();
                 }
                 correo = u.getCorreo();
-                rol = u.getRol(); // ⚠️ Es String, así que sin .name()
+                rol = u.getRol();
             }
         }
 
-        // ===== 3) Asegurar loginTime (lo que ya tenías) =====
+        // ===== 3) Asegurar loginTime =====
         Long loginTimeObj = (Long) session.getAttribute("loginTime");
         if (loginTimeObj == null) {
             loginTimeObj = System.currentTimeMillis();
@@ -98,17 +100,27 @@ public class DashController {
         long pendientes  = reporteService.contarPendientes();
         long aprobados   = reporteService.contarAprobados();
         long rechazados  = reporteService.contarRechazados();
-        long enRevision  = reporteService.contarEnRevision(); // ahora mismo = pendientes
 
-        // ===== 5) Atributos para la vista =====
-        model.addAttribute("nombreUsuario",  nombre);  // visible en header
-        model.addAttribute("correoUsuario",  correo);  // oculto para IndexedDB
-        model.addAttribute("rolUsuario",     rol);     // oculto para IndexedDB
+        // En tu modelo actual "en revisión" = "pendiente"
+        long enRevision  = pendientes;
+
+        // Reportes en proceso: los que aún no están aprobados (pendientes + rechazados)
+        long reportesProceso = pendientes + rechazados;
+
+        // ===== 5) Datos para el gráfico de Partidas (últimos 5 meses) =====
+        PartidaStatsService.PartidasChartData chartData = partidaStatsService.obtenerUltimos5Meses();
+        model.addAttribute("partidasLabels", chartData.getLabels());
+        model.addAttribute("partidasData",   chartData.getValores());
+
+        // ===== 6) Atributos para la vista =====
+        model.addAttribute("nombreUsuario",  nombre);
+        model.addAttribute("correoUsuario",  correo);
+        model.addAttribute("rolUsuario",     rol);
 
         model.addAttribute("tiempoActividad",    tiempoActividad);
 
-        // Tarjeta grande de la derecha (Revisiones Pendientes)
-        model.addAttribute("revisionesPendientes", pendientes);
+        // Tarjeta grande KPI de la derecha
+        model.addAttribute("reportesProceso", reportesProceso);
 
         // Tarjetas pequeñas de la segunda fila
         model.addAttribute("reportesAprobados",  aprobados);
@@ -133,7 +145,7 @@ public class DashController {
     @GetMapping("/gestion-usuario")
     public String gestionUsuario(Model model) {
         model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "GestionUsuario"; // src/main/resources/templates/GestionUsuario.html
+        return "GestionUsuario";
     }
 
     @GetMapping("/eliminar-usuario")
@@ -144,9 +156,6 @@ public class DashController {
 
     @GetMapping("/modificar-usuario")
     public String modificarUsuario() { return "ModificarUsuario"; }
-
-    //@GetMapping("/registro-libro-diario")
-    //public String registroLibroDiario() { return "RegistroLibroDiario"; }
 
     @GetMapping("/perfil")
     public String perfil() { return "Perfil"; }
@@ -161,13 +170,5 @@ public class DashController {
         return "DetallePartida";
     }
 
-    // 👉 Redirige desde /gestion-partida al listado real de partidas
-    /*@GetMapping("/gestion-partida")
-    public String redirigirGestionPartida() {
-        return "redirect:/libro-diario";
-    }*/
-
     // ❌ No definas /logout aquí: lo maneja Spring Security
-    // @GetMapping("/logout")
-    // public String logout() { return "redirect:/logout"; }
 }
