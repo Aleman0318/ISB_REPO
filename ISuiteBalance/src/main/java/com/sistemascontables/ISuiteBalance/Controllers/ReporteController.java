@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sistemascontables.ISuiteBalance.Services.AuditoriaService;
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
@@ -129,25 +131,29 @@ public class ReporteController {
                         @RequestParam String periodicidad,
                         @RequestParam(required=false) String parametrosJson,
                         @RequestParam(required=false) String comentario,
-                        @AuthenticationPrincipal Usuario usuario,   // 👈
+                        @AuthenticationPrincipal Usuario usuarioLogueado,
                         RedirectAttributes ra) {
         try {
             Periodo.PeriodoCalc p = Periodo.ultimoCerrado(periodicidad);
-
-            service.crearPendiente(
+            Reporte r = service.crearPendiente(
                     tipo, periodicidad, p.clave(), p.inicio(), p.fin(),
                     (parametrosJson==null? "{}" : parametrosJson),
-                    comentario
+                    comentario,
+                    usuarioLogueado          // 👈 NUEVO: creador
             );
 
             // 📝 Registrar en bitácora
-            String desc = "Se creó un reporte de tipo " + tipo +
-                    " (" + periodicidad + ") para el período " + p.clave();
-            auditoriaService.registrarAccionReporte(
-                    usuario.getId_usuario(),   // o getIdUsuario(), según tengas el getter
+            String descripcionCrear = "El usuario " + usuarioLogueado.getNombre()
+                    + " creó un reporte de tipo " + r.getTipoReporte()
+                    + " (" + r.getPeriodicidad() + ") para el período " + r.getPeriodoClave();
+
+            auditoriaService.registrarAccion(
+                    usuarioLogueado.getId_usuario(),
                     "CREAR_REPORTE",
-                    desc
+                    "REPORTE",
+                    descripcionCrear
             );
+
 
             ra.addFlashAttribute("ok",
                     "Reporte creado para el período " + p.clave());
@@ -179,40 +185,53 @@ public class ReporteController {
     @PostMapping("/{id}/aprobar")
     @PreAuthorize("hasAuthority('Auditor')")
     public String aprobar(@PathVariable Long id,
-                          @AuthenticationPrincipal Usuario usuario) {
+                          @AuthenticationPrincipal Usuario auditor) {
 
-        service.aprobar(id);
+        Reporte r = service.aprobar(id);
 
-        String desc = "El auditor " + usuario.getNombre() +
-                " aprobó el reporte con id=" + id;
-        auditoriaService.registrarAccionReporte(
-                usuario.getId_usuario(),
+        Usuario creador = r.getUsuarioCreador();
+
+        String descripcion = "El auditor " + auditor.getNombre()
+                + " aprobó el reporte creado por " + creador.getNombre()
+                + " de tipo " + r.getTipoReporte()
+                + " para el período " + r.getPeriodoClave();
+
+        auditoriaService.registrarAccion(
+                auditor.getId_usuario(),
                 "APROBAR_REPORTE",
-                desc
+                "REPORTE",
+                descripcion
         );
 
         return "redirect:/reportes";
     }
+
 
 
     @PostMapping("/{id}/rechazar")
     @PreAuthorize("hasAuthority('Auditor')")
     public String rechazar(@PathVariable Long id,
                            @RequestParam String motivo,
-                           @AuthenticationPrincipal Usuario usuario) {
+                           @AuthenticationPrincipal Usuario auditor) {
 
-        service.rechazar(id, motivo);
+        Reporte r = service.rechazar(id, motivo);
+        Usuario creador = r.getUsuarioCreador();
 
-        String desc = "El auditor " + usuario.getNombre() +
-                " rechazó el reporte con id=" + id +
-                ". Motivo: " + motivo;
-        auditoriaService.registrarAccionReporte(
-                usuario.getId_usuario(),
+        String descripcion = "El auditor " + auditor.getNombre()
+                + " rechazó el reporte creado por " + creador.getNombre()
+                + " de tipo " + r.getTipoReporte()
+                + " para el período " + r.getPeriodoClave()
+                + ". Motivo: " + motivo;
+
+        auditoriaService.registrarAccion(
+                auditor.getId_usuario(),
                 "RECHAZAR_REPORTE",
-                desc
+                "REPORTE",
+                descripcion
         );
 
         return "redirect:/reportes";
     }
+
 
 }

@@ -3,6 +3,10 @@ package com.sistemascontables.ISuiteBalance.Models;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
 
 @Entity
 @Table(name = "tbl_reporte",
@@ -10,6 +14,18 @@ import java.time.LocalDateTime;
                 name="uk_reporte_unico",
                 columnNames = {"tipo_reporte","periodicidad","periodo_clave"}))
 public class Reporte {
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario_creador")
+    private Usuario usuarioCreador;
+
+    public Usuario getUsuarioCreador() {
+        return usuarioCreador;
+    }
+
+    public void setUsuarioCreador(Usuario usuarioCreador) {
+        this.usuarioCreador = usuarioCreador;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

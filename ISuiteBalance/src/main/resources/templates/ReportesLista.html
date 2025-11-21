@@ -15,7 +15,7 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}" class="active">
+        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
             <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
@@ -87,7 +87,7 @@
         </li>
 
         <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <li sec:authorize="hasRole('Auditor')"class="active">
             <a th:href="@{/reportes}">
                 <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
@@ -179,7 +179,8 @@
                                    class="input fuente-p1"
                                    placeholder="Motivo"
                                    style="width: 180px;"
-                                   th:attr="form=${'rechazo-' + r.idReporte}"/>
+                                   th:attr="form=${'rechazo-' + r.idReporte}"
+                                   required />
 
                             <div class="acciones-botones">
                                 <!-- Form de RECHAZAR -->

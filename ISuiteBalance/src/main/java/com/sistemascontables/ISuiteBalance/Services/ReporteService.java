@@ -1,6 +1,7 @@
 package com.sistemascontables.ISuiteBalance.Services;
 
 import com.sistemascontables.ISuiteBalance.Models.Reporte;
+import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Repositorios.ReporteDAO;
 import com.sistemascontables.ISuiteBalance.Models.Periodo;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,9 @@ public class ReporteService {
                                   String periodoClave,
                                   LocalDate inicio, LocalDate fin,
                                   String parametrosJson,
-                                  String comentario) {
+                                  String comentario,
+                                  Usuario creador) {
+
 
         // Regla de NO duplicados (tipo + periodicidad + periodoClave)
         reporteDAO.findByTipoReporteAndPeriodicidadAndPeriodoClave(tipo, periodicidad, periodoClave)
@@ -58,6 +61,7 @@ public class ReporteService {
         r.setPeriodicidad(periodicidad);
         r.setPeriodoClave(periodoClave);
         r.setEstado("PENDIENTE");
+        r.setUsuarioCreador(creador);   // 👈 NUEVO
         r.setComentario(comentario);
         r.setTotalDebitos(debe);
         r.setTotalHaber(haber);

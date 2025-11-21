@@ -16,7 +16,7 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}" class="active">
+        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
             <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
         </li>
 
@@ -95,8 +95,8 @@
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/bitacora}">
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')" >
+            <a th:href="@{/bitacora}"class="active">
                 <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
         </li>
 
@@ -193,7 +193,7 @@
 
                     <!-- Botón Filtrar -->
                     <div class="grupo-auditoria">
-                        <button type="submit" class="btn-final">Filtrar</button>
+                        <button type="submit" class="btn-agregar fuente-btn">Filtrar</button>
                     </div>
                 </form>
 
@@ -209,7 +209,7 @@
                             <th>Entidad afectada</th>
                             <th>Descripción</th> <!-- 👈 AQUÍ -->
                             <th>Fecha/Hora</th>
-                            <th>Opciones</th>
+                            <th sec:authorize="hasRole('Administrador')">Opciones</th>
                         </tr>
                         </thead>
 
@@ -229,7 +229,7 @@
                                 01/11/2025 14:30
                             </td>
 
-                            <td>
+                            <td sec:authorize="hasRole('Administrador')">
                                 <form th:action="@{/bitacora/{id}/eliminar(id=${r.id_auditoria})}"
                                       method="post"
                                       class="form-eliminar-registro"
@@ -239,12 +239,14 @@
                                            th:name="${_csrf.parameterName}"
                                            th:value="${_csrf.token}" />
 
-                                    <a href="#" class="btn-opcion_eliminar btn-eliminar-bitacora"
+                                    <a href="#"
+                                       class="btn-opcion_eliminar btn-eliminar-bitacora"
                                        title="Borrar">
                                         <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
                                     </a>
                                 </form>
                             </td>
+
                         </tr>
 
                         <tr th:if="${#lists.isEmpty(registros)}">
@@ -254,8 +256,8 @@
                     </table>
                 </div>
                 <!-- Botón volver -->
-                <div class="botones-finales">
-                    <a class="btn-final cancelar" th:href="@{/dashboard}">Volver al dashboard</a>
+                <div>
+                    <a class="btn-agregar fuente-btn" th:href="@{/dashboard}">Volver al dashboard</a>
                 </div>
             </div>
         </main>
@@ -338,6 +340,35 @@
       });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const botonesEliminar = document.querySelectorAll('.btn-eliminar-bitacora');
+
+      botonesEliminar.forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault(); // 👈 evita que el <a> navegue a "#"
+
+          const form = btn.closest('form');
+          if (!form) return;
+
+          const { isConfirmed } = await Swal.fire({
+            title: '¿Eliminar registro?',
+            text: 'Esta acción eliminará el registro de la bitácora.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#e63946'
+          });
+
+          if (isConfirmed) {
+            form.submit(); // 👈 aquí se hace el POST a /bitacora/{id}/eliminar
+          }
+        });
+      });
+    });
+</script>
+
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>

@@ -3,11 +3,11 @@ package com.sistemascontables.ISuiteBalance.Controllers;
 import com.sistemascontables.ISuiteBalance.Repositorios.AuditoriaDAO;
 import com.sistemascontables.ISuiteBalance.Repositorios.UsuarioDAO;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -67,8 +67,18 @@ public class BitacoraController {
         model.addAttribute("filtroHasta", hasta);
 
         return "Bitacora";
+
+
+
     }
 
+
+    @PostMapping("/{id}/eliminar")
+    @PreAuthorize("hasRole('Administrador')")
+    public String eliminarRegistro(@PathVariable("id") Long id) {
+        auditoriaDAO.deleteById(id);
+        return "redirect:/bitacora";
+    }
 
 
 }
