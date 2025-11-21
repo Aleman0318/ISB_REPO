@@ -1065,7 +1065,7 @@ font-weight: 700;
 }
 
 .centrar-txt{
-text-align: center;
+text-align: center !important;
 }
 :root{
   --isb-red: #e63946;

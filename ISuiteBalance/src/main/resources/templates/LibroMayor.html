@@ -11,6 +11,64 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- ==== Ajustes generales sidebar + acordeón ==== -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body {
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical y sin barra visible */
+        .sidebar {
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform-origin: top;
+            transition: max-height 0.25s ease, opacity 0.25s ease;
+            padding-left: 0;
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel {
+            opacity: 1;
+        }
+
+        /* Chevron animado */
+        .accordion .chevron {
+            transition: transform 0.25s ease;
+        }
+        .accordion.is-open .chevron {
+            transform: rotate(90deg);
+        }
+
+        /* Chevron blanco como en dashboard */
+        .accordion .chevron path {
+            fill: #ffffff !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,61 +76,104 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
-            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">
+                Inicio
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
-            <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">
+                Saldos Iniciales
+            </a>
         </li>
 
-        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
-            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">
+                Gestion Usuario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}">
-            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">
+                Partidas
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
-            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
-            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Diario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}"  class="active">
-            <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}" class="active">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Mayor
+            </a>
         </li>
 
+        <!-- ACORDEÓN: Estados financieros (igual dashboard) -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                    <path d="M9 6l6 6-6 6"></path>
                 </svg>
             </button>
 
             <ul id="finanzas-submenu" class="accordion-panel" hidden>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
-                    <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
-                </li>
-
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
-                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balanza-comprobacion}">
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
+                    </a>
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-variaciones}" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
-                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                    <a th:href="@{/estado-resultado}">
+                        <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
+                        Edo. de Resultado
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}"
+                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
+                        Variaciones Patrimonio
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
+                        Flujo de Efectivo
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" alt="balance" class="icono-opcion_aside">
+                        Balance General
+                    </a>
                 </li>
 
             </ul>
@@ -81,29 +182,36 @@
         <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
 
-        <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <!-- Admin y Auditor: ver lista de reportes (como dashboard) -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
-            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">
+                Auditoría
+            </a>
         </li>
 
         <li>
-            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+            <a th:href="@{/about}">
+                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">
+                About
+            </a>
         </li>
 
     </ul>
 </div>
+
 <div id="backdrop" class="backdrop"></div>
 
 <div class="main">
@@ -114,11 +222,11 @@
         </button>
         <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
         <div class="user-info">
-      <span class="nombre-usuario fuente-p4" data-usuario-target>
-        <script th:inline="javascript">
-            document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
-        </script>
-      </span>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
+            </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
 
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
@@ -141,7 +249,9 @@
             <div class="card">
                 <form th:action="@{/libro-mayor}" method="get" id="formFiltros">
                     <div class="filtros-card__header">
-                        <h3 class="filtro-label fuente-p1" style="text-align: center; margin-bottom: 40px;">Búsqueda por rango de fechas</h3>
+                        <h3 class="filtro-label fuente-p1" style="text-align: center; margin-bottom: 40px;">
+                            Búsqueda por rango de fechas
+                        </h3>
                     </div>
                     <div class="filtros-card__body fuente-p1">
                         <div class="buscador-wrap filtros-row form-grid">
@@ -178,7 +288,10 @@
                     <div class="mayor-section">
                         <div class="mayor-header">
                             <span class="dot"></span>
-                            <span class="fuente-p1">Cuenta <strong th:text="${g.codigo}"></strong> · <strong th:text="${g.nombrecuenta}"></strong></span>
+                            <span class="fuente-p1">
+                                Cuenta <strong th:text="${g.codigo}"></strong>
+                                · <strong th:text="${g.nombrecuenta}"></strong>
+                            </span>
                         </div>
 
                         <div th:fragment="tabla" class="tabla-wrapper">
@@ -192,7 +305,7 @@
                                     <th>Haber</th>
                                     <th>Saldo</th>
                                     <th>Documento Anexado</th>
-                                    <th>Opcion</th>
+                                    <th>Opción</th>
                                 </tr>
                                 </thead>
                                 <tbody class="fuente-p1">
@@ -215,7 +328,9 @@
                                         </a>
                                     </td>
                                     <td class="opciones">
-                                        <a class="btn-opcion_editar" th:href="@{|/partidas/${f.idPartida}/ver-mayor|}" title="Ver">
+                                        <a class="btn-opcion_editar"
+                                           th:href="@{|/partidas/${f.idPartida}/ver-mayor|}"
+                                           title="Ver">
                                             <img th:src="@{/img/luupa.png}" alt="Editar" class="icono-opcion">
                                         </a>
                                     </td>
@@ -233,14 +348,15 @@
                             </table>
                         </div>
                     </div>
-            </th:block>
+                </th:block>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Scripts (idénticos a Gestión de Partidas) -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     (function () {
       const btn = document.getElementById('menuBtn');
@@ -287,13 +403,16 @@
               const mod = await import('/JS/UsuarioIndexDB.js');
               await mod.clearUser();
               localStorage.removeItem('lastUserName');
-            } catch (err) { console.warn('No se pudo limpiar IndexedDB/localStorage:', err); }
+            } catch (err) {
+              console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+            }
             document.getElementById('logoutForm')?.submit();
           }
         });
       }
     });
 </script>
+
 <script>
     (function(){
       const form   = document.getElementById('formFiltros');
@@ -309,7 +428,6 @@
       }
 
       async function fetchAndSwap(url){
-        // opcional: micro fade
         const cont = document.querySelector(CONT);
         cont?.classList.add('fade');
         try {
@@ -317,16 +435,14 @@
           const html = await res.text();
           const doc  = new DOMParser().parseFromString(html, 'text/html');
           swapResultadosFrom(doc);
-          history.replaceState({}, '', url);  // actualiza la URL sin recargar
+          history.replaceState({}, '', url);
         } catch (e) {
-          // fallback si algo falla
           window.location.href = url;
         } finally {
           document.querySelector(CONT)?.classList.remove('fade');
         }
       }
 
-      // Buscar SIN recargar
       form?.addEventListener('submit', (e)=>{
         e.preventDefault();
         const base = form.getAttribute('action') || window.location.pathname;
@@ -337,7 +453,6 @@
         fetchAndSwap(url);
       });
 
-      // Limpiar SIN recargar
       btnClr?.addEventListener('click', (e)=>{
         e.preventDefault();
         [fDesde, fHasta].forEach(i => { if (i){ i.value=''; i.removeAttribute('name'); }});
@@ -347,12 +462,14 @@
     })();
 </script>
 
-<!-- ✅ Hidratar header con IndexedDB como en tus otras vistas -->
+<!-- IndexedDB / nombre en header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
 <script type="module">
     import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
     hydrateUserDisplay();
 </script>
+
+<!-- Acordeón -->
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>

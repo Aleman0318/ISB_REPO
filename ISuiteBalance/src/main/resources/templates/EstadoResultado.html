@@ -19,8 +19,67 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
     <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical y sin barra visible */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0;
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        /* Animar el chevron */
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+
+        /* Chevron blanco como en dashboard */
+        .accordion .chevron path{
+            fill:#ffffff !important;
+        }
+
         table td.num, table th.num{
             text-align:right;
+        }
+
+        .centrar-txt{
+        text-align: center !important;
         }
 
         .card-estado table{
@@ -42,7 +101,7 @@
             margin-top:10px;
         }
 
-        /* grid para filtros (igual que otros estados) */
+        /* grid para filtros */
         .filtros-grid{
             display:grid;
             grid-template-columns:repeat(4,minmax(0,1fr));
@@ -124,13 +183,15 @@
 
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
-                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio
+                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">
+                Inicio
             </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/saldos-iniciales}">
-                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">
+                Saldos Iniciales
             </a>
         </li>
 
@@ -143,7 +204,8 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
-                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">
+                Partidas
             </a>
         </li>
 
@@ -156,28 +218,30 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/registro-libro-diario}">
-                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Diario
             </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/libro-mayor}">
-                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Mayor
             </a>
         </li>
 
-        <!-- Acordeón estados financieros -->
+        <!-- Acordeón estados financieros (igual dashboard) -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                    <path d="M9 6l6 6-6 6"></path>
                 </svg>
             </button>
 
@@ -185,7 +249,8 @@
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/balanza-comprobacion}">
-                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
                     </a>
                 </li>
 
@@ -206,14 +271,14 @@
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/estado-flujo}">
-                        <img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
                         Flujo de Efectivo
                     </a>
                 </li>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
                     <a th:href="@{/balance-general}">
-                        <img th:src="@{/img/balanza.png}" class="icono-opcion_aside" alt="">
+                        <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
                         Balance General
                     </a>
                 </li>
@@ -224,33 +289,36 @@
         <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
 
-        <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <!-- Admin y Auditor: ver lista de reportes (igual que en otras vistas) -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
-                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">
+                Auditoría
             </a>
         </li>
 
         <li>
             <a th:href="@{/about}">
-                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About
+                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">
+                About
             </a>
         </li>
 
     </ul>
 </div>
+
 <div id="backdrop" class="backdrop"></div>
 
 <div class="main">
@@ -288,8 +356,8 @@
     <div class="container_principal fondo-1">
         <main class="gestion-usuarios">
             <div class="contenedor-titulo-gestion" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-                <div>
-                    <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Estado de Resultado</h1>
+                <div class="centrar-txt centrar-items">
+                    <h1 class="titulo-gestion fuente-titulos3 txt-rojo centrar-txt">Estado de Resultado</h1>
                 </div>
                 <div class="guardar-centro" style="margin-top:0;">
                     <button type="button" class="btn fuente-btn" onclick="window.print()">

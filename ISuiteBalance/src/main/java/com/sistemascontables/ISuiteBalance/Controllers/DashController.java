@@ -3,6 +3,7 @@ package com.sistemascontables.ISuiteBalance.Controllers;
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
 import com.sistemascontables.ISuiteBalance.Services.PartidaService;
+import com.sistemascontables.ISuiteBalance.Services.ReporteService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,9 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -24,11 +22,15 @@ public class DashController {
     //modificado por daigo
     private final UsuarioService usuarioService;
     private final PartidaService partidaService;
+    private final ReporteService reporteService; // 👉 nuevo
 
     // Inyección por constructor
-    public DashController(UsuarioService usuarioService, PartidaService partidaService) {
+    public DashController(UsuarioService usuarioService,
+                          PartidaService partidaService,
+                          ReporteService reporteService) {
         this.usuarioService = usuarioService;
         this.partidaService = partidaService;
+        this.reporteService = reporteService;
     }
     //
 
@@ -65,7 +67,7 @@ public class DashController {
             }
         }
 
-// ===== 2) Si faltan correo/rol, completar con la BD usando el correo único =====
+        // ===== 2) Si faltan correo/rol, completar con la BD usando el correo único =====
         if ((correo == null || rol == null) && usernameOrCorreo != null && !usernameOrCorreo.isBlank()) {
             Optional<Usuario> optU = usuarioService.findByCorreo(usernameOrCorreo);
             if (optU.isPresent()) {
@@ -80,7 +82,6 @@ public class DashController {
             }
         }
 
-
         // ===== 3) Asegurar loginTime (lo que ya tenías) =====
         Long loginTimeObj = (Long) session.getAttribute("loginTime");
         if (loginTimeObj == null) {
@@ -93,16 +94,28 @@ public class DashController {
         long s = (diff / 1000) % 60;
         String tiempoActividad = String.format("%dh:%02dm:%02ds", h, m, s);
 
-        // ===== 4) Atributos para la vista =====
+        // ===== 4) Contadores reales de reportes =====
+        long pendientes  = reporteService.contarPendientes();
+        long aprobados   = reporteService.contarAprobados();
+        long rechazados  = reporteService.contarRechazados();
+        long enRevision  = reporteService.contarEnRevision(); // ahora mismo = pendientes
+
+        // ===== 5) Atributos para la vista =====
         model.addAttribute("nombreUsuario",  nombre);  // visible en header
         model.addAttribute("correoUsuario",  correo);  // oculto para IndexedDB
         model.addAttribute("rolUsuario",     rol);     // oculto para IndexedDB
 
         model.addAttribute("tiempoActividad",    tiempoActividad);
-        model.addAttribute("revisionesPendientes",150);
-        model.addAttribute("reportesAprobados",  960);
-        model.addAttribute("reportesRechazados", 220);
-        model.addAttribute("reportesRevision",   150);
+
+        // Tarjeta grande de la derecha (Revisiones Pendientes)
+        model.addAttribute("revisionesPendientes", pendientes);
+
+        // Tarjetas pequeñas de la segunda fila
+        model.addAttribute("reportesAprobados",  aprobados);
+        model.addAttribute("reportesRechazados", rechazados);
+        model.addAttribute("reportesRevision",   enRevision);
+
+        // De momento sigue fijo; cuando tengas tabla de bitácora lo conectamos también
         model.addAttribute("bitacoraTotal",     "2.3k");
 
         return "dashboard";
@@ -115,8 +128,6 @@ public class DashController {
 
     @GetMapping("/bitacora")
     public String bitacora() { return "Bitacora"; }
-
-
 
     // Listado de usuarios
     @GetMapping("/gestion-usuario")
@@ -155,7 +166,6 @@ public class DashController {
     public String redirigirGestionPartida() {
         return "redirect:/libro-diario";
     }*/
-
 
     // ❌ No definas /logout aquí: lo maneja Spring Security
     // @GetMapping("/logout")

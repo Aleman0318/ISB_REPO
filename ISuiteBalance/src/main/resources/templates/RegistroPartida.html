@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suite Balance | ISB</title>
+    <title>Registrar Partida | Suite Balance ISB</title>
+
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
@@ -13,6 +14,59 @@
     <!-- CSRF -->
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <!-- ✅ Overflow + scroll sidebar + animación acordeón (igual que dashboard) -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical sin barra visible */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0;
+        }
+
+        /* Cuando está abierto (clase manejada por acordeon.js) */
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        /* Animar el chevron */
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+    </style>
 </head>
 <body>
 
@@ -20,41 +74,61 @@
     <h2 class="fuente-semi">Dashboard</h2>
     <ul class="fuente-p1">
 
-        <li sec:authorize="isAuthenticated()"> <a th:href="@{/dashboard}">
-            <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Inicio" class="icono-opcion_aside">
+                Inicio
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/saldos-iniciales}">
-            <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">
+                Saldos Iniciales
+            </a>
         </li>
 
-        <li sec:authorize="hasRole('Administrador')"><a th:href="@{/gestion-usuario}">
-            <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">
+                Gestion Usuario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/subir-doc}" class="active">
-            <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}" class="active">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">
+                Partidas
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
-            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/registro-libro-diario}">
-            <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Diario
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/libro-mayor}">
-            <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Mayor
+            </a>
         </li>
 
+        <!-- Acordeón Estados financieros (mismo pack que en otras vistas) -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -64,17 +138,40 @@
 
             <ul id="finanzas-submenu" class="accordion-panel" hidden>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/balanza-comprobacion}">
-                    <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
-                </li>
-
-                <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/estado-resultado}">
-                    <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">Edo. de Resultado</a>
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balanza-comprobacion}">
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
+                    </a>
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-variaciones}" th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
-                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">Variaciones Patrimonio</a>
+                    <a th:href="@{/estado-resultado}">
+                        <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
+                        Edo. de Resultado
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}"
+                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
+                        Variaciones Patrimonio
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
+                        Flujo de Efectivo
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
+                        Balance General
+                    </a>
                 </li>
 
             </ul>
@@ -83,25 +180,31 @@
         <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
 
-        <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <!-- SOLO Auditor / Admin: lista global de reportes -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')"><a th:href="@{/bitacora}">
-            <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">
+                Auditoría
+            </a>
         </li>
 
         <li>
-            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+            <a th:href="@{/about}">
+                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">
+                About
+            </a>
         </li>
 
     </ul>
@@ -109,29 +212,32 @@
 
 <div id="backdrop" class="backdrop"></div>
 
-<div class="main">
+<div class="main fondo-1">
     <header>
-        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
 
         <div class="brand">
-            <h1 class="fuente-semita">Suite Balance | ISB</h1></div>
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
+        </div>
 
         <div class="user-info">
         <span class="nombre-usuario fuente-p4" data-usuario-target>
             <script th:inline="javascript">
-            document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
-        </script>
+                document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+            </script>
         </span>
 
+            <!-- Semillas para IndexedDB -->
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
             <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
-            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+            <a onclick="window.location.href='/perfil'" title="Perfil">
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+            </a>
+
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
@@ -187,21 +293,25 @@
                                 </div>
 
                                 <label class="sub fuente-btn">Monto</label>
-                                <input class="input monto inp-monto fuente-p1" type="number" min="0" step="0.01" placeholder="$ 0.00">
+                                <input class="input monto inp-monto fuente-p1"
+                                       type="number" min="0" step="0.01" placeholder="$ 0.00">
 
                                 <label class="sub fuente-btn">Descripción (por cuenta)</label>
-                                <textarea class="input inp-desc fuente-p1" rows="2" placeholder="Describe esta línea…"></textarea>
+                                <textarea class="input inp-desc fuente-p1" rows="2"
+                                          placeholder="Describe esta línea…"></textarea>
                             </div>
 
                             <div class="cuenta-foot">
-                                <button class="btn btn-primary btn-enviar fuente-btn" type="button">Añadir a tabla</button>
+                                <button class="btn btn-primary btn-enviar fuente-btn" type="button">
+                                    Añadir a tabla
+                                </button>
                             </div>
                         </section>
                     </div>
                 </div>
 
                 <h2 class="subtitulo fuente-btn" style="text-align: center">Tabla de Partida Doble</h2>
-                <table class="tabla-usuarios tabla-libro " id="tabla-partida">
+                <table class="tabla-usuarios tabla-libro" id="tabla-partida">
                     <thead class="fuente-btn">
                     <tr>
                         <th>N° Partida</th>
@@ -243,6 +353,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- ✅ Menú hamburguesa centralizado -->
+<script type="module" th:src="@{/JS/menu.js}"></script>
+
 <script>
     (function(){
       // ===== utils
@@ -254,20 +367,6 @@
         return `${y}-${m}-${dd}`;
       }
       const toMoney = n => '$ ' + (Number(n)||0).toFixed(2);
-
-      // ====== Menú hamburguesa y logout ======
-      (function(){
-        const btn = document.getElementById('menuBtn');
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.getElementById('backdrop');
-        if(!btn || !sidebar || !backdrop) return;
-        const openMenu = ()=>{ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); btn.setAttribute('aria-expanded','true'); };
-        const closeMenu= ()=>{ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); btn.setAttribute('aria-expanded','false'); };
-        btn.addEventListener('click', e=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu(); });
-        backdrop.addEventListener('click', closeMenu);
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
-        window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-      })();
 
       // ✅ Logout con limpieza de IndexedDB + cache rápido
       document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
@@ -313,11 +412,15 @@
 
       async function cargarCuentas() {
         try {
-          const resp = await fetch('/api/cuentas', { headers: { 'Accept':'application/json' }, cache: 'no-store' });
+          const resp = await fetch('/api/cuentas', {
+            headers: { 'Accept':'application/json' },
+            cache: 'no-store'
+          });
           if (!resp.ok) throw new Error('HTTP '+resp.status);
           const data = await resp.json();
           cuentasMap.clear();
-          cuentasOptionsHTML = '<option value="" selected>Seleccione la cuenta</option>' +
+          cuentasOptionsHTML =
+            '<option value="" selected>Seleccione la cuenta</option>' +
             data.map(c => {
               const id = c.idCuenta ?? c.id_cuenta ?? c.id ?? '';
               const nombre = c.nombreCuenta ?? c.nombrecuenta ?? c.nombre ?? '(sin nombre)';
@@ -331,8 +434,12 @@
           cuentasOptionsHTML = '<option value="" selected>Seleccione la cuenta</option>';
         }
       }
-      function poblarSelectCuenta(sel){ if(sel) sel.innerHTML = cuentasOptionsHTML; }
-      function poblarTodos(){ document.querySelectorAll('.sel-cuenta').forEach(poblarSelectCuenta); }
+      function poblarSelectCuenta(sel){
+        if(sel) sel.innerHTML = cuentasOptionsHTML;
+      }
+      function poblarTodos(){
+        document.querySelectorAll('.sel-cuenta').forEach(poblarSelectCuenta);
+      }
 
       function recalcTotales(){
         let debe = 0, haber = 0;
@@ -360,9 +467,12 @@
           setNumeroPartidaEnTabla(nPartidaProvisional);
         }
 
-        // 2) (Opcional) Intenta un endpoint si existe; si no, no pasa nada
+        // 2) (Opcional) Intenta un endpoint si existe; si no, ignora
         try {
-          const r = await fetch('/api/partidas/next', { headers:{'Accept':'application/json'}, cache:'no-store' });
+          const r = await fetch('/api/partidas/next', {
+            headers:{'Accept':'application/json'},
+            cache:'no-store'
+          });
           if (r.ok) {
             const j = await r.json();
             if (typeof j.next === 'number' && j.next > 0) {
@@ -418,19 +528,28 @@
             <input type="date" class="input inp-fecha fuente-p1" />
 
             <div class="fila-form mt-8">
-              <label class="radio fuente-p1"><input type="radio" name="${radioName}" value="debe" checked> Debe</label>
-              <label class="radio fuente-p1"><input type="radio" name="${radioName}" value="haber"> Haber</label>
+              <label class="radio fuente-p1">
+                <input type="radio" name="${radioName}" value="debe" checked> Debe
+              </label>
+              <label class="radio fuente-p1">
+                <input type="radio" name="${radioName}" value="haber"> Haber
+              </label>
             </div>
 
             <label class="sub fuente-btn">Monto</label>
-            <input class="input monto inp-monto fuente-p1" type="number" min="0" step="0.01" placeholder="$ 0.00">
+            <input class="input monto inp-monto fuente-p1"
+                   type="number" min="0" step="0.01" placeholder="$ 0.00">
 
             <label class="sub fuente-btn">Descripción (por cuenta)</label>
-            <textarea class="input inp-desc fuente-p1" rows="2" placeholder="Describe esta línea…"></textarea>
+            <textarea class="input inp-desc fuente-p1" rows="2"
+                      placeholder="Describe esta línea…"></textarea>
           </div>
           <div class="cuenta-foot">
-            <button class="btn btn-primary btn-enviar fuente-btn" type="button">Añadir a tabla</button>
+            <button class="btn btn-primary btn-enviar fuente-btn" type="button">
+              Añadir a tabla
+            </button>
           </div>`;
+
         const f = section.querySelector('.inp-fecha');
         const hoy = hoyStr();
         f.setAttribute('max', hoy);
@@ -445,6 +564,7 @@
           if (plus) plus.style.display = (i === cards.length - 1) ? '' : 'none';
         });
       }
+
       function actualizarVisibilidadBotonEnviar(){
         const cards = [...cuentasContainer.querySelectorAll('.cuenta-item')];
         cards.forEach((card, i) => {
@@ -459,18 +579,18 @@
         refreshPlusButtons();
         actualizarVisibilidadBotonEnviar();
 
-        // ✅ Fechas por defecto
+        // Fechas por defecto
         const hoy = hoyStr();
         document.querySelectorAll('.inp-fecha').forEach(inp=>{
           inp.setAttribute('max', hoy);
           if(!inp.value) inp.value = hoy;
         });
 
-        // ✅ Inicializa N° provisional (si hay)
+        // Inicializa N° provisional si hay algo
         await initNumeroProvisional();
       })();
 
-      // === Eventos tarjetas
+      // === Eventos tarjetas ===
       cuentasContainer.addEventListener('click', async (e)=>{
         const add = e.target.closest('.btn-add-card');
         if (add) {
@@ -489,9 +609,10 @@
           if (cards.length === 1) {
             card.querySelectorAll('input,select,textarea').forEach(el=>el.value='');
             const hoy = hoyStr();
-            card.querySelector('.inp-fecha')?.setAttribute('max', hoy);
-            if (card.querySelector('.inp-fecha') && !card.querySelector('.inp-fecha').value) {
-              card.querySelector('.inp-fecha').value = hoy;
+            const f = card.querySelector('.inp-fecha');
+            if (f){
+              f.setAttribute('max', hoy);
+              if(!f.value) f.value = hoy;
             }
           } else {
             card.remove();
@@ -516,22 +637,36 @@
             const desc  = card.querySelector('.inp-desc')?.value || '';
 
             const groupName = card.dataset.idx ? `lado-${card.dataset.idx}` : '';
-            const ladoEl = groupName ? card.querySelector(`input[name="${groupName}"]:checked`) : card.querySelector('input[type="radio"]:checked');
+            const ladoEl = groupName
+                ? card.querySelector(`input[name="${groupName}"]:checked`)
+                : card.querySelector('input[type="radio"]:checked');
             const lado  = (ladoEl?.value === 'haber') ? 'haber' : 'debe';
 
             if (!sel?.value || !fecha || !(monto > 0)) continue;
 
             const idCuenta = parseInt(sel.value, 10);
-            const etiqueta = cuentasMap.get(String(idCuenta)) || sel.selectedOptions?.[0]?.text || '';
+            const etiqueta = cuentasMap.get(String(idCuenta)) ||
+                             sel.selectedOptions?.[0]?.text || '';
             const debe  = (lado === 'debe')  ? monto : 0;
             const haber = (lado === 'haber') ? monto : 0;
 
-            agregarFila({ idCuenta, etiquetaCuenta: etiqueta, fecha, descripcion: desc, debe, haber });
+            agregarFila({
+              idCuenta,
+              etiquetaCuenta: etiqueta,
+              fecha,
+              descripcion: desc,
+              debe,
+              haber
+            });
             agregadas++;
           }
 
           if (agregadas === 0) {
-            await Swal.fire('Sin datos válidos','Completa al menos una tarjeta válida (cuenta, fecha y monto).','info');
+            await Swal.fire(
+              'Sin datos válidos',
+              'Completa al menos una tarjeta válida (cuenta, fecha y monto).',
+              'info'
+            );
             return;
           }
 
@@ -547,8 +682,15 @@
       document.querySelector('.btn-adjuntar')?.addEventListener('click', ()=>{
         window.location.href = '/subir-doc?returnTo=/partida';
       });
+
       document.getElementById('btn-cerrar')?.addEventListener('click', async ()=>{
-        const { isConfirmed } = await Swal.fire({title:'Cancelar', text:'Se perderá la vista previa actual.', icon:'question', showCancelButton:true, confirmButtonText:'Sí, salir'});
+        const { isConfirmed } = await Swal.fire({
+          title:'Cancelar',
+          text:'Se perderá la vista previa actual.',
+          icon:'question',
+          showCancelButton:true,
+          confirmButtonText:'Sí, salir'
+        });
         if (isConfirmed) window.location.href = '/dashboard';
       });
 
@@ -572,26 +714,47 @@
 
         tbody.innerHTML = '';
         recalcTotales();
-        // Mantén el provisional; si quieres, puedes reiniciarlo aquí.
-        // partidaIdAsignada = null; // por si prefieres limpiar el id real
+        // Si quieres, aquí podrías resetear partidaIdAsignada/nPartidaProvisional.
       });
 
       // ====== Guardar (POST a backend) ======
       document.getElementById('btn-guardar')?.addEventListener('click', async ()=>{
         const docId = hiddenDoc?.value;
-        if (!docId) { await Swal.fire('Documento requerido','Adjunta el PDF antes de guardar.','warning'); return; }
+        if (!docId) {
+          await Swal.fire(
+            'Documento requerido',
+            'Adjunta el PDF antes de guardar.',
+            'warning'
+          );
+          return;
+        }
 
         const filas = [...tbody.querySelectorAll('tr')];
-        if (filas.length === 0) { await Swal.fire('Sin líneas','Agrega al menos una línea a la partida.','info'); return; }
+        if (filas.length === 0) {
+          await Swal.fire(
+            'Sin líneas',
+            'Agrega al menos una línea a la partida.',
+            'info'
+          );
+          return;
+        }
 
-        // === construir detalles y acumular totales ===
+        // Construir detalles y acumular totales
         let totalDebe = 0, totalHaber = 0;
         const fechasSet = new Set();
         const detalles = filas.map(tr=>{
-          const idCuenta = parseInt(tr.dataset.idCuenta || tr.getAttribute('data-id-cuenta') || '0', 10);
-          const debe  = parseFloat(tr.dataset.debe  || tr.getAttribute('data-debe')  || '0');
-          const haber = parseFloat(tr.dataset.haber || tr.getAttribute('data-haber') || '0');
-          const fecha = tr.dataset.fecha || tr.children[1]?.textContent?.trim() || '';
+          const idCuenta = parseInt(
+              tr.dataset.idCuenta || tr.getAttribute('data-id-cuenta') || '0',
+              10
+          );
+          const debe  = parseFloat(
+              tr.dataset.debe  || tr.getAttribute('data-debe')  || '0'
+          );
+          const haber = parseFloat(
+              tr.dataset.haber || tr.getAttribute('data-haber') || '0'
+          );
+          const fecha = tr.dataset.fecha ||
+                        tr.children[1]?.textContent?.trim() || '';
 
           if (fecha) fechasSet.add(fecha);
           totalDebe  += isNaN(debe)?0:debe;
@@ -600,21 +763,39 @@
         });
 
         if (Math.abs(totalDebe - totalHaber) > 0.0001) {
-          await Swal.fire('Descuadre','Los totales Debe y Haber no coinciden.','error');
+          await Swal.fire(
+            'Descuadre',
+            'Los totales Debe y Haber no coinciden.',
+            'error'
+          );
           return;
         }
 
         if (fechasSet.size === 0) {
-          await Swal.fire('Fecha requerida','Cada línea debe tener fecha.','error'); return;
+          await Swal.fire(
+            'Fecha requerida',
+            'Cada línea debe tener fecha.',
+            'error'
+          );
+          return;
         }
         if (fechasSet.size > 1) {
-          await Swal.fire('Fechas distintas','Todas las líneas deben usar la misma fecha de partida. Corrige antes de guardar.','warning'); return;
+          await Swal.fire(
+            'Fechas distintas',
+            'Todas las líneas deben usar la misma fecha de partida. Corrige antes de guardar.',
+            'warning'
+          );
+          return;
         }
 
         const fechaPartida = [...fechasSet][0];
         const hoy = hoyStr();
         if (fechaPartida > hoy) {
-          await Swal.fire('Fecha futura', 'La fecha no puede ser posterior a hoy.', 'error');
+          await Swal.fire(
+            'Fecha futura',
+            'La fecha no puede ser posterior a hoy.',
+            'error'
+          );
           return;
         }
 
@@ -622,20 +803,30 @@
         const body = { fecha: fechaPartida, concepto, detalles };
 
         try{
-          const resp = await fetch('/partida?docId=' + encodeURIComponent(docId), {
-            method: 'POST',
-            headers: { 'Content-Type':'application/json', [csrfHeader]: csrfToken },
-            body: JSON.stringify(body)
-          });
+          const resp = await fetch(
+              '/partida?docId=' + encodeURIComponent(docId),
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type':'application/json',
+                  [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(body)
+              }
+          );
           const data = await resp.json();
 
           if (resp.ok && (data.ok || data.idPartida)) {
-            // ✅ Actualiza número real en la tabla y guarda en localStorage
+            // Actualiza número real en la tabla y guarda en localStorage
             partidaIdAsignada = data.idPartida;
             setNumeroPartidaEnTabla(partidaIdAsignada);
             localStorage.setItem('isb_lastNPartida', String(partidaIdAsignada));
 
-            await Swal.fire('Guardado','Partida #'+(data.idPartida ?? '')+' registrada.','success');
+            await Swal.fire(
+              'Guardado',
+              'Partida #'+(data.idPartida ?? '')+' registrada.',
+              'success'
+            );
             window.location.href = '/registro-libro-diario';
           } else {
             console.error('Respuesta del servidor:', data);
@@ -643,13 +834,16 @@
           }
         }catch(e){
           console.error(e);
-          await Swal.fire('Error','No se pudo guardar la partida.','error');
+          await Swal.fire(
+            'Error',
+            'No se pudo guardar la partida.',
+            'error'
+          );
         }
       });
 
     })();
 </script>
-
 
 <!-- ✅ IndexedDB del usuario: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
@@ -657,6 +851,9 @@
     import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
     hydrateUserDisplay();
 </script>
+
+<!-- Acordeón Estados financieros -->
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
+
 </body>
 </html>

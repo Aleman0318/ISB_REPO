@@ -18,6 +18,61 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
     <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical y sin barra visible */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0;
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        /* Animar el chevron */
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+
+        /* Chevron blanco (como en dashboard) */
+        .accordion .chevron path{
+            fill:#ffffff !important;
+        }
+
         table td.num, table th.num{
             text-align:right;
         }
@@ -116,9 +171,7 @@
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/gestion-partida}">
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">
-                Gestion de Partidas
-            </a>
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
@@ -133,18 +186,18 @@
             </a>
         </li>
 
-        <!-- Acordeón estados financieros -->
+        <!-- Acordeón estados financieros (patrón dashboard) -->
         <li class="accordion">
             <button type="button"
                     class="accordion-toggle fuente-p1"
                     aria-expanded="false"
                     aria-controls="finanzas-submenu">
                 <span class="acc-label">
-                  <img th:src="@{/img/grafico-de-barras.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
                   Estados financieros
                 </span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                    <path d="M9 6l6 6-6 6"></path>
                 </svg>
             </button>
 
@@ -164,8 +217,7 @@
                 </li>
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
-                    <a th:href="@{/estado-variaciones}"
-                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                    <a th:href="@{/estado-variaciones}">
                         <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
                         Variaciones de Patrimonio
                     </a>
@@ -173,14 +225,14 @@
 
                 <li sec:authorize="hasAnyRole('Administrador','Contador')">
                     <a th:href="@{/estado-flujo}" class="active">
-                        <img th:src="@{/img/grafico-de-barras.png}" class="icono-opcion_aside" alt="">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
                         Flujo de Efectivo
                     </a>
                 </li>
 
-                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
                     <a th:href="@{/balance-general}">
-                        <img th:src="@{/img/balanza.png}" class="icono-opcion_aside" alt="">
+                        <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
                         Balance General
                     </a>
                 </li>
@@ -191,15 +243,15 @@
         <!-- SOLO Admin y Contador: crear reporte -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/reportes/nuevo}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
                 Generar reporte
             </a>
         </li>
 
-        <!-- SOLO Auditor: ver lista de reportes -->
-        <li sec:authorize="hasRole('Auditor')">
+        <!-- Admin y Auditor: ver lista de reportes -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/reportes}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
                 Reportes
             </a>
         </li>
