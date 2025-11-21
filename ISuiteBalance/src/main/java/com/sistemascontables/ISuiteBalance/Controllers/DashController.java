@@ -113,11 +113,6 @@ public class DashController {
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/bitacora")
-    public String bitacora() { return "Bitacora"; }
-
-
-
     // Listado de usuarios
     @GetMapping("/gestion-usuario")
     public String gestionUsuario(Model model) {
@@ -134,9 +129,6 @@ public class DashController {
     @GetMapping("/modificar-usuario")
     public String modificarUsuario() { return "ModificarUsuario"; }
 
-    //@GetMapping("/registro-libro-diario")
-    //public String registroLibroDiario() { return "RegistroLibroDiario"; }
-
     @GetMapping("/perfil")
     public String perfil() { return "Perfil"; }
 
@@ -150,14 +142,4 @@ public class DashController {
         return "DetallePartida";
     }
 
-    // 👉 Redirige desde /gestion-partida al listado real de partidas
-    /*@GetMapping("/gestion-partida")
-    public String redirigirGestionPartida() {
-        return "redirect:/libro-diario";
-    }*/
-
-
-    // ❌ No definas /logout aquí: lo maneja Spring Security
-    // @GetMapping("/logout")
-    // public String logout() { return "redirect:/logout"; }
 }
