@@ -181,18 +181,23 @@
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1 class="fuente-semita">Suite Balance | ISB</h1></div>
-        <div class="user-info">
-            <!-- 👇 Usuario sin parpadeo + semilla del servidor -->
-            <span class="nombre-usuario fuente-p4" data-usuario-target>
-                <script th:inline="javascript">
-                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
-                </script>
-            </span>
-            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
 
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1></div>
+
+        <div class="user-info">
+        <span class="nombre-usuario fuente-p4" data-usuario-target>
+            <script th:inline="javascript">
+                document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+            </script>
+        </span>
+
+            <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
+            <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
+            <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
