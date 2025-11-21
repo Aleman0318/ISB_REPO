@@ -67,6 +67,8 @@
         .accordion.is-open .chevron{
             transform:rotate(90deg);
         }
+
+
     </style>
 </head>
 <body>
@@ -211,6 +213,7 @@
 <div class="main">
     <!-- Header -->
     <header>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
@@ -224,16 +227,15 @@
                 </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <span data-user-email   th:text="${correoUsuario}" style="display:none;"></span>
-            <span data-user-role    th:text="${rolUsuario}"   style="display:none;"></span>
 
-            <a onclick="window.location.href='/perfil'" title="Perfil">
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
-            </a>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
+
+            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
             <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
                 <i class="fi fi-sr-power" aria-hidden="true"></i>
             </button>
+
             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
@@ -241,129 +243,147 @@
     </header>
 
     <div class="container_principal fondo-1">
-        <main class="auditoria">
+        <main class="auditoria fondo-1">
+
             <div class="contenedor-titulo-gestion">
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Bitácora de auditoría</h1>
             </div>
 
             <div class="contenedor-auditoria">
 
-                <!-- 🔎 FORMULARIO DE FILTROS -->
-                <form class="formulario-auditoria"
-                      th:action="@{/bitacora}" method="get">
+                <!-- 🔎 CARD DE FILTROS (Mismo estilo que Gestión de Partidas) -->
+                <div class="card">
+                    <form id="formFiltrosAuditoria"
+                          class="fuente-p1"
+                          th:action="@{/bitacora}"
+                          method="get">
 
-                    <!-- Usuario -->
-                    <div class="grupo-auditoria">
-                        <label for="usuario">Usuario:</label>
-                        <select id="usuario" name="idUsuario">
-                            <option value="">Todos</option>
-                            <option th:each="u : ${usuarios}"
-                                    th:value="${u.id_usuario}"
-                                    th:text="${u.nombre + ' (' + u.rol + ')'}">
-                            </option>
+                        <div class="form-grid">
 
-                        </select>
-                    </div>
+                            <!-- Usuario -->
+                            <div>
+                                <label for="usuario">Usuario</label>
+                                <select id="usuario" name="idUsuario" class="input">
+                                    <option value="">Todos</option>
+                                    <option th:each="u : ${usuarios}"
+                                            th:value="${u.id_usuario}"
+                                            th:text="${u.nombre + ' (' + u.rol + ')'}">
+                                    </option>
+                                </select>
+                            </div>
 
-                    <!-- Acción -->
-                    <div class="grupo-auditoria">
-                        <label for="accion">Acción:</label>
-                        <select id="accion" name="accion">
-                            <option value="">Todas</option>
-                            <option value="CREAR_REPORTE"
-                                    th:selected="${param.accion} == 'CREAR_REPORTE'">Creación de reporte</option>
-                            <option value="APROBAR_REPORTE"
-                                    th:selected="${param.accion} == 'APROBAR_REPORTE'">Aprobación de reporte</option>
-                            <option value="RECHAZAR_REPORTE"
-                                    th:selected="${param.accion} == 'RECHAZAR_REPORTE'">Rechazo de reporte</option>
-                        </select>
-                    </div>
+                            <!-- Acción -->
+                            <div>
+                                <label for="accion">Acción</label>
+                                <select id="accion" name="accion" class="input">
+                                    <option value="">Todas</option>
+                                    <option value="CREAR_REPORTE"
+                                            th:selected="${param.accion} == 'CREAR_REPORTE'">
+                                        Creación de reporte
+                                    </option>
+                                    <option value="APROBAR_REPORTE"
+                                            th:selected="${param.accion} == 'APROBAR_REPORTE'">
+                                        Aprobación de reporte
+                                    </option>
+                                    <option value="RECHAZAR_REPORTE"
+                                            th:selected="${param.accion} == 'RECHAZAR_REPORTE'">
+                                        Rechazo de reporte
+                                    </option>
+                                </select>
+                            </div>
 
+                            <!-- Desde -->
+                            <div>
+                                <label for="desde">Desde</label>
+                                <input type="date"
+                                       id="desde"
+                                       name="desde"
+                                       class="input"
+                                       th:value="${param.desde}">
+                            </div>
 
-                    <!-- Rango de fechas -->
-                    <div class="grupo-auditoria">
-                        <label for="desde">Desde:</label>
-                        <input type="date" id="desde" name="desde"
-                               th:value="${param.desde}">
-                    </div>
-
-                    <div class="grupo-auditoria">
-                        <label for="hasta">Hasta:</label>
-                        <input type="date" id="hasta" name="hasta"
-                               th:value="${param.hasta}">
-                    </div>
-
-                    <!-- Botón Filtrar -->
-                    <div class="grupo-auditoria">
-                        <button type="submit" class="btn-agregar fuente-btn">Filtrar</button>
-                    </div>
-                </form>
-
-                <!-- 📋 TABLA DE REGISTROS -->
-                <div class="tabla-auditoria">
-                    <h2 class="titulo-tabla">Registros de auditoría</h2>
-                    <table class="tabla-registros">
-                        <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Rol</th>
-                            <th>Acción</th>
-                            <th>Entidad afectada</th>
-                            <th>Descripción</th> <!-- 👈 AQUÍ -->
-                            <th>Fecha/Hora</th>
-                            <th sec:authorize="hasRole('Administrador')">Opciones</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr th:each="r : ${registros}">
-                            <td th:text="${r.usuario.nombre}">Juan Pérez</td>
-                            <td th:text="${r.usuario.rol}">Administrador</td>
-                            <td th:text="${r.accion}">CREAR_REPORTE</td>
-                            <td th:text="${r.entidadAfectada}">REPORTE</td>
-
-                            <!-- 👇 ESTA ES LA DESCRIPCIÓN QUE VAMOS A CONSTRUIR EN EL SERVICE -->
-                            <td th:text="${r.descripcion}">
-                                El auditor X aprobó el reporte de Y para el período Z
-                            </td>
-
-                            <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm')}">
-                                01/11/2025 14:30
-                            </td>
-
-                            <td sec:authorize="hasRole('Administrador')">
-                                <form th:action="@{/bitacora/{id}/eliminar(id=${r.id_auditoria})}"
-                                      method="post"
-                                      class="form-eliminar-registro"
-                                      style="display:inline-block; margin:0; padding:0;">
-
-                                    <input type="hidden"
-                                           th:name="${_csrf.parameterName}"
-                                           th:value="${_csrf.token}" />
-
-                                    <a href="#"
-                                       class="btn-opcion_eliminar btn-eliminar-bitacora"
-                                       title="Borrar">
-                                        <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
-                                    </a>
-                                </form>
-                            </td>
-
-                        </tr>
-
-                        <tr th:if="${#lists.isEmpty(registros)}">
-                            <td colspan="7">No hay registros de auditoría para los filtros seleccionados.</td>
-                        </tr>
-                        <!-- aquí luego vas inyectando rows desde el backend -->
-                        </tbody>
-                    </table>
+                            <!-- Hasta -->
+                            <div>
+                                <label for="hasta">Hasta</label>
+                                <input type="date"
+                                       id="hasta"
+                                       name="hasta"
+                                       class="input"
+                                       th:value="${param.hasta}">
+                            </div>
+                        </div>
+                        <div class="contenedor-boton">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn-agregar fuente-btn">Filtrar</button>
+                        </div>
+                    </form>
                 </div>
-                <!-- Botón volver -->
-                <div>
-                    <a class="btn-agregar fuente-btn" th:href="@{/dashboard}">Volver al dashboard</a>
+
+                <!-- 📋 TABLA DE REGISTROS (mismo estilo de tabla que la de Partidas) -->
+                <table class="tabla-usuarios" id="tabla-bitacora">
+                    <thead class="fuente-btn">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Acción</th>
+                        <th>Entidad afectada</th>
+                        <th>Descripción</th>
+                        <th>Fecha/Hora</th>
+                        <th sec:authorize="hasRole('Administrador')">Opciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody class="fuente-p1">
+                    <tr th:each="r : ${registros}">
+                        <td th:text="${r.usuario.nombre}">Juan Pérez</td>
+                        <td th:text="${r.usuario.rol}">Administrador</td>
+                        <td th:text="${r.accion}">CREAR_REPORTE</td>
+                        <td th:text="${r.entidadAfectada}">REPORTE</td>
+
+                        <!-- Descripción generada desde el service -->
+                        <td th:text="${r.descripcion}">
+                            El auditor X aprobó el reporte de Y para el período Z
+                        </td>
+
+                        <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm')}">
+                            01/11/2025 14:30
+                        </td>
+
+                        <td sec:authorize="hasRole('Administrador')" class="opciones">
+                            <form th:action="@{/bitacora/{id}/eliminar(id=${r.id_auditoria})}"
+                                  method="post"
+                                  class="form-eliminar-registro"
+                                  style="display:inline-block; margin:0; padding:0;">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}" />
+
+                                <a href="#"
+                                   class="btn-opcion_eliminar btn-eliminar-bitacora"
+                                   title="Borrar">
+                                    <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
+                                </a>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(registros)}">
+                        <td colspan="7">No hay registros de auditoría para los filtros seleccionados.</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="contenedor-boton">
+                    <button sec:authorize="hasRole('Auditor')" type="button"
+                            class="btn-agregar fuente-btn"
+                            onclick="imprimirBitacora()">
+                        Exportar tabla a PDF
+                    </button>
                 </div>
             </div>
         </main>
+
     </div>
 </div>
 
@@ -371,12 +391,39 @@
 
 <!-- Hamburguesa -->
 <script>
+    // Menú hamburguesa + backdrop
     (function(){
       const btn = document.getElementById('menuBtn');
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('backdrop');
 
-<!-- SweetAlert para mensajes ok / err (opcional, por si lo usas) -->
+      if(!btn || !sidebar || !backdrop) return;
+
+      function openMenu(){
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+        btn.setAttribute('aria-expanded','true');
+      }
+      function closeMenu(){
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+        btn.setAttribute('aria-expanded','false');
+      }
+      function toggleMenu(){
+        const isOpen = sidebar.classList.contains('sidebar--open');
+        isOpen ? closeMenu() : openMenu();
+      }
+
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
+      backdrop.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
+      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+    })();
+</script>
+
+<!-- SweetAlert para mensajes ok / err (si los usas en esta vista) -->
 <script th:inline="javascript">
     const okMsg  = /*[[${ok}]]*/ null;
     const errMsg = /*[[${err}]]*/ null;
@@ -389,15 +436,17 @@
         confirmButtonColor: '#4CAF50',
         confirmButtonText: 'Perfecto'
       });
+    } else if (errMsg) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errMsg,
+        confirmButtonColor: '#e63946',
+        confirmButtonText: 'Entendido'
+      });
     }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
 </script>
+
 
 <!-- IndexedDB: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
@@ -405,6 +454,19 @@
     import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
     hydrateUserDisplay();
 </script>
+
+<script>
+    function imprimirBitacora() {
+        document.body.classList.add("solo-tabla");
+
+        window.print();
+
+        setTimeout(() => {
+            document.body.classList.remove("solo-tabla");
+        }, 300);
+    }
+</script>
+
 
 <!-- Logout con limpieza IndexedDB + cache rápido -->
 <script>
@@ -414,6 +476,7 @@
 
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -426,8 +489,13 @@
 
         if (!isConfirmed) return;
 
-          const f = document.getElementById('logoutForm');
-          if (f) f.submit();
+        // (opcional) limpiar IndexedDB + localStorage igual que en el otro HTML
+        try {
+          const mod = await import('/JS/UsuarioIndexDB.js');
+          await mod.clearUser();
+          localStorage.removeItem('lastUserName');
+        } catch (err) {
+          console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
         }
 
         const f = document.getElementById('logoutForm');
@@ -435,6 +503,7 @@
       });
     });
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
       const botonesEliminar = document.querySelectorAll('.btn-eliminar-bitacora');
