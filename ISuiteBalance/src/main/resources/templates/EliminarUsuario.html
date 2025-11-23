@@ -92,11 +92,8 @@
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/gestion-partida}">
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">
-                Gestion de Partidas
-            </a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}" >
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">

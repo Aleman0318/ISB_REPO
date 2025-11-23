@@ -8,6 +8,7 @@
         Editar Partida | Suite Balance ISB
     </title>
 
+    <!-- Mismo orden de CSS que el resto -->
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
@@ -62,43 +63,35 @@
             transform:rotate(90deg);
         }
 
-        .input-file-wrapper {
-            position: relative;
-            display: inline-block;
+        /* Ajustes pequeños del formulario superior */
+        .form-card {
+            background:#fff;
+            border-radius:10px;
+            box-shadow:0 8px 18px rgba(0,0,0,.06);
+            padding:20px;
+            width:90%;
+            margin:0 auto 20px;
         }
-
-        .input-file-wrapper input[type="file"] {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;      /* Oculta el input real */
-            cursor: pointer;
+        .form-row {
+            display:grid;
+            grid-template-columns: 160px minmax(0,1fr);
+            gap:10px 20px;
+            margin-bottom:12px;
+            align-items:center;
         }
+        .form-row label { font-weight:600; }
 
-        .btn-file-custom {
-            background: #e63946;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            display: inline-block;
-            cursor: pointer;
-            font-family: inherit;
-            border: none;
-            margin: 10px 0;
+        .muted { color:#6b7280; font-size:.9rem; }
+
+        /* Contenedor de totales debajo de las tarjetas */
+        .totales {
+            margin-top:10px;
+            display:flex;
+            gap:18px;
+            color:#374151;
+            font-weight:600;
+            flex-wrap:wrap;
         }
-
-
-        /* Estilos mínimos para el form de líneas (no rompen tu layout) */
-        .form-card { background:#fff; border-radius:12px; box-shadow:0 8px 18px rgba(0,0,0,.06); padding:16px; }
-        .form-row { display:grid; grid-template-columns: 1fr 2fr; gap:10px; margin-bottom:12px; }
-        .form-row label { align-self:center; }
-        .linea { display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
-        .linea select, .linea input { padding:6px 10px; }
-        .linea .btn-opcion { line-height:1; }
-        .acciones-lineas { display:flex; gap:8px; margin-top:8px; }
-        .totales { margin-top:10px; display:flex; gap:18px; color:#374151; font-weight:600; flex-wrap:wrap; }
-        .muted { color:#6b7280; }
     </style>
 </head>
 <body>
@@ -137,11 +130,8 @@
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/gestion-partida}">
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">
-                Gestion de Partidas
-            </a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
+            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
@@ -292,93 +282,134 @@
 
             <div th:if="${error}" class="alerta-error fuente-p1" th:text="${error}"></div>
 
-            <div class="card">
-                <form th:action="@{'/partidas/' + ${idPartida}}" method="post"
-                      enctype="multipart/form-data"  style="margin: 0; padding: 30px 0px;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <input type="hidden" name="idPartida" th:value="${idPartida}"/>
+            <form th:action="@{'/partidas/' + ${idPartida}}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="form-card">
 
-                    <div class="form-row">
-                        <label class="fuente-btn">Fecha</label>
-                        <input type="date" name="fecha" th:value="${fecha}" required class="fuente-p1">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="idPartida" th:value="${idPartida}"/>
+
+                <!-- === CABECERA: Fecha / Concepto / Documento === -->
+                <div class="form-row">
+                    <label class="fuente-btn">Fecha</label>
+                    <input type="date" name="fecha" th:value="${fecha}" required class="fuente-p1">
+                </div>
+
+                <div class="form-row">
+                    <label class="fuente-btn">Concepto</label>
+                    <input type="text" name="concepto" th:value="${concepto}" required class="fuente-p1">
+                </div>
+
+                <div class="form-row">
+                    <label class="fuente-btn">Documento</label>
+                    <div class="fuente-p1">
+                        <div class="muted" th:if="${docNombre}">
+                            Actual:
+                            <span th:text="${docNombre}">documento.pdf</span>
+                        </div>
+
+                        <input type="file" name="pdf" accept="application/pdf" class="fuente-p1">
+
+                        <select name="idClasificacion" th:value="${docClasif}" class="fuente-p1">
+                            <option th:value="1" th:selected="${docClasif==1}">Factura</option>
+                            <option th:value="2" th:selected="${docClasif==2}">Vale</option>
+                            <option th:value="3" th:selected="${docClasif==3}">Cheque</option>
+                            <option th:value="4" th:selected="${docClasif==4}">Otro</option>
+                        </select>
+
+                        <small class="muted fuente-p2">
+                            Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)
+                        </small>
                     </div>
+                </div>
 
-                    <div class="form-row">
-                        <label class="fuente-btn">Concepto</label>
-                        <input type="text" name="concepto" th:value="${concepto}" required class="fuente-p1">
-                    </div>
+                <!-- === DETALLE EN TARJETAS (similar a Registrar Partida) === -->
+                <section class="registrar-partida" style="margin-top:18px;">
+                    <div class="cuentas-wrap">
+                        <div class="cuentas-header">
+                            <span class="cuentas-titulo fuente-btn">Detalle de la partida</span>
+                            <span class="muted fuente-p2">
+                                Modifica las cuentas, montos y lados Debe / Haber.
+                            </span>
+                        </div>
 
-                    <div class="form-row">
-                        <label class="fuente-btn">Documento</label>
-                        <div class="fuente-p1">
-                            <div class="muted" th:if="${docNombre}">
-                                Actual: <span th:text="${docNombre}">documento.pdf</span>
-                            </div>
-                            <div class="input-file-wrapper">
-                                <button type="button" class="btn-file-custom">
-                                    Seleccionar archivo
-                                </button>
-                                <input type="file" name="pdf" accept="application/pdf">
-                            </div>
+                        <div id="lineas" class="cuentas-container fondo-lineas" aria-live="polite">
+                            <!-- Cada línea como tarjeta -->
+                            <section class="cuenta-item"
+                                     th:each="l, stat : ${lineas}">
+                                <div class="cuenta-head">
+                                    <h3 class="fuente-btn"
+                                        th:text="'Línea ' + (${stat.index} + 1)">Línea 1</h3>
+                                    <div class="head-actions">
+                                        <a class="btn-icon btn-delete-card danger"
+                                           title="Eliminar línea"
+                                           type="button"
+                                           onclick="quitarLinea(this)">
+                                            <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
+                                        </a>
+                                    </div>
+                                </div>
 
-                            <select name="idClasificacion" th:value="${docClasif}" class="fuente-p1">
-                                <option th:value="1" th:selected="${docClasif==1}">Factura</option>
-                                <option th:value="2" th:selected="${docClasif==2}">Vale</option>
-                                <option th:value="3" th:selected="${docClasif==3}">Cheque</option>
-                                <option th:value="4" th:selected="${docClasif==4}">Otro</option>
-                            </select>
+                                <div class="cuenta-body">
+                                    <label class="sub fuente-btn">Cuenta</label>
+                                    <select name="idCuenta[]" required
+                                            class="input sel-cuenta fuente-btn"
+                                            th:attr="data-selected=${l.idCuenta}">
+                                        <!-- Mientras se carga catálogo -->
+                                        <option th:value="${l.idCuenta}" th:text="${l.idCuenta}">
+                                            Cargando catálogo…
+                                        </option>
+                                    </select>
 
-                            <small class="muted fuente-p2">
-                                Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)
-                            </small>
+                                    <label class="sub fuente-btn">Debe</label>
+                                    <input type="number" step="0.01" name="debe[]"
+                                           th:value="${l.montoDebe}"
+                                           placeholder="Debe"
+                                           oninput="calcularTotales()"
+                                           class="input fuente-p1">
+
+                                    <label class="sub fuente-btn">Haber</label>
+                                    <input type="number" step="0.01" name="haber[]"
+                                           th:value="${l.montoHaber}"
+                                           placeholder="Haber"
+                                           oninput="calcularTotales()"
+                                           class="input fuente-p1">
+                                </div>
+                            </section>
                         </div>
                     </div>
 
-                    <section>
-                        <h3 class="fuente-btn">Detalle</h3>
-                        <div id="lineas">
-                            <div class="linea" th:each="l : ${lineas}">
-                                <!-- data-selected conserva el valor renderizado por Thymeleaf -->
-                                <select name="idCuenta[]" required class="fuente-p1"
-                                        th:attr="data-selected=${l.idCuenta}">
-                                    <!-- Placeholder mientras se carga catálogo -->
-                                    <option th:value="${l.idCuenta}" th:text="${l.idCuenta}">
-                                        Cargando catálogo…
-                                    </option>
-                                </select>
-
-                                <input type="number" step="0.01" name="debe[]"  th:value="${l.montoDebe}"
-                                       placeholder="Debe"  oninput="calcularTotales()" class="fuente-p1">
-
-                                <input type="number" step="0.01" name="haber[]" th:value="${l.montoHaber}"
-                                       placeholder="Haber" oninput="calcularTotales()" class="fuente-p1">
-
-                                <a class="btn-icon btn-delete-card" title="Eliminar línea" type="button"
-                                   onclick="quitarLinea(this)">
-                                    <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="acciones-lineas">
-                            <button class="btn-agregar2 editar" type="button" onclick="agregarLinea()">
-                                Añadir +
-                            </button>
-                        </div>
-
-                        <div class="totales">
-                            <div>Debe: <span id="sumDebe">$ 0.00</span></div>
-                            <div>Haber: <span id="sumHaber">$ 0.00</span></div>
-                        </div>
-                    </section>
-
-                    <div class="contenedor-boton" style="gap:8px; display:flex; flex-wrap:wrap;">
-                        <button class="btn-agregar" type="submit">Actualizar</button>
-                        <a class="btn-agregar" th:href="@{/gestion-partida}">Cancelar</a>
+                    <div class="acciones-lineas acciones-siguiente">
+                        <button class="btn-agregar2 editar" type="button" onclick="agregarLinea()">
+                            Añadir Línea +
+                        </button>
                     </div>
-                </form>
-            </div>
 
+                    <div class="totales">
+                        <div>Debe: <span id="sumDebe">$ 0.00</span></div>
+                        <div>Haber: <span id="sumHaber">$ 0.00</span></div>
+                    </div>
+                </section>
+
+                <!-- === BOTONES FINALES === -->
+                <div class="contenedor-boton" style="gap:10px; display:flex; flex-wrap:wrap;">
+                    <a class="btn-adjuntar fuente-btn"
+                       th:href="@{/gestion-partida}">
+                        Volver a Gestión de Partidas
+                    </a>
+
+                    <button class="btn-cancelar fuente-btn"
+                            type="button"
+                            th:onclick="|window.location='@{'/partidas/' + ${idPartida} + '/ver'}'|">
+                        Cancelar
+                    </button>
+
+                    <button class="btn-guardar fuente-btn" type="submit">
+                        Actualizar
+                    </button>
+                </div>
+            </form>
         </main>
     </div>
 </div>
@@ -557,6 +588,7 @@
     hydrateUserDisplay();
 </script>
 
+<!-- Acordeón Estados financieros -->
 <script type="module" th:src="@{/JS/acordeon.js}"></script>
 
 </body>
