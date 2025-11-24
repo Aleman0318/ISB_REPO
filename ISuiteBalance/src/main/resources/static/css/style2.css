@@ -1153,9 +1153,11 @@ text-align: center !important;
 .about-grid{
   margin:18px 0 8px;
   display:grid;
-  grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) );
+  /* auto-fit hace que las columnas “sobrantes” se plieguen y no dejen hueco */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap:14px;
-  align-items: start;
+  align-items:start;
+  justify-content:center; /* ayuda a centrar cuando hay pocas tarjetas */
 }
 
 /* TARJETA */
