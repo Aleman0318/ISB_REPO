@@ -11,14 +11,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.Map;
+import com.sistemascontables.ISuiteBalance.Repositorios.ClasificacionDocumentoDAO;
+import org.springframework.data.domain.Sort;
+
 
 @Controller
 public class PartidaController {
     private final PartidaService partidaService;
     private final DocumentoFuenteDAO docRepo;
+    private final ClasificacionDocumentoDAO clasifRepo;
 
-    public PartidaController(PartidaService s, DocumentoFuenteDAO dr) {
-        this.partidaService = s; this.docRepo = dr;
+    public PartidaController(PartidaService s, DocumentoFuenteDAO dr, ClasificacionDocumentoDAO clasifRepo) {
+        this.partidaService = s; this.docRepo = dr; this.clasifRepo = clasifRepo;
     }
 
     @GetMapping("/partida")
@@ -55,7 +59,10 @@ public class PartidaController {
         vm.documento().ifPresent(d -> {
             model.addAttribute("docNombre", d.getNombreArchivo());
             model.addAttribute("docClasif", d.getIdClasificacion());
+
         });
+        model.addAttribute("clasificaciones",
+                clasifRepo.findAll(Sort.by("idClasificacion")));
         return "PartidaEditar"; // Reusamos la misma vista PERO en modo EDIT
     }
 

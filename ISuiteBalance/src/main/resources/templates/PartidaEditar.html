@@ -91,6 +91,30 @@
             color:#374151;
             font-weight:600;
             flex-wrap:wrap;
+            justify-content:center;  /* centrado */
+            text-align:center;
+        }
+
+        /* Botón redondo "+" dentro de cada tarjeta */
+        .btn-add-line{
+            width:32px;
+            height:32px;
+            border-radius:999px;
+            border:1px solid #d1d5db;
+            background:#ffffff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:18px;
+            line-height:1;
+            padding:0;
+            cursor:pointer;
+        }
+
+        /* Centrar montos Debe / Haber */
+        .cuenta-body input[name^="debe"],
+        .cuenta-body input[name^="haber"]{
+            text-align:center;
         }
     </style>
 </head>
@@ -130,8 +154,11 @@
             </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}">
-            <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">
+                Gestion de Partidas
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
@@ -303,28 +330,55 @@
 
                 <div class="form-row">
                     <label class="fuente-btn">Documento</label>
+
                     <div class="fuente-p1">
+
+                        <!-- Documento actual -->
                         <div class="muted" th:if="${docNombre}">
                             Actual:
                             <span th:text="${docNombre}">documento.pdf</span>
                         </div>
 
-                        <input type="file" name="pdf" accept="application/pdf" class="fuente-p1">
+                        <!-- Botón con input file oculto -->
+                        <input type="file"
+                               id="pdfInputEditar"
+                               name="pdf"
+                               accept="application/pdf"
+                               style="display:none;"
+                               onchange="actualizarNombreDocumentoEditar(this)">
 
-                        <select name="idClasificacion" th:value="${docClasif}" class="fuente-p1">
-                            <option th:value="1" th:selected="${docClasif==1}">Factura</option>
-                            <option th:value="2" th:selected="${docClasif==2}">Vale</option>
-                            <option th:value="3" th:selected="${docClasif==3}">Cheque</option>
-                            <option th:value="4" th:selected="${docClasif==4}">Otro</option>
+                        <label for="pdfInputEditar" class="btn-agregar fuente-btn" style="cursor:pointer; display:inline-block;">
+                            Seleccionar archivo
+                        </label>
+
+                        <span id="nombreDocumentoEditar"
+                              class="fuente-p1"
+                              style="margin-left:8px;">
+                            Sin archivo seleccionado
+                        </span>
+
+                        <select name="idClasificacion"
+                                class="input"
+                                style="width:100%;">
+                            <option value=""
+                                    th:if="${#lists.isEmpty(clasificaciones)}">
+                                Seleccione una clasificación
+                            </option>
+                            <option th:each="c : ${clasificaciones}"
+                                    th:value="${c.idClasificacion}"
+                                    th:text="${c.nombreclasificacion}"
+                                    th:selected="${docClasif != null and c.idClasificacion == docClasif}">
+                            </option>
                         </select>
 
                         <small class="muted fuente-p2">
-                            Si no eliges nuevo PDF, se conserva el actual. (Siempre debe existir un documento)
+                            Si no eliges nuevo PDF, se conserva el actual.
                         </small>
                     </div>
                 </div>
 
-                <!-- === DETALLE EN TARJETAS (similar a Registrar Partida) === -->
+
+                <!-- === DETALLE EN TARJETAS === -->
                 <section class="registrar-partida" style="margin-top:18px;">
                     <div class="cuentas-wrap">
                         <div class="cuentas-header">
@@ -340,8 +394,16 @@
                                      th:each="l, stat : ${lineas}">
                                 <div class="cuenta-head">
                                     <h3 class="fuente-btn"
-                                        th:text="'Línea ' + (${stat.index} + 1)">Línea 1</h3>
+                                        th:text="'Cuenta afectada ' + (${stat.index} + 1)">Cuenta afectada 1</h3>
                                     <div class="head-actions">
+                                        <!-- "+" para añadir línea -->
+                                        <button class="btn-icon btn-add-line"
+                                                title="Añadir línea"
+                                                type="button"
+                                                onclick="agregarLinea()">
+                                            +
+                                        </button>
+
                                         <a class="btn-icon btn-delete-card danger"
                                            title="Eliminar línea"
                                            type="button"
@@ -356,7 +418,6 @@
                                     <select name="idCuenta[]" required
                                             class="input sel-cuenta fuente-btn"
                                             th:attr="data-selected=${l.idCuenta}">
-                                        <!-- Mientras se carga catálogo -->
                                         <option th:value="${l.idCuenta}" th:text="${l.idCuenta}">
                                             Cargando catálogo…
                                         </option>
@@ -379,34 +440,25 @@
                             </section>
                         </div>
                     </div>
-
-                    <div class="acciones-lineas acciones-siguiente">
-                        <button class="btn-agregar2 editar" type="button" onclick="agregarLinea()">
-                            Añadir Línea +
-                        </button>
-                    </div>
-
+                    <br>
                     <div class="totales">
                         <div>Debe: <span id="sumDebe">$ 0.00</span></div>
                         <div>Haber: <span id="sumHaber">$ 0.00</span></div>
                     </div>
                 </section>
-
-                <!-- === BOTONES FINALES === -->
-                <div class="contenedor-boton" style="gap:10px; display:flex; flex-wrap:wrap;">
-                    <a class="btn-adjuntar fuente-btn"
-                       th:href="@{/gestion-partida}">
-                        Volver a Gestión de Partidas
-                    </a>
-
-                    <button class="btn-cancelar fuente-btn"
-                            type="button"
-                            th:onclick="|window.location='@{'/partidas/' + ${idPartida} + '/ver'}'|">
-                        Cancelar
+                <br>
+                <!-- === BOTONES FINALES: Cancelar + Actualizar === -->
+                <div class="botones1" style="gap:10px; display:flex; flex-wrap:wrap; justify-content:center;">
+                    <!-- Cancelar -> volver a Gestión de Partidas -->
+                    <button class="btn-cancelar fuente-btn" type="submit">
+                        Actualizar
                     </button>
 
-                    <button class="btn-guardar fuente-btn" type="submit">
-                        Actualizar
+                    <!-- Actualizar -->
+                    <button class="btn-cancelar fuente-btn"
+                            type="button"
+                            th:onclick="|window.location='@{/gestion-partida}'|">
+                        Cancelar
                     </button>
                 </div>
             </form>
@@ -414,12 +466,22 @@
     </div>
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Menú hamburguesa -->
 <script type="module" th:src="@{/JS/menu.js}"></script>
 
 <script>
+    function actualizarNombreDocumentoEditar(input){
+        const span = document.getElementById('nombreDocumentoEditar');
+        if (input.files.length > 0) {
+            span.textContent = input.files[0].name;
+        } else {
+            span.textContent = "Sin archivo seleccionado";
+        }
+    }
+
     // ====== Catálogo dinámico de cuentas ======
     let cuentasOptionsHTML = '';
     const cuentasMap = new Map();
@@ -465,7 +527,6 @@
       });
     }
 
-    // ====== LÓGICA DE LÍNEAS EN TARJETAS ======
     function toNumber(v){
       const n = parseFloat(String(v ?? '').replace(',', '.'));
       return isNaN(n) ? 0 : n;
@@ -492,8 +553,9 @@
 
       section.innerHTML = `
         <div class="cuenta-head">
-          <h3 class="fuente-btn">Línea ${idx}</h3>
+          <h3 class="fuente-btn">Cuenta afectada ${idx}</h3>
           <div class="head-actions">
+            <button class="btn-icon btn-add-line" title="Añadir línea" type="button" onclick="agregarLinea()">+</button>
             <a class="btn-icon btn-delete-card danger" title="Eliminar línea" type="button"
                onclick="quitarLinea(this)">
               <img src="/img/borra.png" alt="Eliminar" class="icono-opcion">
@@ -514,11 +576,25 @@
         </div>
       `;
       cont.appendChild(section);
+      renumerarLineas();
+      calcularTotales();
+      refreshPlusButtonsEditar();
+    }
+
+    /* Mostrar el "+" solo en la última tarjeta */
+    function refreshPlusButtonsEditar(){
+      const cards = document.querySelectorAll('#lineas .cuenta-item');
+      cards.forEach((card, i) => {
+        const plus = card.querySelector('.btn-add-line');
+        if (plus){
+          plus.style.display = (i === cards.length - 1) ? '' : 'none';
+        }
+      });
     }
 
     function renumerarLineas(){
       document.querySelectorAll('#lineas .cuenta-item .cuenta-head h3')
-        .forEach((h, i) => h.textContent = 'Línea ' + (i+1));
+        .forEach((h, i) => h.textContent = 'Cuenta afectada ' + (i+1));
     }
 
     function quitarLinea(btn){
@@ -529,6 +605,7 @@
         card.remove();
         renumerarLineas();
         calcularTotales();
+        refreshPlusButtonsEditar();
       }
     }
 
@@ -543,43 +620,65 @@
       if (haberEl) haberEl.textContent = toMoney(sumHaber);
     }
 
-    // ====== Logout con SweetAlert + IndexedDB ======
+    // ====== Logout + validación de partida equilibrada ======
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
-      if (!btn) return;
+      if (btn){
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
 
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
+          const { isConfirmed } = await Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: 'Se cerrará tu sesión actual.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cerrar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#e63946'
+          });
 
-        const { isConfirmed } = await Swal.fire({
-          title: '¿Cerrar sesión?',
-          text: 'Se cerrará tu sesión actual.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, cerrar',
-          cancelButtonText: 'Cancelar',
-          confirmButtonColor: '#e63946'
+          if (!isConfirmed) return;
+
+          try {
+            const mod = await import('/JS/UsuarioIndexDB.js');
+            await mod.clearUser();
+            localStorage.removeItem('lastUserName');
+          } catch (err) {
+            console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
+          }
+
+          const f = document.getElementById('logoutForm');
+          if (f) f.submit();
         });
+      }
 
-        if (!isConfirmed) return;
-
-        try {
-          const mod = await import('/JS/UsuarioIndexDB.js');
-          await mod.clearUser();
-          localStorage.removeItem('lastUserName');
-        } catch (err) {
-          console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
-        }
-
-        const f = document.getElementById('logoutForm');
-        if (f) f.submit();
-      });
-
-      // Totales iniciales + catálogo
+      // Totales iniciales + catálogo + visibilidad del "+"
       calcularTotales();
       cargarCuentas();
+      refreshPlusButtonsEditar();
+
+      // ✅ VALIDAR QUE DEBE = HABER ANTES DE ACTUALIZAR
+      const form = document.querySelector('form.form-card');
+      if (form){
+        form.addEventListener('submit', async (e) => {
+          let sumDebe = 0, sumHaber = 0;
+          document.querySelectorAll('input[name="debe[]"]').forEach(i => sumDebe += toNumber(i.value));
+          document.querySelectorAll('input[name="haber[]"]').forEach(i => sumHaber += toNumber(i.value));
+
+          if (Math.abs(sumDebe - sumHaber) > 0.0001) {
+            e.preventDefault(); // ⛔ no manda el formulario
+            await Swal.fire({
+              title: 'Descuadre',
+              text: 'Los totales Debe y Haber no coinciden. Revisa los montos antes de actualizar.',
+              icon: 'error',
+              confirmButtonColor: '#e63946'
+            });
+          }
+        });
+      }
     });
 </script>
+
 
 <!-- IndexedDB del usuario: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
