@@ -124,6 +124,32 @@
                 text-align:left;
             }
         }
+
+        /* ===== Documentos recientes (layout sencillo) ===== */
+        .recent ul{
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+
+        .recent li{
+            margin-bottom:0.35rem;
+        }
+
+        .recent-item{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:0.75rem;
+        }
+
+        .recent-name{
+            flex:1;
+            min-width:0;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis; /* corta con ... si el nombre es muy largo */
+        }
     </style>
 </head>
 <body>
@@ -343,12 +369,28 @@
         <div class="recent">
             <h3>Documentos Recientes</h3>
             <ul>
-                <li>Documento 1 <button>Visualizar</button></li>
-                <li>Documento 2 <button>Visualizar</button></li>
-                <li>Documento 3 <button>Visualizar</button></li>
-                <li>Documento 4 <button>Visualizar</button></li>
-                <li>Documento 5 <button>Visualizar</button></li>
-                <li>Documento 6 <button>Visualizar</button></li>
+                <!-- Lista dinámica de documentos recientes -->
+                <li th:each="doc : ${documentosRecientes}" class="recent-item">
+                    <span class="recent-name" th:text="${doc.nombre}">Documento X</span>
+
+                    <!-- Admin / Auditor: pueden abrir el archivo -->
+                    <a sec:authorize="hasAnyRole('Administrador','Auditor')"
+                       th:href="@{/docs-recientes/{file}(file=${doc.nombre})}" target="_blank">
+                        <button type="button">Visualizar</button>
+                    </a>
+
+                    <!-- Otros roles (Contador, invitado): muestran alerta -->
+                    <button type="button"
+                            class="btn-visualizar-restringido"
+                            sec:authorize="!hasAnyRole('Administrador','Auditor')">
+                        Visualizar
+                    </button>
+                </li>
+
+                <!-- Mensaje si no hay documentos -->
+                <li th:if="${#lists.isEmpty(documentosRecientes)}">
+                    No hay documentos recientes en la carpeta docs.
+                </li>
             </ul>
         </div>
     </section>
@@ -415,6 +457,18 @@
 
           document.getElementById('logoutForm').submit();
         }
+      });
+
+      // 🔐 Botones de "Visualizar" restringidos (no Admin/Auditor)
+      document.querySelectorAll('.btn-visualizar-restringido').forEach(boton => {
+        boton.addEventListener('click', () => {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Acceso restringido',
+            text: 'Solo los usuarios con rol Administrador o Auditor pueden visualizar documentos recientes.',
+            confirmButtonText: 'Entendido'
+          });
+        });
       });
     });
 </script>

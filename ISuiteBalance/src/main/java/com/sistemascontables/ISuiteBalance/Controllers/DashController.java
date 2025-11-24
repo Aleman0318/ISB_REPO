@@ -1,11 +1,14 @@
 package com.sistemascontables.ISuiteBalance.Controllers;
 
 import com.sistemascontables.ISuiteBalance.Models.Usuario;
+import com.sistemascontables.ISuiteBalance.Models.DocumentoReciente;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
 import com.sistemascontables.ISuiteBalance.Services.PartidaService;
 import com.sistemascontables.ISuiteBalance.Services.ReporteService;
 import com.sistemascontables.ISuiteBalance.Services.PartidaStatsService;
-import com.sistemascontables.ISuiteBalance.Repositorios.AuditoriaDAO; // 👈 IMPORT NUEVO
+import com.sistemascontables.ISuiteBalance.Services.DocumentoRecienteService;
+import com.sistemascontables.ISuiteBalance.Repositorios.AuditoriaDAO;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -26,19 +30,22 @@ public class DashController {
     private final PartidaService partidaService;
     private final ReporteService reporteService;
     private final PartidaStatsService partidaStatsService;
-    private final AuditoriaDAO auditoriaDAO;              // 👈 CAMPO NUEVO
+    private final AuditoriaDAO auditoriaDAO;
+    private final DocumentoRecienteService documentoRecienteService; // 👈 NUEVO
 
     // Inyección por constructor
     public DashController(UsuarioService usuarioService,
                           PartidaService partidaService,
                           ReporteService reporteService,
                           PartidaStatsService partidaStatsService,
-                          AuditoriaDAO auditoriaDAO) {    // 👈 PARÁMETRO NUEVO
+                          AuditoriaDAO auditoriaDAO,
+                          DocumentoRecienteService documentoRecienteService) { // 👈 NUEVO
         this.usuarioService = usuarioService;
         this.partidaService = partidaService;
         this.reporteService = reporteService;
         this.partidaStatsService = partidaStatsService;
-        this.auditoriaDAO = auditoriaDAO;                 // 👈 ASIGNACIÓN NUEVA
+        this.auditoriaDAO = auditoriaDAO;
+        this.documentoRecienteService = documentoRecienteService; // 👈 NUEVO
     }
 
     @GetMapping("/dashboard")
@@ -124,10 +131,15 @@ public class DashController {
         model.addAttribute("partidasData",   chartData.getValores());
 
         // ===== 6) Contador real de Bitácora de Auditoría =====
-        long bitacoraTotal = auditoriaDAO.count();       // 👈 AQUÍ SE CUENTAN LAS FILAS
+        long bitacoraTotal = auditoriaDAO.count();
         model.addAttribute("bitacoraTotal", bitacoraTotal);
 
-        // ===== 7) Atributos para la vista =====
+        // ===== 7) Documentos recientes desde carpeta docs =====
+        List<DocumentoReciente> documentosRecientes =
+                documentoRecienteService.listarRecientes(6);
+        model.addAttribute("documentosRecientes", documentosRecientes);
+
+        // ===== 8) Atributos para la vista =====
         model.addAttribute("nombreUsuario",  nombre);
         model.addAttribute("correoUsuario",  correo);
         model.addAttribute("rolUsuario",     rol);
