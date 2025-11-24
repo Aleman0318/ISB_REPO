@@ -19,17 +19,15 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar con scroll vertical pero sin mostrar barra */
         .sidebar{
             overflow-y: auto;
-            scrollbar-width: none;          /* Firefox */
+            scrollbar-width: none;
         }
         .sidebar::-webkit-scrollbar{
             width: 0;
             height: 0;
         }
 
-        /* Botón del acordeón (Estados financieros) */
         .accordion-toggle{
             display:flex;
             align-items:center;
@@ -41,7 +39,6 @@
             cursor:pointer;
         }
 
-        /* Panel con animación de despliegue */
         .accordion-panel{
             max-height:0;
             overflow:hidden;
@@ -63,6 +60,20 @@
         .accordion.is-open .chevron{
             transform:rotate(90deg);
         }
+
+        .about-grid{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+        }
+
+
+        .about-grid .feature{
+            flex: 1 1 260px;   /* crece y se encoge pero nunca menos de 260px */
+            max-width: 320px;  /* opcional, para que no se estiren demasiado */
+        }
+
     </style>
 </head>
 <body>
