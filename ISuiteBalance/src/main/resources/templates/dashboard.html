@@ -124,7 +124,7 @@
             }
         }
 
-        /* ===== Lista Documentos Recientes ===== */
+        /* ===== Documentos recientes (layout sencillo) ===== */
         .recent ul{
             list-style:none;
             margin:0;
@@ -135,40 +135,19 @@
             margin-bottom:0.35rem;
         }
 
-        /* contenedor de cada fila: nombre + botón */
         .recent-item{
-            display:grid;
-            grid-template-columns: 1fr auto; /* nombre ocupa el espacio, botón lo necesario */
+            display:flex;
             align-items:center;
-            column-gap:0.75rem;
+            justify-content:space-between;
+            gap:0.75rem;
         }
 
-        /* nombre del archivo: recortado con ... */
         .recent-name{
-            overflow:hidden;
-            text-overflow:ellipsis;
+            flex:1;
+            min-width:0;
             white-space:nowrap;
-        }
-
-        /* Al hacer hover sobre la fila, permitimos scroll dentro del nombre */
-        .recent-item:hover .recent-name{
-            overflow:auto;
-            text-overflow:clip; /* quitamos los ... al desplazar */
-        }
-
-        /* Scrollbar oculto normalmente, visible solo en hover si hay overflow */
-        .recent-name::-webkit-scrollbar{
-            height:0;
-        }
-        .recent-item:hover .recent-name::-webkit-scrollbar{
-            height:4px;
-        }
-
-        .recent-name{
-            scrollbar-width:none;      /* Firefox: oculto */
-        }
-        .recent-item:hover .recent-name{
-            scrollbar-width:thin;      /* Firefox: fino solo en hover */
+            overflow:hidden;
+            text-overflow:ellipsis; /* corta con ... si el nombre es muy largo */
         }
     </style>
 </head>
@@ -392,9 +371,19 @@
                 <!-- Lista dinámica de documentos recientes -->
                 <li th:each="doc : ${documentosRecientes}" class="recent-item">
                     <span class="recent-name" th:text="${doc.nombre}">Documento X</span>
-                    <a th:href="@{/docs-recientes/{file}(file=${doc.nombre})}" target="_blank">
+
+                    <!-- Admin / Auditor: pueden abrir el archivo -->
+                    <a sec:authorize="hasAnyRole('Administrador','Auditor')"
+                       th:href="@{/docs-recientes/{file}(file=${doc.nombre})}" target="_blank">
                         <button type="button">Visualizar</button>
                     </a>
+
+                    <!-- Otros roles (Contador, invitado): muestran alerta -->
+                    <button type="button"
+                            class="btn-visualizar-restringido"
+                            sec:authorize="!hasAnyRole('Administrador','Auditor')">
+                        Visualizar
+                    </button>
                 </li>
 
                 <!-- Mensaje si no hay documentos -->
@@ -467,6 +456,18 @@
 
           document.getElementById('logoutForm').submit();
         }
+      });
+
+      // 🔐 Botones de "Visualizar" restringidos (no Admin/Auditor)
+      document.querySelectorAll('.btn-visualizar-restringido').forEach(boton => {
+        boton.addEventListener('click', () => {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Acceso restringido',
+            text: 'Solo los usuarios con rol Administrador o Auditor pueden visualizar documentos recientes.',
+            confirmButtonText: 'Entendido'
+          });
+        });
       });
     });
 </script>
