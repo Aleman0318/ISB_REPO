@@ -5,103 +5,180 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de Partida | Suite Balance ISB</title>
+
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        html, body{
+            overflow-x: hidden;
+        }
+
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0;
+        }
+
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+    </style>
 </head>
-
-<style>
-    /* Evitar scroll horizontal global */
-html, body {
-    overflow-x: hidden;
-}
-
-/* Sidebar con scroll vertical y sin barra visible */
-.sidebar {
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-}
-.sidebar::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
-
-</style>
 <body>
 
-
-
+<!-- ============= SIDEBAR ============= -->
 <div class="sidebar">
     <h2 class="fuente-semi">Dashboard</h2>
+
     <ul class="fuente-p1">
-        <!-- Inicio: solo usuarios autenticados -->
+
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/dashboard}">
-                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">Inicio</a>
+                <img th:src="@{/img/home.png}" class="icono-opcion_aside">Inicio
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/saldos-iniciales}">
-                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+                <img th:src="@{/img/calendario.png}" class="icono-opcion_aside">Saldos Iniciales
             </a>
         </li>
 
-        <!-- Solo Administrador -->
         <li sec:authorize="hasRole('Administrador')">
             <a th:href="@{/gestion-usuario}">
-                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario</a>
+                <img th:src="@{/img/gestion-de-usuarios.png}" class="icono-opcion_aside">Gestion Usuario
+            </a>
         </li>
 
-        <!-- Administrador o Contador -->
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/subir-doc}">
-                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas</a>
+                <img th:src="@{/img/documento.png}" class="icono-opcion_aside">Partidas
+            </a>
         </li>
 
-        <li sec:authorize="hasAnyRole('Administrador','Contador')"><a th:href="@{/gestion-partida}" >
-                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" class="icono-opcion_aside">Gestion de Partidas
+            </a>
         </li>
 
         <li sec:authorize="hasAnyRole('Administrador','Contador')">
             <a th:href="@{/registro-libro-diario}">
-                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario</a>
-        </li>
-        <!-- NUEVO: Libro Mayor -->
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/libro-mayor}">
-                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor</a>
-        </li>
-        <!-- NUEVO: Balanza -->
-        <li sec:authorize="hasAnyRole('Administrador','Contador')">
-            <a th:href="@{/balanza-comprobacion}">
-                <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">Balanza</a>
+                <img th:src="@{/img/libro-mayor.png}" class="icono-opcion_aside">Libro Diario
+            </a>
         </li>
 
-        <!-- Administrador o Auditor -->
-        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
-            <a th:href="@{/generar-reporte}">
-                <img th:src="@{/img/grafico-de-barras.png}" alt="Reporte" class="icono-opcion_aside">Reportes</a>
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}" class="active">
+                <img th:src="@{/img/mayor.png}" class="icono-opcion_aside">Libro Mayor
+            </a>
         </li>
+
+        <!-- Acordeón Estados Financieros -->
+        <li class="accordion">
+            <button type="button"
+                    class="accordion-toggle fuente-p1"
+                    aria-expanded="false"
+                    aria-controls="finanzas-submenu">
+                <span class="acc-label">
+                  <img th:src="@{/img/estados-financieros.png}" class="icono-opcion_aside">
+                  Estados financieros
+                </span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                </svg>
+            </button>
+
+            <ul id="finanzas-submenu" class="accordion-panel" hidden>
+                <li><a th:href="@{/balanza-comprobacion}">
+                    <img th:src="@{/img/balanza.png}" class="icono-opcion_aside">Balanza
+                </a></li>
+
+                <li><a th:href="@{/estado-resultado}">
+                    <img th:src="@{/img/estado-de-resultados.png}" class="icono-opcion_aside">Estado de Resultado
+                </a></li>
+
+                <li><a th:href="@{/estado-variaciones}">
+                    <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside">Variaciones Patrimonio
+                </a></li>
+
+                <li><a th:href="@{/estado-flujo}">
+                    <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside">Flujo de Efectivo
+                </a></li>
+
+                <li><a th:href="@{/balance-general}">
+                    <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside">Balance General
+                </a></li>
+            </ul>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/reportes.png}" class="icono-opcion_aside">Reportes
+            </a>
+        </li>
+
         <li sec:authorize="hasAnyRole('Administrador','Auditor')">
             <a th:href="@{/bitacora}">
-                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría</a>
+                <img th:src="@{/img/revisar.png}" class="icono-opcion_aside">Auditoría
+            </a>
         </li>
 
-        <!-- About (visible para todos los roles, incluso invitado) -->
         <li>
             <a th:href="@{/about}">
-                <img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">About</a>
+                <img th:src="@{/img/nosotros.png}" class="icono-opcion_aside">Nosotros
+            </a>
         </li>
+
     </ul>
 </div>
+
 <div id="backdrop" class="backdrop"></div>
 
-<div class="main">
+<!-- ============= MAIN ============= -->
+<div class="main fondo-dash">
+
+    <!-- HEADER -->
     <header>
-        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+        <link rel="stylesheet"
+              href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
-            <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
+            <i class="fi fi-rr-menu-burger"></i>
         </button>
 
         <div class="brand">
@@ -109,20 +186,22 @@ html, body {
         </div>
 
         <div class="user-info">
-            <span class="nombre-usuario fuente-p4" data-usuario-target>
-                <script th:inline="javascript">
-                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
-                </script>
-            </span>
+
+        <span class="nombre-usuario fuente-p4" data-usuario-target>
+            <script th:inline="javascript">
+                document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+            </script>
+        </span>
 
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
             <span data-user-email th:text="${usuario?.correo}" style="display:none;"></span>
             <span data-user-role th:text="${usuario?.rol}" style="display:none;"></span>
-            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
-            <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
-            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
-                <i class="fi fi-sr-power" aria-hidden="true"></i>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                 class="avatar">
+
+            <button id="logoutBtn" class="logout-btn" title="Cerrar sesión">
+                <i class="fi fi-sr-power"></i>
             </button>
 
             <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
@@ -131,9 +210,10 @@ html, body {
         </div>
     </header>
 
-    <!-- Contenido central con mismas clases -->
+    <!-- ========== CONTENIDO ========== -->
     <div class="container_principal fondo-1">
         <main class="gestion-usuarios fondo-1">
+
             <div class="contenedor-titulo-gestion">
                 <h1 class="titulo-gestion fuente-titulos3 txt-rojo">
                     Detalle de Partida <span th:text="${idPartida}">#</span>
@@ -149,32 +229,39 @@ html, body {
                     <th>Haber</th>
                 </tr>
                 </thead>
+
                 <tbody class="fuente-p1">
                 <tr th:each="l, it : ${lineas}">
-                    <td th:text="${it.index + 1}">1</td>
+                    <td th:text="${it.index + 1}"></td>
                     <td>
                         <span th:text="${l.nombreCuenta}"></span>
                         <span class="muted">(ID <span th:text="${l.idCuenta}"></span>)</span>
                     </td>
-                    <td th:text="${#numbers.formatDecimal(l.montoDebe,1,'COMMA',2,'POINT')}">0.00</td>
-                    <td th:text="${#numbers.formatDecimal(l.montoHaber,1,'COMMA',2,'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(l.montoDebe,1,'COMMA',2,'POINT')}"></td>
+                    <td th:text="${#numbers.formatDecimal(l.montoHaber,1,'COMMA',2,'POINT')}"></td>
                 </tr>
+
                 <tr th:if="${#lists.isEmpty(lineas)}">
                     <td colspan="4">Sin líneas en esta partida.</td>
                 </tr>
                 </tbody>
+
                 <tfoot>
                 <tr>
                     <th colspan="2" style="text-align:right;">TOTAL</th>
-                    <th th:text="${#numbers.formatDecimal(totalDebe,1,'COMMA',2,'POINT')}">0.00</th>
-                    <th th:text="${#numbers.formatDecimal(totalHaber,1,'COMMA',2,'POINT')}">0.00</th>
+                    <th th:text="${#numbers.formatDecimal(totalDebe,1,'COMMA',2,'POINT')}"></th>
+                    <th th:text="${#numbers.formatDecimal(totalHaber,1,'COMMA',2,'POINT')}"></th>
                 </tr>
                 </tfoot>
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar fuente-btn" onclick="window.location.href='/libro-mayor'">Volver al Libro Mayor</button>
+                <button class="btn-agregar fuente-btn"
+                        th:onclick="'window.location.href=\'/libro-mayor\''">
+                    Volver al Libro Mayor
+                </button>
             </div>
+
         </main>
     </div>
 </div>
@@ -182,26 +269,13 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Menú lateral -->
-<script>
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-      if(!btn||!sidebar||!backdrop) return;
-      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); btn.setAttribute('aria-expanded','true'); }
-      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); btn.setAttribute('aria-expanded','false'); }
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open')?closeMenu():openMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
-    })();
-</script>
+<script type="module" th:src="@{/JS/menu.js}"></script>
 
+<!-- IndexedDB Usuario -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
-<script type="module">
-    import { hydrateUserDisplay } from '/JS/UsuarioIndexDB.js';
-    hydrateUserDisplay();
-</script>
+
+<!-- Acordeón -->
+<script type="module" th:src="@{/JS/acordeon.js}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -230,15 +304,11 @@ html, body {
             console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
           }
 
-          const f = document.getElementById('logoutForm');
-          if (f) f.submit();
+          document.getElementById('logoutForm').submit();
         }
       });
     });
 </script>
-
-<!-- JS del acordeón (animación Estados financieros) -->
-<script type="module" th:src="@{/JS/acordeon.js}"></script>
 
 </body>
 </html>

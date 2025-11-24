@@ -288,7 +288,7 @@
                         <th>Total Créditos</th>
                         <th>Comentario</th>
                         <!-- Solo el auditor ve la columna de acciones -->
-                        <th sec:authorize="hasRole('Auditor')">Acciones</th>
+                        <th sec:authorize="hasAnyRole('Auditor', 'Administrador')">Acciones</th>
                     </tr>
                     </thead>
                     <tbody class="fuente-p1">
@@ -299,7 +299,7 @@
                         <td th:text="${#numbers.formatDecimal(r.totalHaber,1,'COMMA',2,'POINT')}">0.00</td>
                         <td th:text="${r.comentario}">Comentario</td>
 
-                        <td class="acciones-cell" sec:authorize="hasRole('Auditor')">
+                        <td class="acciones-cell" sec:authorize="hasAnyRole('Auditor', 'Administrador')">
 
                             <!-- Campo motivo asociado al form de rechazo -->
                             <input type="text"
