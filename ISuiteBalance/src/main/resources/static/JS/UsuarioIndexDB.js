@@ -1,14 +1,12 @@
-// static/JS/isb-user.js
+// static/JS/UsuarioIndexDB.js
 const DB_NAME = 'UsuarioIndexDB';
 const DB_VERSION = 1;
 const STORE = 'session';
 
+// ---- Apertura y manejo de IndexedDB ----
 function openDB() {
   return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) {
-      resolve(null); // fallback
-      return;
-    }
+    if (!('indexedDB' in window)) { resolve(null); return; }
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -23,10 +21,7 @@ function openDB() {
 
 async function idbPut(obj) {
   const db = await openDB();
-  if (!db) {
-    localStorage.setItem('isb.currentUser', JSON.stringify(obj));
-    return;
-  }
+  if (!db) { localStorage.setItem('isb.currentUser', JSON.stringify(obj)); return; }
   await new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, 'readwrite');
     tx.objectStore(STORE).put(obj);
@@ -54,10 +49,7 @@ async function idbGet(key) {
 
 async function idbDelete(key) {
   const db = await openDB();
-  if (!db) {
-    localStorage.removeItem('isb.currentUser');
-    return;
-  }
+  if (!db) { localStorage.removeItem('isb.currentUser'); return; }
   await new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, 'readwrite');
     tx.objectStore(STORE).delete(key);
@@ -67,53 +59,139 @@ async function idbDelete(key) {
   db.close();
 }
 
-// ===== API pública =====
+// ---- API pública ----
 export async function saveUser(user) {
   if (!user) return;
-  await idbPut({ key: 'currentUser', ...user });
+
+  // Mezcla con lo que ya haya guardado para no perder datos previos
+  const prev = await getUser();
+
+  const payload = {
+    key: 'currentUser',
+    nombre: user.nombre ?? prev?.nombre ?? '',
+    correo: user.correo ?? prev?.correo ?? null,
+    rol:    user.rol    ?? prev?.rol    ?? null
+  };
+
+  await idbPut(payload);
+
+  // Actualiza visualmente solo el nombre
   const span = document.querySelector('[data-usuario-target]');
-  if (span) span.textContent = user.nombre ?? user.username ?? '';
+  if (span) span.textContent = payload.nombre || 'Invitado';
+
+  // Guarda en localStorage para evitar parpadeo
+  if (payload.nombre) localStorage.setItem('lastUserName', payload.nombre);
 }
 
 export async function getUser() {
   const obj = await idbGet('currentUser');
   if (!obj) return null;
-  const { nombre, username, id } = obj;
-  return { nombre, username, id };
+  const { nombre, correo, rol } = obj;
+  return { nombre, correo, rol };
 }
 
 export async function clearUser() {
   await idbDelete('currentUser');
   const span = document.querySelector('[data-usuario-target]');
   if (span) span.textContent = '';
+  localStorage.removeItem('lastUserName');
 }
 
 /**
- * 1) Si el backend dejó el nombre en el DOM (data-usuario-server), usarlo y persistir.
- * 2) Si no, leer desde IndexedDB y mostrar.
+ * 1️⃣ Usa los datos ocultos del backend (nombre, correo, rol)
+ * 2️⃣ Si no existen, lee desde IndexedDB
+ * 3️⃣ (Opcional) Si no hay nada, intenta /api/me
  */
 export async function hydrateUserDisplay() {
   const host = document.querySelector('[data-usuario-target]');
-  const serverValEl = document.querySelector('[data-usuario-server]');
   if (!host) return;
 
-  // 1️⃣ Mostrar inmediatamente el nombre cacheado (si lo hay)
+  // 1️⃣ Muestra el nombre cacheado rápido
   const cached = localStorage.getItem('lastUserName');
   if (cached) host.textContent = cached;
 
-  // 2️⃣ Luego buscar en IndexedDB o "semilla" del servidor
-  const user = await getUser();
-  const serverNombre = serverValEl?.textContent?.trim();
+  // Lee datos del backend ocultos en el HTML
+  const serverNombre = document.querySelector('[data-usuario-server]')?.textContent?.trim();
+  const serverCorreo = document.querySelector('[data-user-email]')?.textContent?.trim();
+  const serverRol    = document.querySelector('[data-user-role]') ?.textContent?.trim();
 
-  if (serverNombre && serverNombre.toLowerCase() !== 'invitado') {
-    await saveUser({ nombre: serverNombre });
-    localStorage.setItem('lastUserName', serverNombre);
-    host.textContent = serverNombre;
-  } else if (user) {
-    localStorage.setItem('lastUserName', user.nombre);
+  // 2️⃣ Si hay datos del backend, los guarda en IndexedDB
+  if ((serverNombre && serverNombre.toLowerCase() !== 'invitado') || serverCorreo || serverRol) {
+    await saveUser({ nombre: serverNombre, correo: serverCorreo, rol: serverRol });
+    return;
+  }
+
+  // 3️⃣ Si no hay nada, usa IndexedDB
+  const user = await getUser();
+  if (user?.nombre) {
     host.textContent = user.nombre;
-  } else {
-    host.textContent = 'Invitado';
-    localStorage.removeItem('lastUserName');
+    localStorage.setItem('lastUserName', user.nombre);
+    return;
+  }
+
+  // 4️⃣ Último recurso: /api/me
+  try {
+    const r = await fetch('/api/me', { credentials: 'same-origin', headers: { 'Accept':'application/json' }});
+    if (r.ok) {
+      const me = await r.json(); // {nombre, correo, rol}
+      if (me?.nombre) { await saveUser(me); return; }
+    }
+  } catch {}
+
+  // 5️⃣ Fallback final
+  host.textContent = 'Invitado';
+  localStorage.removeItem('lastUserName');
+}
+
+// === Guardia de rol en el front (UX) =========================================
+
+/**
+ * Obtiene el rol actual priorizando:
+ * 1) Datos del backend incrustados en el HTML (data-user-role)
+ * 2) IndexedDB (getUser)
+ * Devuelve un string: "Administrador" | "Contador" | "Auditor" | "Invitado" | null
+ */
+export async function getCurrentRole() {
+  const serverRol = document.querySelector('[data-user-role]')?.textContent?.trim();
+  if (serverRol) return serverRol;
+
+  const u = await getUser();
+  return u?.rol ?? null;
+}
+
+/**
+ * Verifica si el rol actual está dentro de allowedRoles.
+ * - allowedRoles: array de strings con tus roles literales (ej: ["Administrador","Contador"])
+ * - redirectOnDeny: si no cumple, redirige a esta ruta (por defecto "/error/403"); si lo pones a null, no redirige.
+ * Retorna true si pasa, false si no.
+ */
+export async function checkRoleAllowed(allowedRoles = [], redirectOnDeny = '/error/403') {
+  try {
+    // normaliza a mayúsculas para comparar sin problemas de casing
+    const normalize = (s) => (s || '').toString().trim().toUpperCase();
+    const allowSet = new Set(allowedRoles.map(normalize));
+
+    // público
+    if (allowSet.size === 0) return true;
+
+    const rol = await getCurrentRole();  // "Administrador" | ...
+    const rolNorm = normalize(rol);
+
+    // Si no hay rol, tratamos como "Invitado"
+    const invitadoNorm = normalize('Invitado');
+
+    // Si incluyen Invitado y no hay rol => permitido
+    if (!rolNorm && allowSet.has(invitadoNorm)) return true;
+
+    // ¿rol permitido?
+    const ok = allowSet.has(rolNorm);
+    if (!ok && redirectOnDeny) {
+      window.location.href = redirectOnDeny;
+      return false;
+    }
+    return ok;
+  } catch {
+    // Si algo falla, no bloquees: deja que el backend decida
+    return true;
   }
 }

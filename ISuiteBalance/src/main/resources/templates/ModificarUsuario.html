@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,19 +9,197 @@
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" th:href="@{/img/conta-illustration.png}">
+
+    <!-- 👇 Mismo fix de overflow + estilos de acordeón que usamos en las demás plantillas -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body{
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical oculto */
+        .sidebar{
+            overflow-y: auto;
+            scrollbar-width: none;          /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:100%;
+            background:transparent;
+            border:none;
+            padding:8px 12px;
+            cursor:pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel{
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            transform-origin: top;
+            transition:max-height 0.25s ease, opacity 0.25s ease;
+            padding-left:0; /* por si las <li> ya llevan su propio padding */
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel{
+            opacity:1;
+        }
+
+        /* Animar el chevron */
+        .accordion .chevron{
+            transition:transform 0.25s ease;
+        }
+        .accordion.is-open .chevron{
+            transform:rotate(90deg);
+        }
+    </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h2>Dashboard</h2>
-    <ul>
-        <li><a th:href="@{/dashboard}" class="active">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}">Gestion de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
+
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Inicio" class="icono-opcion_aside">Inicio
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">Saldos Iniciales
+            </a>
+        </li>
+
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}" class="active">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">Gestion Usuario
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">Partidas
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Diario
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">Libro Mayor
+            </a>
+        </li>
+
+        <!-- Acordeón Estados financieros igual al resto -->
+        <li class="accordion">
+            <button type="button"
+                    class="accordion-toggle fuente-p1"
+                    aria-expanded="false"
+                    aria-controls="finanzas-submenu">
+                <span class="acc-label">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  Estados financieros
+                </span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" fill="currentColor"></path>
+                </svg>
+            </button>
+
+            <ul id="finanzas-submenu" class="accordion-panel" hidden>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balanza-comprobacion}">
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-resultado}">
+                        <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
+                        Edo. de Resultado
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}"
+                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
+                        Variaciones Patrimonio
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
+                        Flujo de Efectivo
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" class="icono-opcion_aside" alt="">
+                        Balance General
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+        <!-- Reportería unificada con íconos nuevos -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/mis}">
+                <img th:src="@{/img/reportes.png}" alt="Mis reportes" class="icono-opcion_aside">
+                Mis reportes
+            </a>
+        </li>
+
+        <li sec:authorize="hasRole('Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">Auditoría
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">Nosotros</a>
+        </li>
+
     </ul>
 </div>
 
@@ -34,22 +213,16 @@
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
         <div class="brand">
-            <h1>Suite Balance | ISB</h1>
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
         </div>
-        <div class="user-info">
+        <div class="user-info fuente-p4">
             <!-- === usuario sin parpadeo + semilla backend === -->
             <span class="nombre-usuario" data-usuario-target>
-              <script th:inline="javascript">
-                document.write(
-                  localStorage.getItem('lastUserName') ||
-                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                  'Invitado'
-                );
-              </script>
+            <script th:inline="javascript">
+                document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+            </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- ============================================== -->
-
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
 
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -66,9 +239,12 @@
         </div>
     </header>
 
-    <div class="container_principal">
+    <div class="container_principal fondo-1"><br> <br>
+        <div class="contenedor-titulo-gestion">
+            <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Modificar Usuario</h1>
+        </div>
         <div class="formulario-usuario">
-            <h1>Modificar Usuario</h1>
+
             <!-- Mensajes flash opcionales -->
             <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
             <div th:if="${ok}" class="alerta-exito" th:text="${ok}"></div>
@@ -80,44 +256,44 @@
                 <input type="hidden" name="action" id="actionField" value="">
 
                 <div class="form-grupo">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre"
+                    <label  class="fuente-btn" for="nombre">Nombre:</label>
+                    <input class="fuente-p1" type="text" id="nombre" name="nombre"
                            placeholder="Nombre" required
                            th:value="${usuario.nombre}">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="correo">Correo:</label>
-                    <input type="email" id="correo" name="correo"
+                    <label class="fuente-btn" for="correo">Correo:</label>
+                    <input class="fuente-p1" type="email" id="correo" name="correo"
                            placeholder="correo@ejemplo.com" required
                            th:value="${usuario.correo}">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="contrasenal">Contraseña:</label>
-                    <input
-                            type="text"
-                            id="contrasenal"
-                            placeholder="No se puede cambiar desde aquí"
-                            readonly
-                            aria-readonly="true">
+                    <label class="fuente-btn" for="contrasenal">Contraseña:</label>
+                    <input class="fuente-p1"
+                           type="text"
+                           id="contrasenal"
+                           placeholder="No se puede cambiar desde aquí"
+                           readonly
+                           aria-readonly="true">
                 </div>
 
                 <div class="form-grupo">
-                    <label for="rol">Cambiar rol:</label>
-                    <select id="rol" name="rol" required>
+                    <label class="fuente-btn" for="rol">Cambiar rol:</label>
+                    <select class="fuente-p1" id="rol" name="rol" required>
                         <option value="">Seleccionar Rol del Usuario</option>
-                        <option value="ADMIN" th:selected="${usuario.rol == 'ADMIN'}">Administrador</option>
-                        <option value="CONTADOR" th:selected="${usuario.rol == 'CONTADOR'}">Contador</option>
-                        <option value="AUDITOR" th:selected="${usuario.rol == 'AUDITOR'}">Auditor</option>
+                        <option value="Administrador" th:selected="${usuario.rol == 'ADMIN'}">Administrador</option>
+                        <option value="Contador" th:selected="${usuario.rol == 'CONTADOR'}">Contador</option>
+                        <option value="Auditor" th:selected="${usuario.rol == 'AUDITOR'}">Auditor</option>
                     </select>
                 </div>
 
-                <div class="botones">
+                <div class="botones1">
                     <!-- GUARDAR: no es submit; enviamos nosotros -->
                     <button
                             type="button"
-                            class="btn-agregar"
+                            class="btn-agregar fuente-btn"
                             id="btnGuardar"
                             onclick="
                                 const f = this.form;
@@ -134,7 +310,7 @@
                     <!-- CANCELAR: NO envía el form -->
                     <button
                             type="button"
-                            class="btn-cancelar"
+                            class="btn-agregar fuente-btn"
                             th:onclick="|window.location='@{/gestion-usuario}'|">
                         Cancelar
                     </button>
@@ -147,50 +323,22 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Chart.js
+    // Chart.js (por si no hay canvas, no rompe)
     const ctx = document.getElementById('barChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['JUL','JUN','AGO','SEP','OCT'],
-        datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
-      },
-      options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
-    });
-
-    // Hamburguesa
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.querySelector('.sidebar');
-      const backdrop = document.getElementById('backdrop');
-
-      if(!btn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('sidebar--open');
-        backdrop.classList.add('backdrop--show');
-        document.body.classList.add('no-scroll');
-        btn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        sidebar.classList.remove('sidebar--open');
-        backdrop.classList.remove('backdrop--show');
-        document.body.classList.remove('no-scroll');
-        btn.setAttribute('aria-expanded','false');
-      }
-      function toggleMenu(){
-        const isOpen = sidebar.classList.contains('sidebar--open');
-        isOpen ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); toggleMenu(); });
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMenu(); });
-
-      // Si cambias a desktop, cierra el panel
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
-    })();
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['JUL','JUN','AGO','SEP','OCT'],
+          datasets: [{ label:'Reportes', data:[546,390,487,254,673], backgroundColor:'#2b6cb0' }]
+        },
+        options: { responsive:true, plugins:{ legend:{ display:false }}, scales:{ y:{ beginAtZero:true }}}
+      });
+    }
 </script>
+
+<!-- ✅ Menú hamburguesa unificado -->
+<script type="module" th:src="@{/JS/menu.js}"></script>
 
 <!-- ✅ IndexedDB del usuario: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
@@ -233,5 +381,7 @@
     });
 </script>
 
+<!-- Acordeón Estados financieros -->
+<script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>

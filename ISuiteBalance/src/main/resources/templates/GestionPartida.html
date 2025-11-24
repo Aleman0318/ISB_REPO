@@ -1,27 +1,212 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Partidas | Suite Balance ISB</title>
     <link rel="stylesheet" th:href="@{/css/style2.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" th:href="@{/img/conta-illustration.png}">
+
+    <!-- ==== Ajustes generales sidebar + acordeón ==== -->
+    <style>
+        /* Evitar scroll horizontal global */
+        html, body {
+            overflow-x: hidden;
+        }
+
+        /* Sidebar con scroll vertical y sin barra visible */
+        .sidebar {
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        /* Botón del acordeón (Estados financieros) */
+        .accordion-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        /* Panel con animación de despliegue */
+        .accordion-panel {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform-origin: top;
+            transition:
+                max-height 0.25s ease,
+                opacity 0.25s ease;
+            padding-left: 0;
+        }
+
+        /* Cuando está abierto */
+        .accordion.is-open .accordion-panel {
+            opacity: 1;
+        }
+
+        /* Chevron animado */
+        .accordion .chevron {
+            transition: transform 0.25s ease;
+        }
+        .accordion.is-open .chevron {
+            transform: rotate(90deg);
+        }
+
+        /* Chevron blanco como en dashboard */
+        .accordion .chevron path {
+            fill: #ffffff !important;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Sidebar (igual que en Gestión Usuario) -->
 <div class="sidebar">
-    <h2>Dashboard</h2>
-    <ul>
-        <li><a th:href="@{/dashboard}">Inicio</a></li>
-        <li><a th:href="@{/gestion-usuario}">Gestion Usuario</a></li>
-        <li><a th:href="@{/subir-doc}">Documentos</a></li>
-        <li><a th:href="@{/partida}">Partidas</a></li>
-        <li><a th:href="@{/gestion-partida}" class="active">Gestión de Partidas</a></li>
-        <li><a th:href="@{/registro-libro-diario}">Libro Diario</a></li>
-        <li><a th:href="@{/generar-reporte}">Reportes</a></li>
-        <li><a th:href="@{/bitacora}">Auditoría</a></li>
+    <h2 class="fuente-semi">Dashboard</h2>
+    <ul class="fuente-p1">
+
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">
+                <img th:src="@{/img/home.png}" alt="Eliminar" class="icono-opcion_aside">
+                Inicio
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/saldos-iniciales}">
+                <img th:src="@{/img/calendario.png}" alt="Saldos" class="icono-opcion_aside">
+                Saldos Iniciales
+            </a>
+        </li>
+
+        <li sec:authorize="hasRole('Administrador')">
+            <a th:href="@{/gestion-usuario}">
+                <img th:src="@{/img/gestion-de-usuarios.png}" alt="gestionUsu" class="icono-opcion_aside">
+                Gestion Usuario
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/subir-doc}">
+                <img th:src="@{/img/documento.png}" alt="Documento" class="icono-opcion_aside">
+                Partidas
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/gestion-partida}" class="active">
+                <img th:src="@{/img/carga-de-archivos.png}" alt="gestionPartida" class="icono-opcion_aside">Gestion de Partidas</a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/registro-libro-diario}">
+                <img th:src="@{/img/libro-mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Diario
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/libro-mayor}">
+                <img th:src="@{/img/mayor.png}" alt="Libro" class="icono-opcion_aside">
+                Libro Mayor
+            </a>
+        </li>
+
+        <!-- ACORDEÓN: Estados financieros (igual dashboard) -->
+        <li class="accordion">
+            <button type="button"
+                    class="accordion-toggle fuente-p1"
+                    aria-expanded="false"
+                    aria-controls="finanzas-submenu">
+                <span class="acc-label">
+                  <img th:src="@{/img/estados-financieros.png}" alt="Estados Financieros" class="icono-opcion_aside">
+                  Estados financieros
+                </span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6"></path>
+                </svg>
+            </button>
+
+            <ul id="finanzas-submenu" class="accordion-panel" hidden>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/balanza-comprobacion}">
+                        <img th:src="@{/img/balanza.png}" alt="Libro" class="icono-opcion_aside">
+                        Balanza
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-resultado}">
+                        <img th:src="@{/img/estado-de-resultados.png}" alt="ER" class="icono-opcion_aside">
+                        Edo. de Resultado
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-variaciones}"
+                       th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI.matches('.*/estado-variaciones.*')} ? ' active'">
+                        <img th:src="@{/img/gestion-patrimonial.png}" class="icono-opcion_aside" alt="">
+                        Variaciones Patrimonio
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador')">
+                    <a th:href="@{/estado-flujo}">
+                        <img th:src="@{/img/flujo-efectivo.png}" class="icono-opcion_aside" alt="">
+                        Flujo de Efectivo
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('Administrador','Contador','Auditor')">
+                    <a th:href="@{/balance-general}">
+                        <img th:src="@{/img/balance-general.png}" alt="balance" class="icono-opcion_aside">
+                        Balance General
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+        <!-- SOLO Admin y Contador: crear reporte -->
+        <li sec:authorize="hasAnyRole('Administrador','Contador')">
+            <a th:href="@{/reportes/nuevo}">
+                <img th:src="@{/img/generar-reporte.png}" alt="Reporte" class="icono-opcion_aside">
+                Generar reporte
+            </a>
+        </li>
+
+        <!-- Admin y Auditor: ver lista de reportes (igual dashboard) -->
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/reportes}">
+                <img th:src="@{/img/reportes.png}" alt="Reporte" class="icono-opcion_aside">
+                Reportes
+            </a>
+        </li>
+
+        <li sec:authorize="hasAnyRole('Administrador','Auditor')">
+            <a th:href="@{/bitacora}">
+                <img th:src="@{/img/revisar.png}" alt="Auditoria" class="icono-opcion_aside">
+                Auditoría
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/about}"><img th:src="@{/img/nosotros.png}" alt="Libro" class="icono-opcion_aside">Nosotros</a>
+        </li>
+
     </ul>
 </div>
 
@@ -29,26 +214,22 @@
 
 <!-- Main -->
 <div class="main">
-    <!-- Header (igual que en Gestión Usuario) -->
+    <!-- Header -->
     <header>
         <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
         <button id="menuBtn" class="menu-btn" aria-label="Abrir menú" title="Menú">
             <i class="fi fi-rr-menu-burger" aria-hidden="true"></i>
         </button>
-        <div class="brand"><h1>Suite Balance | ISB</h1></div>
+        <div class="brand">
+            <h1 class="fuente-semita">Suite Balance | ISB</h1>
+        </div>
         <div class="user-info">
-            <!-- 👇 Nombre de usuario sin parpadeo + semilla backend -->
-            <span class="nombre-usuario" data-usuario-target>
-              <script th:inline="javascript">
-                document.write(
-                  localStorage.getItem('lastUserName') ||
-                  /*[[${nombreUsuario}]]*/ 'Invitado' ||
-                  'Invitado'
-                );
-              </script>
+            <span class="nombre-usuario fuente-p4" data-usuario-target>
+                <script th:inline="javascript">
+                    document.write(localStorage.getItem('lastUserName') || '[[${nombreUsuario}]]' || 'Invitado');
+                </script>
             </span>
             <span data-usuario-server th:text="${nombreUsuario}" style="display:none;"></span>
-            <!-- 👆 -->
 
             <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" class="avatar">
             <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
@@ -61,30 +242,53 @@
         </div>
     </header>
 
-    <!-- Contenedor principal (mismas clases) -->
-    <div class="container_principal">
-        <main class="gestion-usuarios">
-            <h1 class="titulo-gestion">Gestión de Partidas</h1>
+    <!-- Contenedor principal -->
+    <div class="container_principal fondo-1">
+        <main class="gestion-usuarios fondo-1">
 
-            <div class="buscador-wrap">
-                <input id="buscarPartidas"
-                       class="input"
-                       type="text"
-                       placeholder="Buscar por #partida, usuario o concepto…"
-                       autocomplete="off">
+            <div class="contenedor-titulo-gestion">
+                <h1 class="titulo-gestion fuente-titulos3 txt-rojo">Gestion de Partidas</h1>
+            </div>
 
-                <input id="buscarFecha"
-                       class="input"
-                       type="date"
-                       aria-label="Filtrar por fecha">
+            <div class="card">
+                <form id="formFiltros" onsubmit="return false;">
+                    <div class="form-grid fuente-p1">
+                        <div>
+                            <label for="buscarPartidas">Filtro de búsqueda</label>
+                            <input id="buscarPartidas"
+                                   class="input"
+                                   type="text"
+                                   placeholder="Buscar por #partida, usuario o concepto…"
+                                   autocomplete="off">
+                        </div>
 
-                <button id="limpiarBusqueda" class="btn limpiar" type="button">Limpiar</button>
+                        <div>
+                            <label for="buscarPeriodo">Mes / año</label>
+                            <div class="mes">
+                                <input id="buscarPeriodo"
+                                       class="input input-mes"
+                                       type="month"
+                                       aria-label="Filtrar por mes y año"
+                                       required>
+                                <span class="place">Elegir mes y año</span>
+                            </div>
+                        </div>
 
-                <span id="contadorCoincidencias"></span>
+                        <div class="filtro-col botones">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn fuente-btn" id="limpiarBusqueda">Limpiar</button>
+                        </div>
+
+                        <div>
+                            <label>&nbsp;</label>
+                            <span id="contadorCoincidencias"></span>
+                        </div>
+                    </div>
+                </form>
             </div>
 
             <table class="tabla-usuarios" id="tabla-gestion-partidas">
-                <thead>
+                <thead class="fuente-btn">
                 <tr>
                     <th>Nº</th>
                     <th>Fecha</th>
@@ -97,7 +301,7 @@
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody class="fuente-p1">
                 <tr th:each="p : ${partidas}">
                     <td th:text="${p.idPartida}">1</td>
                     <td th:text="${p.fecha}">2025-10-14</td>
@@ -114,54 +318,87 @@
                         </a>
                     </td>
                     <td class="opciones">
-                        <a class="btn-opcion ver"     th:href="@{|/partidas/${p.idPartida}/ver|}"    title="Ver">👁️</a>
-                        <a class="btn-opcion editar"  th:href="@{|/partidas/${p.idPartida}/editar|}" title="Editar">✏️</a>
+                        <a class="btn-opcion_editar"
+                           th:href="@{|/partidas/${p.idPartida}/ver|}"
+                           title="Ver">
+                            <img th:src="@{/img/luupa.png}" alt="Ver" class="icono-opcion">
+                        </a>
+                        <a class="btn-opcion_editar"
+                           th:href="@{|/partidas/${p.idPartida}/editar|}"
+                           title="Editar">
+                            <img th:src="@{/img/nota.png}" alt="Editar" class="icono-opcion">
+                        </a>
 
-                        <!-- 👇🏻 clase y data-id para SweetAlert2 -->
                         <form class="form-eliminar"
                               th:action="@{|/partidas/${p.idPartida}/eliminar|}"
                               method="post"
                               th:attr="data-id=${p.idPartida}"
                               style="display:inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button class="btn-opcion eliminar" type="submit" title="Eliminar">🗑️</button>
+                            <button class="btn-opcion" type="submit" title="Eliminar">
+                                <img th:src="@{/img/borra.png}" alt="Eliminar" class="icono-opcion">
+                            </button>
                         </form>
                     </td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(partidas)}">
-                    <td colspan="7">Aún no hay partidas registradas.</td>
+                    <td colspan="8">Aún no hay partidas registradas.</td>
                 </tr>
                 </tbody>
             </table>
 
             <div class="contenedor-boton">
-                <button class="btn-agregar" onclick="window.location.href='/subir-doc'">Registrar Partida</button>
+                <button class="btn-agregar fuente-btn" onclick="window.location.href='/subir-doc'">
+                    Registrar Partida
+                </button>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Scripts mínimos -->
+<!-- Scripts-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    (function(){
+    (function () {
       const btn = document.getElementById('menuBtn');
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('backdrop');
-      if(!btn||!sidebar||!backdrop) return;
-      function openMenu(){ sidebar.classList.add('sidebar--open'); backdrop.classList.add('backdrop--show'); document.body.classList.add('no-scroll'); }
-      function closeMenu(){ sidebar.classList.remove('sidebar--open'); backdrop.classList.remove('backdrop--show'); document.body.classList.remove('no-scroll'); }
-      btn.addEventListener('click', (e)=>{ e.preventDefault(); sidebar.classList.contains('sidebar--open')?closeMenu():openMenu(); });
+
+      if (!btn || !sidebar || !backdrop) return;
+
+      function openMenu() {
+        sidebar.classList.add('sidebar--open');
+        backdrop.classList.add('backdrop--show');
+        document.body.classList.add('no-scroll');
+      }
+
+      function closeMenu() {
+        sidebar.classList.remove('sidebar--open');
+        backdrop.classList.remove('backdrop--show');
+        document.body.classList.remove('no-scroll');
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebar.classList.contains('sidebar--open') ? closeMenu() : openMenu();
+      });
+
       backdrop.addEventListener('click', closeMenu);
-      window.addEventListener('resize', ()=>{ if (window.innerWidth > 767) closeMenu(); });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 767) closeMenu();
+      });
     })();
 
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('logoutBtn');
       if (!btn) return;
+
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
+
         const { isConfirmed } = await Swal.fire({
           title: '¿Cerrar sesión?',
           text: 'Se cerrará tu sesión actual.',
@@ -171,6 +408,7 @@
           cancelButtonText: 'Cancelar',
           confirmButtonColor: '#e63946'
         });
+
         if (isConfirmed) {
           try {
             const mod = await import('/JS/UsuarioIndexDB.js');
@@ -179,11 +417,13 @@
           } catch (err) {
             console.warn('No se pudo limpiar IndexedDB/localStorage:', err);
           }
+
           document.getElementById('logoutForm')?.submit();
         }
       });
     });
 </script>
+
 <script>
     // Confirmación con SweetAlert2 para eliminar
     document.addEventListener('DOMContentLoaded', () => {
@@ -199,7 +439,7 @@
             showCancelButton: true,
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#e11d48',   // rojo
+            confirmButtonColor: '#e11d48',
             cancelButtonColor: '#6b7280'
           });
 
@@ -210,7 +450,6 @@
       });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- ✅ IndexedDB del usuario: hidratar header -->
 <script type="module" th:src="@{/JS/UsuarioIndexDB.js}"></script>
@@ -219,68 +458,69 @@
     hydrateUserDisplay();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     (function(){
-      const inputTxt   = document.getElementById('buscarPartidas');
-      const inputFecha = document.getElementById('buscarFecha');
-      const btnClean   = document.getElementById('limpiarBusqueda');
-      const tabla      = document.getElementById('tabla-gestion-partidas');
-      const tbody      = tabla?.querySelector('tbody');
-      const badge      = document.getElementById('contadorCoincidencias');
+      const inputTxt     = document.getElementById('buscarPartidas');
+      const inputPeriodo = document.getElementById('buscarPeriodo');
+      const btnClean     = document.getElementById('limpiarBusqueda');
+      const tabla        = document.getElementById('tabla-gestion-partidas');
+      const tbody        = tabla?.querySelector('tbody');
+      const badge        = document.getElementById('contadorCoincidencias');
       if (!tbody) return;
 
-      // columnas a considerar en el filtro de texto
-      const COL_NUM     = 0; // N°
-      const COL_FECHA   = 1; // Fecha (no se usa en texto; se usa input date)
-      const COL_CONCEP  = 2; // Concepto
-      const COL_USUARIO = 3; // Usuario
-      // (ignoramos Documento para que sus dígitos no “ensucien” las coincidencias)
+      const COL_NUM     = 0;
+      const COL_FECHA   = 1;
+      const COL_CONCEP  = 2;
+      const COL_USUARIO = 3;
 
       const norm = (s) => (s ?? '').toString()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .trim().toLowerCase();
 
       let lastAlertKey = '';
-
-      // debounce
       let t; const deb = (fn,ms=120)=> (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);};
 
       function getCellText(tr, idx){
         const td = tr.cells[idx];
-        return norm(td ? (td.innerText || td.textContent || '') : '');
+        return (td ? (td.innerText || td.textContent || '') : '').trim();
+      }
+
+      function toYearMonth(str){
+        const s = str.trim();
+        if (!s) return '';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(0,7);
+        const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (m) return `${m[3]}-${m[2]}`;
+        if (/^\d{4}-\d{2}$/.test(s)) return s;
+        const m2 = s.match(/(\d{4})[-/](\d{2})/);
+        return m2 ? `${m2[1]}-${m2[2]}` : '';
       }
 
       function filtrar(){
-        const qRaw = inputTxt.value || '';
-        const q = norm(qRaw);
-        const fecha = inputFecha.value || ''; // formato yyyy-mm-dd
-        let visibles = 0;
+        const qRaw    = inputTxt.value || '';
+        const q       = norm(qRaw);
+        const periodo = (inputPeriodo.value || '').trim();
+        let visibles  = 0;
 
         const soloNumeros = /^\d+$/.test(qRaw.trim());
 
         for (const tr of tbody.rows){
-          // textos por columna
-          const txtNum     = getCellText(tr, COL_NUM);
-          const txtFecha   = getCellText(tr, COL_FECHA);    // para mostrar/contar, no para buscar por texto
-          const txtConcept = getCellText(tr, COL_CONCEP);
-          const txtUser    = getCellText(tr, COL_USUARIO);
+          const txtNum     = norm(getCellText(tr, COL_NUM));
+          const txtFecha   = getCellText(tr, COL_FECHA);
+          const txtYM      = toYearMonth(txtFecha);
+          const txtConcept = norm(getCellText(tr, COL_CONCEP));
+          const txtUser    = norm(getCellText(tr, COL_USUARIO));
 
-          // ---- filtro por fecha (si se eligió)
-          let pasaFecha = true;
-          if (fecha){
-            // la celda suele venir como "2025-10-21" → comparamos exacto
-            pasaFecha = txtFecha.startsWith(fecha);
+          let pasaPeriodo = true;
+          if (periodo){
+            pasaPeriodo = (txtYM === periodo);
           }
 
-          // ---- filtro por texto
           let pasaTexto = true;
           if (q){
             if (soloNumeros){
-              // buscar sólo en columna N°
               pasaTexto = txtNum.startsWith(q);
-            }else{
-              // buscar en Usuario y Concepto; también permitimos N° cuando empieza
+            } else {
               pasaTexto = (
                 txtUser.startsWith(q) ||
                 txtConcept.startsWith(q) ||
@@ -291,17 +531,15 @@
             }
           }
 
-          const show = pasaFecha && pasaTexto;
+          const show = pasaPeriodo && pasaTexto;
           tr.style.display = show ? '' : 'none';
           if (show) visibles++;
         }
 
-        // contador
-        if (!q && !fecha) badge.textContent = '';
+        if (!q && !periodo) badge.textContent = '';
         else badge.textContent = `Coincidencias: ${visibles}`;
 
-        // alerta si no hay resultados (evita spam con misma llave)
-        const alertKey = (q || '-') + '|' + (fecha || '-');
+        const alertKey = (q || '-') + '|' + (periodo || '-');
         if (!visibles && alertKey !== lastAlertKey){
           lastAlertKey = alertKey;
           Swal.fire({
@@ -314,18 +552,21 @@
       }
 
       inputTxt.addEventListener('input', deb(filtrar, 120));
-      inputFecha.addEventListener('change', filtrar);
+      inputPeriodo.addEventListener('change', filtrar);
       btnClean.addEventListener('click', ()=>{
         inputTxt.value = '';
-        inputFecha.value = '';
+        inputPeriodo.value = '';
         filtrar();
         inputTxt.focus();
       });
 
-      // atajos
-      inputTxt.addEventListener('keydown', (e)=>{ if (e.key==='Escape'){ btnClean.click(); }});
+      inputTxt.addEventListener('keydown', (e)=>{
+        if (e.key==='Escape'){ btnClean.click(); }
+      });
     })();
 </script>
 
+<!-- Acordeón -->
+<script type="module" th:src="@{/JS/acordeon.js}"></script>
 </body>
 </html>

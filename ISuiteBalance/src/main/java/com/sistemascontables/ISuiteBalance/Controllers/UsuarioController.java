@@ -28,14 +28,14 @@ public class UsuarioController {
                                    @RequestParam String password,
                                    RedirectAttributes ra) { // 👈 agregado
 
-        // Normaliza correo si quieres evitar duplicados con mayúsculas/minúsculas:
+        // Normalizamos correo para evitar duplicados con mayúsculas/minúsculas:
         String correoNorm = correo.trim().toLowerCase(); // opcional pero recomendado
 
         // 1) Correo duplicado
         if (usuarioService.verificarExistencia(correoNorm)) {
             ra.addAttribute("exists", "true");
             ra.addAttribute("msg", "El correo ingresado ya está en uso.");
-            return "redirect:/register"; // -> /register?exists=true&msg=...
+            return "redirect:/register";
         }
 
         // 2) (Opcional) Política de contraseña
@@ -43,13 +43,13 @@ public class UsuarioController {
         if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
             ra.addAttribute("weak", "true");
             ra.addAttribute("msg", "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.");
-            return "redirect:/register"; // -> /register?weak=true&msg=...
+            return "redirect:/register";
         }
 
         // 3) Crear usuario
-        String rolPorDefecto = "CONTADOR";
+        String rolPorDefecto = "Invitado";
         Usuario usuario = new Usuario(nombre, correoNorm, password, rolPorDefecto);
-        usuarioService.saveUsuario(usuario); // Asegúrate que aquí se encripte la contraseña
+        usuarioService.saveUsuario(usuario); // Aquí nos aseguramos que se encripte la contraseña
 
         // 4) OK -> manda flag a login para SweetAlert
         return "redirect:/login?registered";

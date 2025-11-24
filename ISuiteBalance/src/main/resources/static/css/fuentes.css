@@ -7,6 +7,13 @@
   font-style: normal;
 }
 
+/*titulos formales para encabezados de plantillas (letra gruesa)*/
+@font-face {
+  font-family: 'Fuente-titulos2';
+  src: url('/fonts/Summer.ttf') format('truetype');
+  font-style: normal;
+}
+
 /*Parrafos 1*/
 @font-face {
   font-family: 'Fuente-p1';
@@ -40,14 +47,43 @@
   font-style: normal;
 }
 
+/*titulos 3*/
+@font-face {
+  font-family: 'Fuente-titulos3';
+  src: url('/fonts/Gildeon.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*parrafos 4*/
+@font-face {
+  font-family: 'Fuente-p4';
+  src: url('/fonts/ROCK.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*botones*/
+@font-face {
+  font-family: 'Fuente-btn';
+  src: url('/fonts/GOTHIC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .fuente-titulos1{
 font-family: 'Fuente-titulos1';
 font-size: 6.5rem;
 text-align: center; }
 
+.fuente-titulos2{
+font-family: 'Fuente-titulos2';
+font-size: 3rem;
+text-align: center; }
+
 .fuente-p1{
 font-family: 'Fuente-p1';
-font-size: 1.2rem;
+font-size: 1.15rem;
 }
 
 .fuente-p2{
@@ -65,3 +101,34 @@ font-family: 'Fuente-semi';
 font-size: 0.8rem;
 text-align: center; }
 
+.fuente-semita{
+font-family: 'Fuente-semi';
+font-size: 1.3rem; }
+
+.rojo{
+    color:#FF3030 !important;
+}
+.fuente-titulos3{
+font-family: 'Fuente-titulos3';
+font-size: 6rem;
+text-align: center;
+}
+
+.fuente-p4{
+font-family: 'Fuente-p4';
+font-size: 1.30rem;
+}
+
+.fuente-btn{
+font-family: 'Fuente-btn';
+font-size: 1.25rem;
+}
+
+.fuente-btn2{
+font-family: 'Fuente-btn';
+font-size: 0.75rem;
+}
+
+.fuente-semita{
+font-family: 'Fuente-semi';
+font-size: 1.3rem; }

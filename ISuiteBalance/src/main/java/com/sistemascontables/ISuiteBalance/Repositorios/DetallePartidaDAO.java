@@ -4,6 +4,9 @@ import com.sistemascontables.ISuiteBalance.Models.DetallePartida;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
@@ -23,4 +26,100 @@ public interface DetallePartidaDAO extends JpaRepository<DetallePartida, Long> {
     List<DetallePartidaView> lineasConNombre(@Param("idPartida") Long idPartida);
 
     void deleteByIdPartida(Long idPartida);
+
+    // ===== Libro Diario (tal cual ya lo tenías) =====
+    @Query("""
+        SELECT
+            d.id             AS idDetalle,
+            d.idCuenta       AS idCuenta,
+            p.id             AS idPartida,
+            p.fecha          AS fecha,
+            c.tipocuenta     AS tipoCuenta,
+            CONCAT(c.codigo, ' - ', c.nombrecuenta) AS cuenta,
+            p.concepto       AS descripcion,
+            d.montoDebe      AS debe,
+            d.montoHaber     AS haber,
+            df.id            AS docId,
+            df.nombreArchivo AS docNombre
+        FROM DetallePartida d
+        JOIN Partida p            ON p.id = d.idPartida
+        JOIN CuentaContable c     ON c.idCuenta = d.idCuenta
+        LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
+        WHERE p.fecha BETWEEN COALESCE(:desde, p.fecha) AND COALESCE(:hasta, p.fecha)
+        ORDER BY p.fecha ASC, p.id ASC, d.id ASC
+    """)
+    List<LibroDiarioDAO> libroDiario(@Param("desde") LocalDate desde,
+                                     @Param("hasta") LocalDate hasta);
+
+    // ===== Movimientos para Libro Mayor (tal cual ya lo tenías) =====
+    @Query("""
+       SELECT
+         p.fecha                    AS fecha,
+         p.id                       AS idPartida,
+         p.concepto                 AS descripcion,
+         d.montoDebe                AS debe,
+         d.montoHaber               AS haber,
+         c.idCuenta                 AS idCuenta,
+         c.codigo                   AS codigo,
+         c.nombrecuenta             AS nombrecuenta,
+         df.id                      AS docId,
+         df.nombreArchivo           AS docNombre
+       FROM DetallePartida d
+       JOIN Partida p          ON p.id = d.idPartida
+       JOIN CuentaContable c   ON c.idCuenta = d.idCuenta
+       LEFT JOIN DocumentoFuente df ON df.idPartida = p.id
+       WHERE (:idCuenta IS NULL OR d.idCuenta = :idCuenta)
+         AND (COALESCE(:desde, p.fecha) <= p.fecha)
+         AND (COALESCE(:hasta, p.fecha) >= p.fecha)
+       ORDER BY c.codigo ASC, p.fecha ASC, p.id ASC, d.id ASC
+    """)
+    List<LibroMayorView> mayorMovimientos(@Param("idCuenta") Long idCuenta,
+                                          @Param("desde") LocalDate desde,
+                                          @Param("hasta") LocalDate hasta);
+
+    // ===== NUEVO: agregados de Débitos/Créditos por rango (para SaldosService) =====
+    @Query("""
+        SELECT COALESCE(SUM(d.montoDebe), 0)
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE d.idCuenta = :idCuenta
+          AND (:desde IS NULL OR p.fecha >= :desde)
+          AND (:hasta IS NULL OR p.fecha <= :hasta)
+    """)
+    BigDecimal sumDebitos(@Param("idCuenta") Long idCuenta,
+                          @Param("desde") LocalDate desde,
+                          @Param("hasta") LocalDate hasta);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.montoHaber), 0)
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE d.idCuenta = :idCuenta
+          AND (:desde IS NULL OR p.fecha >= :desde)
+          AND (:hasta IS NULL OR p.fecha <= :hasta)
+    """)
+    BigDecimal sumCreditos(@Param("idCuenta") Long idCuenta,
+                           @Param("desde") LocalDate desde,
+                           @Param("hasta") LocalDate hasta);
+
+    // ===== Saldo previo a un rango (si lo ocupas para mayor acumulado) =====
+    // Se usa solo si 'desde' NO es null; si 'desde' es null, el service toma saldoInicial = 0.
+    @Query("""
+        SELECT
+            d.idCuenta                                   AS idCuenta,
+            COALESCE(SUM(d.montoDebe - d.montoHaber), 0) AS saldo
+        FROM DetallePartida d
+        JOIN Partida p ON p.id = d.idPartida
+        WHERE (:idCuenta IS NULL OR d.idCuenta = :idCuenta)
+          AND ( :desde IS NOT NULL AND p.fecha < :desde )
+        GROUP BY d.idCuenta
+    """)
+    List<SaldoInicialRow> saldosInicialesPorCuenta(@Param("idCuenta") Long idCuenta,
+                                                   @Param("desde") LocalDate desde);
+
+    // Proyección simple para el saldo inicial
+    interface SaldoInicialRow {
+        Long getIdCuenta();
+        BigDecimal getSaldo();
+    }
 }

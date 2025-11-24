@@ -1,4 +1,5 @@
 package com.sistemascontables.ISuiteBalance.Config;
+
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioDetailsService;
 import com.sistemascontables.ISuiteBalance.Services.UsuarioService;
@@ -30,16 +31,49 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // ===== Público (invitado) =====
                         .requestMatchers(
+                                "/",
+                                "/acerca",          // ✅ Invitado puede ver
                                 "/login",
                                 "/register",
+                                "/api/me",          // ✅ lo usa tu JS para hidratar
                                 "/fonts/**",
                                 "/css/**",
                                 "/js/**",
+                                "/JS/**",           // ✅ por si sirves /JS en mayúsculas
                                 "/img/**",
                                 "/webjars/**",
                                 "/favicon.ico"
                         ).permitAll()
+
+                        // ===== Por rol (usa hasRole/hasAnyRole porque tus authorities son ROLE_<Rol>) =====
+                        // Administrador
+                        .requestMatchers("/gestion-usuario/**").hasRole("Administrador")
+
+                        // Administrador o Contador
+                        .requestMatchers(
+                                "/registro-libro-diario/**",
+                                "/libro-mayor/**",
+                                "/partidas/**",
+                                "/subir-doc/**",
+                                "/gestion-partida/**",
+                                // ➕ Crear nuevo reporte (formulario)
+                                "/reportes/nuevo"
+                        ).hasAnyRole("Administrador","Contador")
+
+                        // Lista de reportes: Admin, Contador y Auditor
+                        .requestMatchers("/reportes/**").hasAnyRole("Administrador","Contador","Auditor")
+
+                        // Bitácora: Admin o Auditor
+                        .requestMatchers("/bitacora/**").hasAnyRole("Administrador","Auditor")
+
+                        // Dashboard: requiere login
+                        .requestMatchers("/dashboard/**").authenticated()
+
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // Todo lo dems, autenticado
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -71,18 +105,20 @@ public class SecurityConfig {
                             response.sendRedirect("/dashboard");
                         })
                         .permitAll()
-                ).logout(logout -> logout
-                // Atrapamos POST /logout explícitamente
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "remember-me")
-                .permitAll()
-        );
+                )
+                .logout(logout -> logout
+                        // Atrapamos POST /logout explícitamente
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "remember-me")
+                        .permitAll()
+                )
+                // ✅ 403 personalizado para rol inadecuado
+                .exceptionHandling(ex -> ex.accessDeniedPage("/error/403"));
 
-
-
+        // CSRF queda habilitado por defecto (tu formulario ya manda el token)
         return http.build();
     }
 

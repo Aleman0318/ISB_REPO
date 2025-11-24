@@ -33,7 +33,7 @@ public class GestionUsuarioController {
         String n = nombre == null ? "" : nombre.trim();
         String c = correo == null ? "" : correo.trim().toLowerCase();
         String p = passwordPlano == null ? "" : passwordPlano.trim();
-        String r = rol == null ? "" : rol.trim().toUpperCase();
+        String r = rol == null ? "" : rol.trim();
 
         if (n.isEmpty() || c.isEmpty() || p.isEmpty() || r.isEmpty()) {
             ra.addFlashAttribute("error", "Todos los campos son obligatorios.");
@@ -56,7 +56,7 @@ public class GestionUsuarioController {
             ra.addFlashAttribute("formRol", r);
             return "redirect:/crear-usuario";
         }
-        if (!(r.equals("ADMIN") || r.equals("CONTADOR") || r.equals("AUDITOR"))) {
+        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado") )) {
             ra.addFlashAttribute("error", "Rol inválido.");
             ra.addFlashAttribute("formNombre", n);
             ra.addFlashAttribute("formCorreo", c);
@@ -149,7 +149,7 @@ public class GestionUsuarioController {
 
         String n = nombre == null ? "" : nombre.trim();
         String c = correo == null ? "" : correo.trim().toLowerCase();
-        String r = rol == null ? "" : rol.trim().toUpperCase();
+        String r = rol == null ? "" : rol.trim();
 
         if (id == null || n.isEmpty() || c.isEmpty() || r.isEmpty()) {
             ra.addFlashAttribute("error", "Todos los campos son obligatorios.");
@@ -159,7 +159,7 @@ public class GestionUsuarioController {
             ra.addFlashAttribute("error", "Correo electrónico no válido.");
             return "redirect:/usuario/editar/" + id;
         }
-        if (!(r.equals("ADMIN") || r.equals("CONTADOR") || r.equals("AUDITOR"))) {
+        if (!(r.equals("Administrador") || r.equals("Contador") || r.equals("Auditor") || r.equals("Invitado") )) {
             ra.addFlashAttribute("error", "Rol inválido.");
             return "redirect:/usuario/editar/" + id;
         }
