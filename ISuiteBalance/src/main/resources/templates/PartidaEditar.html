@@ -13,6 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/fuentes.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" th:href="@{/img/conta-illustration.png}">
 
     <style>
         /* Evitar scroll horizontal global */
@@ -111,12 +112,64 @@
             cursor:pointer;
         }
 
+        /* ================================
+           LAYOUT Cuenta / Debe / Haber
+           ================================ */
+        .registrar-partida .cuenta-body{
+            display:grid;
+            grid-template-columns: 1fr 1fr;           /* dos columnas */
+            grid-template-rows: auto auto auto auto;  /* 4 filas */
+            column-gap:20px;
+            row-gap:8px;
+        }
+
+        .registrar-partida .cuenta-body label.sub{
+            display:block;
+            font-size:.85rem;
+            font-weight:700;
+            color:#333;
+            margin:0 0 2px;
+        }
+
+        /* Fila 1: label "Cuenta" */
+        .registrar-partida .cuenta-body label.sub:nth-of-type(1){
+            grid-column:1 / -1;
+            grid-row:1;
+        }
+
+        /* Fila 2: select de Cuenta */
+        .registrar-partida .cuenta-body select.sel-cuenta{
+            grid-column:1 / -1;
+            grid-row:2;
+        }
+
+        /* Fila 3: labels Debe / Haber (MISMA FILA) */
+        .registrar-partida .cuenta-body label.sub:nth-of-type(2){
+            grid-column:1 / 2;  /* izquierda */
+            grid-row:3;
+        }
+        .registrar-partida .cuenta-body label.sub:nth-of-type(3){
+            grid-column:2 / 3;  /* derecha */
+            grid-row:3;
+        }
+
+        /* Fila 4: inputs Debe / Haber alineados */
+        .registrar-partida .cuenta-body input[name^="debe"]{
+            grid-column:1 / 2;
+            grid-row:4;
+        }
+        .registrar-partida .cuenta-body input[name^="haber"]{
+            grid-column:2 / 3;
+            grid-row:4;
+        }
+
         /* Centrar montos Debe / Haber */
-        .cuenta-body input[name^="debe"],
-        .cuenta-body input[name^="haber"]{
+        .registrar-partida .cuenta-body input[name^="debe"],
+        .registrar-partida .cuenta-body input[name^="haber"]{
             text-align:center;
         }
     </style>
+
 </head>
 <body>
 
